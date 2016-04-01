@@ -10,9 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace AndroidGui.Core
+namespace AndroidGui.Core.Playfield
 {
-    class WallSection
+    public class WallSection
     {
         public WallSection(bool isPassable, bool hasHamster, bool isExit, bool isHiddenExit)
         {

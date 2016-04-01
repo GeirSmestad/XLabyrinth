@@ -17,7 +17,7 @@ namespace AndroidGui.Core.Entities
     /// you end up on top of the next hole awaiting your next turn. The holes are connected 
     /// in a loop.
     /// </summary>
-    class Teleporter
+    public class Teleporter
     {
         public Teleporter(Teleporter nextHole)
         {

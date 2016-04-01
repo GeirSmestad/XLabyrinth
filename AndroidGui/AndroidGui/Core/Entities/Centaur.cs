@@ -10,9 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace AndroidGui.Core.Actors
+namespace AndroidGui.Core.Entities
 {
-    class Centaur
+    public class Centaur
     {
         public int PosX;
         public int PosY;

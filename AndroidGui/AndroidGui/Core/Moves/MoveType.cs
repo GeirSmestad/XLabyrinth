@@ -10,9 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace AndroidGui.Core
+namespace AndroidGui.Core.Moves
 {
-    enum ActionType
+    enum MoveType
     {
         DoNothing,
         MoveUp,

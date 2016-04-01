@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace AndroidGui.Core
+namespace AndroidGui.Core.Playfield
 {
     public enum SquareType
     {

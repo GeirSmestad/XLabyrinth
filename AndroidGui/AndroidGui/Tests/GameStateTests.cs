@@ -10,11 +10,19 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace AndroidGui.Core.Playfield
+using NUnit.Framework;
+
+namespace AndroidGui.Tests
 {
-    public class PlayfieldSquare
+    [TestFixture]
+    public class GameStateTests
     {
-        public int NumTreasures;
-        public SquareType Type;
+        [Test]
+        public void Should_pass()
+        {
+            Assert.IsTrue(true);
+        }
+
+
     }
 }

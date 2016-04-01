@@ -9,16 +9,16 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using AndroidGui.Core.Actors;
+using AndroidGui.Core.Entities;
 
-namespace AndroidGui.Core
+namespace AndroidGui.Core.Moves
 {
-    class Action
+    class Move
     {
         public Player PerformedBy { get; private set; }
-        public ActionType ActionType { get; private set; }
+        public MoveType ActionType { get; private set; }
 
-        public Action(Player performedBy, ActionType actionType)
+        public Move(Player performedBy, MoveType actionType)
         {
             PerformedBy = performedBy;
             ActionType = actionType;

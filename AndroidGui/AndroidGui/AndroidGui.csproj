@@ -53,8 +53,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Actions\Action.cs" />
-    <Compile Include="Core\Actions\ActionType.cs" />
+    <Compile Include="Core\Moves\Move.cs" />
+    <Compile Include="Core\Moves\MoveType.cs" />
+    <Compile Include="Core\Playfield\Board.cs" />
     <Compile Include="Core\Entities\Centaur.cs" />
     <Compile Include="Core\Entities\Player.cs" />
     <Compile Include="Core\Entities\Teleporter.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\GameStateTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GettingStarted.Xamarin" />
@@ -84,9 +86,7 @@
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.
