@@ -13,6 +13,6 @@ namespace AndroidGui.Core.Playfield
         HamsterStorage,
         FitnessStudio,
         CementStorage,
-        Teleporter // TODO: Probably unnecessary.
+        Teleporter
     }
 }
