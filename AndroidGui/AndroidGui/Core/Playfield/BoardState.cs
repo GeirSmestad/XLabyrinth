@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using AndroidGui.Core.Entities;
 
 namespace AndroidGui.Core.Playfield
@@ -17,10 +11,10 @@ namespace AndroidGui.Core.Playfield
     /// An instance of the Board class represents the current state of the
     /// play area.
     /// </summary>
-    public class Board
+    public class BoardState
     {
         public WallSection[,] WallGrid;
-        public PlayfieldSquare[,] Playfield;
+        public PlayfieldSquare[,] PlayfieldGrid;
         public List<Teleporter> Holes;
         public Centaur centaur;
     }

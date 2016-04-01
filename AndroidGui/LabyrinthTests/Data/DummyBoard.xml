@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LabyrinthLevel>
+  <Playfield>
+    <Row>
+      <Empty />
+      <Empty />
+      <FitnessStudio />
+      <Empty />
+      <Teleporter>3</Teleporter>
+    </Row>
+    <Row>
+      <AmmoStorage />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Teleporter>5</Teleporter>
+    </Row>
+    <Row>
+      <Empty />
+      <Empty />
+      <Empty />
+      <CementStorage />
+      <HamsterStorage />
+    </Row>
+    <Row>
+      <Empty />
+      <Teleporter>1</Teleporter>
+      <Empty />
+      <Empty />
+      <Teleporter>2</Teleporter>
+    </Row>
+    <Row>
+      <Empty />
+      <Empty />
+      <Empty />
+      <Teleporter>4</Teleporter>
+      <Empty />
+    </Row>
+  </Playfield>
+
+  <Walls>
+    
+
+  </Walls>
+
+  <StartingPositions>
+    <PlayerPosition>
+      <x>3</x>
+      <y>2</y>
+    </PlayerPosition>
+    <PlayerPosition>
+      <x>4</x>
+      <y>4</y>
+    </PlayerPosition>
+  </StartingPositions>
+  
+  <Centaur>
+    <StartingPosition>
+      <x>1</x>
+      <y>0</y>
+    </StartingPosition>
+      <Path>
+      
+      </Path>
+  </Centaur>
+  
+</LabyrinthLevel>

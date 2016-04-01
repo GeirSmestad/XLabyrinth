@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-
 namespace AndroidGui.Core.Playfield
 {
     public class WallSection
@@ -28,6 +21,7 @@ namespace AndroidGui.Core.Playfield
         private bool hasHamster;
         private bool isExit;
         private bool isHiddenExit;
+        private bool isExterior; // TODO: Unsure if this is required. Implement if so.
 
         public bool IsPassable
         {

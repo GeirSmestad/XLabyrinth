@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-
 namespace AndroidGui.Core.Entities
 {
     class Player
@@ -28,15 +21,15 @@ namespace AndroidGui.Core.Entities
         public int NumHamsterSprays = 0;
         public int NumCement = 0;
         public bool CarriesTreasure = false;
+        public int Score = 0;
 
-        public bool IsGhost = false;
+        public bool IsAlive = true;
         public int PosX;
         public int PosY;
 
-
         public void Die()
         {
-            IsGhost = true;
+            IsAlive = false;
             NumArrows = NumGrenades = NumHamsters = NumHamsterSprays = 0;
         }
     }

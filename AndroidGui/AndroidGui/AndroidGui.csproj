@@ -53,9 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Helpers\BoardLoader.cs" />
     <Compile Include="Core\Moves\Move.cs" />
     <Compile Include="Core\Moves\MoveType.cs" />
-    <Compile Include="Core\Playfield\Board.cs" />
+    <Compile Include="Core\Playfield\BoardState.cs" />
     <Compile Include="Core\Entities\Centaur.cs" />
     <Compile Include="Core\Entities\Player.cs" />
     <Compile Include="Core\Entities\Teleporter.cs" />
