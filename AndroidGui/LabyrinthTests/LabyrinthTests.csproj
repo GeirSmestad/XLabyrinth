@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -69,16 +70,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AndroidGui\AndroidGui.csproj">
-      <Project>{1a4be556-3958-402c-bb3a-fc3cffcc2f49}</Project>
-      <Name>AndroidGui</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\DummyBoard.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LabyrinthEngine\LabyrinthEngine.csproj">
+      <Project>{48ccc159-96b9-478c-bd15-ada83ac296ed}</Project>
+      <Name>LabyrinthEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidGui", "AndroidGui\An
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabyrinthTests", "LabyrinthTests\LabyrinthTests.csproj", "{322E48DB-E2A5-4732-B1F6-08D9EF4DC3F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabyrinthEngine", "LabyrinthEngine\LabyrinthEngine.csproj", "{48CCC159-96B9-478C-BD15-ADA83AC296ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{322E48DB-E2A5-4732-B1F6-08D9EF4DC3F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{322E48DB-E2A5-4732-B1F6-08D9EF4DC3F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{322E48DB-E2A5-4732-B1F6-08D9EF4DC3F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

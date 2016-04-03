@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-using AndroidGui.Core.Helpers;
-using AndroidGui.Core.Playfield;
+using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Playfield;
 
 namespace LabyrinthTests
 {

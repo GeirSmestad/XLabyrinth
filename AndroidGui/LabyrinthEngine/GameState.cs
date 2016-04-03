@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using AndroidGui.Core.Entities;
-using AndroidGui.Core.Playfield;
-using AndroidGui.Core.Moves;
+using LabyrinthEngine.Entities;
+using LabyrinthEngine.Playfield;
+using LabyrinthEngine.Moves;
 
-namespace AndroidGui.Core
+namespace LabyrinthEngine
 {
     public class GameState
     {

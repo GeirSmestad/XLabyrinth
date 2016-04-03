@@ -1,10 +1,10 @@
-using AndroidGui.Core.Entities;
+using LabyrinthEngine.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AndroidGui.Core.Playfield
+namespace LabyrinthEngine.Playfield
 {
     public class PlayfieldSquare
     {

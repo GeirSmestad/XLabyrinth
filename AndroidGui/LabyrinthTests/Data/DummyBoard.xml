@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- TODO: Might be a better idea with tighter integration to model by using attributes on each
+     tag that corresponds to an actual model element. 
+     E.g. <PlayfieldElement NumTreasures="2" SquareType="AmmoStorage" />-->
 <LabyrinthLevel>
   <Playfield>
-    <Row>
-      <Empty />
+    <Row testAttr="4">
+      <Treasure />
       <Empty />
       <FitnessStudio />
       <Empty />
@@ -17,7 +20,7 @@
     </Row>
     <Row>
       <Empty />
-      <Empty />
+      <Treasure />
       <Empty />
       <CementStorage />
       <HamsterStorage />
@@ -31,17 +34,28 @@
     </Row>
     <Row>
       <Empty />
-      <Empty />
+      <Treasure />
       <Empty />
       <Teleporter>4</Teleporter>
       <Empty />
     </Row>
   </Playfield>
 
-  <Walls>
-    
+  <HorizontalWalls>
+    <HorizontalWallSegment>
+      <HasHamster />
+      <w_x>1</w_x>
+      <y>0</y>
+    </HorizontalWallSegment>
 
-  </Walls>
+  </HorizontalWalls>
+
+  <VerticalWalls>
+    <VerticalWallSegment>
+      <w_y>1</w_y>
+      <x>0</x>
+    </VerticalWallSegment>
+  </VerticalWalls>
 
   <StartingPositions>
     <PlayerPosition>

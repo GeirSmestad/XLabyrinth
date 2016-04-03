@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using AndroidGui.Core;
-
 using NUnit.Framework;
-using AndroidGui.Core.Playfield;
+
+using LabyrinthEngine;
+using LabyrinthEngine.Playfield;
 
 namespace AndroidGui.Tests
 {

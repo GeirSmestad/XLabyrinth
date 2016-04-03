@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using AndroidGui.Core.Entities;
+using LabyrinthEngine.Entities;
 
-namespace AndroidGui.Core.Playfield
+namespace LabyrinthEngine.Playfield
 {
     /// <summary>
     /// An instance of the Board class represents the current state of the

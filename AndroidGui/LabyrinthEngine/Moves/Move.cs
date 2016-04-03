@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using AndroidGui.Core.Entities;
+using LabyrinthEngine.Entities;
 
-namespace AndroidGui.Core.Moves
+namespace LabyrinthEngine.Moves
 {
     class Move
     {

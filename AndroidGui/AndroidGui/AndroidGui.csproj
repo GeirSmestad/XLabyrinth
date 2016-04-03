@@ -29,6 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,17 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Helpers\BoardLoader.cs" />
-    <Compile Include="Core\Moves\Move.cs" />
-    <Compile Include="Core\Moves\MoveType.cs" />
-    <Compile Include="Core\Playfield\BoardState.cs" />
-    <Compile Include="Core\Entities\Centaur.cs" />
-    <Compile Include="Core\Entities\Player.cs" />
-    <Compile Include="Core\Entities\Teleporter.cs" />
-    <Compile Include="Core\GameState.cs" />
-    <Compile Include="Core\Playfield\PlayfieldSquare.cs" />
-    <Compile Include="Core\Playfield\SquareType.cs" />
-    <Compile Include="Core\Playfield\WallSection.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
