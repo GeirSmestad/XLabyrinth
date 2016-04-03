@@ -1,3 +1,4 @@
+using LabyrinthEngine.Playfield;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,15 @@ namespace LabyrinthEngine.Entities
     /// </summary>
     public class Teleporter
     {
-        public Teleporter(Teleporter nextHole)
-        {
-            NextHole = nextHole;
-        }
-
+        public int TeleporterIndex { get; private set; }
         public Teleporter NextHole { get; private set; }
+        public PlayfieldSquare Square { get; private set; }
+        
+        public Teleporter(int teleporterIndex, Teleporter nextHole, PlayfieldSquare square)
+        {
+            TeleporterIndex = teleporterIndex;
+            NextHole = nextHole;
+            Square = square;
+        }
     }
 }

@@ -21,6 +21,11 @@ namespace LabyrinthEngine
         Random randomNumberGenerator;
         int initialRngSeed; // Must store this to facilitate rebuilding game state from move list
 
+        public GameState(BoardState board)
+        {
+            Board = board;
+        }
+
         public void SetToInitialState()
         {
 

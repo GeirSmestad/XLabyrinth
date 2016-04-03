@@ -45,6 +45,8 @@
     <Compile Include="Entities\Teleporter.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="Helpers\BoardLoader.cs" />
+    <Compile Include="Helpers\ExtensionMethods.cs" />
+    <Compile Include="Helpers\LabyrinthExceptions.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
     <Compile Include="Playfield\BoardState.cs" />

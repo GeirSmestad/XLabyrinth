@@ -3,44 +3,51 @@
      tag that corresponds to an actual model element. 
      E.g. <PlayfieldElement NumTreasures="2" SquareType="AmmoStorage" />-->
 <LabyrinthLevel>
-  <Playfield>
-    <Row testAttr="4">
-      <Treasure />
+  <Playfield width="5" height="5">
+    <Row>
       <Empty />
+      <Empty treasures="1"/>
+      <FitnessStudio treasures="2"/>
       <FitnessStudio />
-      <Empty />
-      <Teleporter>3</Teleporter>
+      <Teleporter teleporterIndex="3"/>
     </Row>
     <Row>
       <AmmoStorage />
       <Empty />
       <Empty />
       <Empty />
-      <Teleporter>5</Teleporter>
+      <Teleporter teleporterIndex="5"/>
     </Row>
     <Row>
       <Empty />
-      <Treasure />
+      <Empty />
       <Empty />
       <CementStorage />
       <HamsterStorage />
     </Row>
     <Row>
       <Empty />
-      <Teleporter>1</Teleporter>
+      <Teleporter teleporterIndex="1"/>
       <Empty />
       <Empty />
-      <Teleporter>2</Teleporter>
+      <Teleporter teleporterIndex="2"/>
     </Row>
     <Row>
       <Empty />
-      <Treasure />
       <Empty />
-      <Teleporter>4</Teleporter>
+      <Empty />
+      <Teleporter teleporterIndex="4"/>
       <Empty />
     </Row>
   </Playfield>
 
+  <LabyrinthExits>
+    <NormalExit mazeEdge="left" y="3"/>
+    <HiddenExit mazeEdge="right" y="0"/>
+    <HiddenExit mazeEdge="bottom" x="1"/>
+    <NormalExit mazeEdge="top" x="4"/>
+  </LabyrinthExits>
+    
   <HorizontalWalls>
     <HorizontalWallSegment>
       <HasHamster />
@@ -58,24 +65,15 @@
   </VerticalWalls>
 
   <StartingPositions>
-    <PlayerPosition>
-      <x>3</x>
-      <y>2</y>
-    </PlayerPosition>
-    <PlayerPosition>
-      <x>4</x>
-      <y>4</y>
-    </PlayerPosition>
+    <PlayerPosition x="3" y="2" />
+    <PlayerPosition x="4" y="4" />
   </StartingPositions>
   
   <Centaur>
-    <StartingPosition>
-      <x>1</x>
-      <y>0</y>
-    </StartingPosition>
-      <Path>
+    <CentaurPosition x="1" y="0" />
+    <CentaurPath>
       
-      </Path>
+    </CentaurPath>
   </Centaur>
   
 </LabyrinthLevel>

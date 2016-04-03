@@ -14,15 +14,25 @@ namespace LabyrinthTests
     public class BoardLoaderTests
     {
         [Test]
-        public void When_loading_board_from_xml_should_yield_correct_board()
+        public void When_loading_board_from_xml_should_yield_board()
         {
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\DummyBoard.xml");
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
 
             BoardState board = BoardLoader.InitializeFromXml(boardXmlContent);
 
             Assert.NotNull(board);
+        }
 
-            // TODO: Add more assertions depending on DummyBoard contents
+        [Test]
+        public void When_loading_board_from_xml_should_load_all_board_properties()
+        {
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
+
+            BoardState board = BoardLoader.InitializeFromXml(boardXmlContent);
+
+            Assert.Fail("Not implemented");
+
+            // TODO: Test the returned board to test all features, using public methods.
         }
     }
 }

@@ -1,4 +1,5 @@
 using LabyrinthEngine.Entities;
+using LabyrinthEngine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace LabyrinthEngine.Playfield
         public int NumTreasures { get; set; }
         public SquareType Type { get; private set; }
         public Teleporter Hole { get; private set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+
 
         public PlayfieldSquare(SquareType type, int numTreasures, Teleporter hole=null)
         {
@@ -25,12 +29,15 @@ namespace LabyrinthEngine.Playfield
         {
             if (Type == SquareType.Teleporter && Hole == null)
             {
-                throw new InvalidOperationException("A teleporter square needs to have a teleporter attached");
+                // TODO: Temporarily removed until teleporter functionality is implemented.
+                //throw new LabyrinthInvalidStateException(
+                //    "A teleporter square needs to have a teleporter attached");
             }
 
             if (Type != SquareType.Teleporter && Hole != null)
             {
-                throw new InvalidOperationException("A non-teleporter square cannot have a teleporter attached");
+                //throw new LabyrinthInvalidStateException(
+                //    "A non-teleporter square cannot have a teleporter attached");
             }
         }
     }
