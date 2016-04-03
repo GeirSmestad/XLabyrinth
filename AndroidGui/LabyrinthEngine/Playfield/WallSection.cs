@@ -7,12 +7,13 @@ namespace LabyrinthEngine.Playfield
 {
     public class WallSection
     {
-        public WallSection(bool isPassable, bool hasHamster, bool isExit, bool isHiddenExit)
+        public WallSection(bool isPassable, bool hasHamster, 
+            bool isExit, bool isExterior)
         {
             this.isPassable = isPassable;
             this.hasHamster = hasHamster;
             this.isExit = isExit;
-            this.isHiddenExit = isHiddenExit;
+            this.isExterior = isExterior;
 
             AssertThatWallStateIsLegal();
         }
@@ -20,8 +21,7 @@ namespace LabyrinthEngine.Playfield
         private bool isPassable;
         private bool hasHamster;
         private bool isExit;
-        private bool isHiddenExit;
-        private bool isExterior; // TODO: Unsure if this is required. Implement if so.
+        private bool isExterior;
 
         public bool IsPassable
         {
@@ -60,30 +60,32 @@ namespace LabyrinthEngine.Playfield
                 AssertThatWallStateIsLegal();
             }
         }
-        public bool IsHiddenExit
+
+        public bool IsExterior
         {
             get
             {
-                return isHiddenExit;
+                return isExterior;
             }
             set
             {
-                isHiddenExit = value;
+                isExterior = value;
                 AssertThatWallStateIsLegal();
             }
         }
 
         private void AssertThatWallStateIsLegal()
         {
-            if (IsExit && IsHiddenExit)
+            if (IsExit && !IsExterior)
             {
-                throw new InvalidOperationException("A wall section cannot both be exit and hidden exit");
+                throw new InvalidOperationException("The exit must be on an exterior wall");
             }
 
             if (IsPassable && HasHamster)
             {
                 throw new InvalidOperationException("A wall section cannot both have a hamster and be passable");
             }
+
         }
     }
 }

@@ -10,14 +10,15 @@ namespace LabyrinthEngine.Helpers
     public static class ExtensionMethods
     {
         /// <summary>
-        /// Returns true if the XPathNavigator has a parameter of attributeName equal to attributeValue.
+        /// Returns true if the XPathNavigator has a parameter of attributeName equal to 
+        /// attributeValue (case-insensitive).
         /// </summary>
         public static bool HasAttributeEqualTo(this XPathNavigator element,
             string attributeName, string attributeValue)
         {
-            var attribute = element.GetAttribute(attributeName, string.Empty);
+            var valueFromXml = element.GetAttribute(attributeName, string.Empty);
 
-            if (attribute.Equals(attributeValue))
+            if (valueFromXml.ToLower().Equals(attributeValue.ToLower()))
             {
                 return true;
             }
@@ -34,16 +35,5 @@ namespace LabyrinthEngine.Helpers
         {
             return element.GetAttribute(localName, string.Empty);
         }
-
-        //public static T ToEnumOrDefault<T>(this string value, T defaultValue)
-        //{
-        //    if (string.IsNullOrEmpty(value))
-        //    {
-        //        return defaultValue;
-        //    }
-
-        //    T result;
-        //    return Enum.TryParse<T>(value, true, out result) ? result : defaultValue;
-        //}
     }
 }

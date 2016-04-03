@@ -12,7 +12,17 @@ namespace LabyrinthEngine.Helpers
 {
     public class BoardLoader
     {
-        public static BoardState InitializeFromXml(string xml)
+        public BoardState Board { get; private set; }
+
+        private int boardWidth;
+        private int boardHeight;
+
+        public BoardLoader(string xmlToInitializeBoardFrom)
+        {
+            Board = initializeBoardFromXml(xmlToInitializeBoardFrom);
+        }
+
+        private BoardState initializeBoardFromXml(string xml)
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
@@ -21,13 +31,12 @@ namespace LabyrinthEngine.Helpers
             var playfieldXml = navigator.SelectSingleNode("/LabyrinthLevel/Playfield");
             var playfield = parsePlayfieldFrom(playfieldXml);
 
-            WallSection[,] horizontalWalls = null;
             var horizontalWallsXml = navigator.SelectSingleNode("/LabyrinthLevel/HorizontalWalls");
+            var horizontalWalls = parseHorizontalWallsFrom(horizontalWallsXml);
 
-            WallSection[,] verticalWalls = null;
             var verticalWallsXml = navigator.SelectSingleNode("/LabyrinthLevel/VerticalWalls");
+            var verticalWalls = parseVerticalWallsFrom(verticalWallsXml);
 
-            // TODO: Add code to read and insert exits into wall definitions (LabyrinthExits)
             // TODO: Add code to construct teleporters from already-parsed playfield
             // TODO: Populate playfield X and Y coordinates from already-parsed playfield
 
@@ -41,24 +50,24 @@ namespace LabyrinthEngine.Helpers
             return new BoardState(playfield, horizontalWalls, verticalWalls, holes, centaur);
         }
 
-        private static PlayfieldSquare[,] parsePlayfieldFrom(XPathNavigator playfieldElement)
+        private PlayfieldSquare[,] parsePlayfieldFrom(XPathNavigator playfieldElement)
         {
-            int width = int.Parse(playfieldElement.GetAttribute("width"));
-            int height = int.Parse(playfieldElement.GetAttribute("height"));
+            boardWidth = int.Parse(playfieldElement.GetAttribute("width"));
+            boardHeight = int.Parse(playfieldElement.GetAttribute("height"));
 
-            PlayfieldSquare[,] result = new PlayfieldSquare[width, height];
+            PlayfieldSquare[,] result = new PlayfieldSquare[boardWidth, boardHeight];
 
             try
             {
                 var iteratorForAllRows = playfieldElement.Select("Row");
 
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < boardHeight; y++)
                 {
                     iteratorForAllRows.MoveNext();
                     var currentRowElement = iteratorForAllRows.Current.Clone();
                     var iteratorForAllSquares = currentRowElement.Select("*");
 
-                    for (int x = 0; x < width; x++)
+                    for (int x = 0; x < boardWidth; x++)
                     {
                         iteratorForAllSquares.MoveNext();
                         var currentPlayfieldSquare = iteratorForAllSquares.Current.Clone();
@@ -81,7 +90,7 @@ namespace LabyrinthEngine.Helpers
             return result;
         }
 
-        private static PlayfieldSquare parsePlayfieldSquareFrom(XPathNavigator playfieldSquareElement)
+        private PlayfieldSquare parsePlayfieldSquareFrom(XPathNavigator playfieldSquareElement)
         {
             int numTreasures = 0;
             SquareType type;
@@ -104,13 +113,106 @@ namespace LabyrinthEngine.Helpers
             {
                 // Teleporters must be converted to a linked list once all have been parsed.
 
-                //var index = int.Parse(playfieldSquareElement.GetAttribute("teleporterIndex"));
-                // TODO: Fix this. Doesn't work because of circular dependency in constructors
-                //teleporter = new Teleporter(index, null, result);
-                //return new PlayfieldSquare(type, numTreasures, teleporter);
+                var index = int.Parse(playfieldSquareElement.GetAttribute("teleporterIndex"));
+                teleporter = new Teleporter(index, null);
+                return new PlayfieldSquare(type, numTreasures, teleporter);
             }
 
             return new PlayfieldSquare(type, numTreasures);
+        }
+
+        private WallSection[,] parseHorizontalWallsFrom(XPathNavigator horizontalWallsXml)
+        {
+            var result = new WallSection[boardWidth, boardHeight+1];
+
+            for (int w_y = 0; w_y <= boardHeight; w_y++)
+            {
+                for (int x = 0; x < boardWidth; x++)
+                {
+                    if (w_y == 0 || w_y == boardHeight+1)
+                    {
+                        result[x, w_y] = new WallSection(false, false, false, isExterior:true);
+                    }
+                    else
+                    { 
+                        result[x, w_y] = new WallSection(true, false, false, false); // No wall
+                    }
+                }
+            }
+
+            var iteratorForAllHorizontalWalls = horizontalWallsXml.Select("HorizontalWallSegment");
+            while (iteratorForAllHorizontalWalls.MoveNext())
+            {
+                var currentWallElement = iteratorForAllHorizontalWalls.Current.Clone();
+
+                int w_y, x;
+                var currentWall = parseWallSectionFrom(currentWallElement, out w_y, out x);
+
+                result[x, w_y] = currentWall;
+            }
+
+            return result;
+        }
+
+        private WallSection[,] parseVerticalWallsFrom(XPathNavigator verticalWallsXml)
+        {
+            var result = new WallSection[boardWidth, boardHeight + 1];
+
+            for (int w_x = 0; w_x <= boardWidth; w_x++)
+            {
+                for (int y = 0; y < boardHeight; y++)
+                {
+                    if (w_x == 0 || w_x == boardWidth + 1)
+                    {
+                        result[y, w_x] = new WallSection(false, false, false, isExterior: true);
+                    }
+                    else
+                    {
+                        result[y, w_x] = new WallSection(true, false, false, false); // No wall
+                    }
+                }
+            }
+
+            var iteratorForAllVerticalWalls = verticalWallsXml.Select("VerticalWallSegment");
+            while (iteratorForAllVerticalWalls.MoveNext())
+            {
+                var currentWallElement = iteratorForAllVerticalWalls.Current.Clone();
+
+                int w_x, y;
+                var currentWall = parseWallSectionFrom(currentWallElement, out w_x, out y);
+
+                result[y, w_x] = currentWall;
+            }
+
+            return result;
+        }
+
+        private WallSection parseWallSectionFrom(XPathNavigator wallSectionXml, 
+            out int wallCoordinate, out int adjacentSquareCoordinate)
+        {
+            bool isPassable = wallSectionXml.HasAttributeEqualTo("isPassable", "yes");
+            bool isExit = wallSectionXml.HasAttributeEqualTo("isExit", "yes");
+            bool hasHamster = wallSectionXml.HasAttributeEqualTo("hasHamster", "yes");
+            bool isExterior;
+
+            if (wallSectionXml.Name == "HorizontalWallSegment")
+            {
+                wallCoordinate = int.Parse(wallSectionXml.GetAttribute("w_y"));
+                adjacentSquareCoordinate = int.Parse(wallSectionXml.GetAttribute("x"));
+                isExterior = wallCoordinate == 0 || wallCoordinate == boardHeight;
+            }
+            else if (wallSectionXml.Name == "VerticalWallSegment")
+            {
+                wallCoordinate = int.Parse(wallSectionXml.GetAttribute("w_x"));
+                adjacentSquareCoordinate = int.Parse(wallSectionXml.GetAttribute("y"));
+                isExterior = wallCoordinate == 0 || wallCoordinate == boardWidth;
+            }
+            else
+            {
+                throw new LabyrinthParseException("Encountered illegal wall segment name");
+            }
+
+            return new WallSection(isPassable, hasHamster, isExit, isExterior);
         }
     }
 }

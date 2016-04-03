@@ -40,28 +40,17 @@
       <Empty />
     </Row>
   </Playfield>
-
-  <LabyrinthExits>
-    <NormalExit mazeEdge="left" y="3"/>
-    <HiddenExit mazeEdge="right" y="0"/>
-    <HiddenExit mazeEdge="bottom" x="1"/>
-    <NormalExit mazeEdge="top" x="4"/>
-  </LabyrinthExits>
     
   <HorizontalWalls>
-    <HorizontalWallSegment>
-      <HasHamster />
-      <w_x>1</w_x>
-      <y>0</y>
-    </HorizontalWallSegment>
-
+    <HorizontalWallSegment w_y="5" x="4" isExit="yes" isPassable="yes"/>
+    <HorizontalWallSegment w_y="3" x="1" hasHamster="yes"/>
+    <HorizontalWallSegment w_y="3" x="2" />
+    <HorizontalWallSegment w_y="3" x="3" />
   </HorizontalWalls>
 
   <VerticalWalls>
-    <VerticalWallSegment>
-      <w_y>1</w_y>
-      <x>0</x>
-    </VerticalWallSegment>
+    <VerticalWallSegment w_x="5" y="4" isExit="yes" hasHamster="yes"/>
+    <VerticalWallSegment w_x="3" y="4" />
   </VerticalWalls>
 
   <StartingPositions>

@@ -29,15 +29,14 @@ namespace LabyrinthEngine.Playfield
         {
             if (Type == SquareType.Teleporter && Hole == null)
             {
-                // TODO: Temporarily removed until teleporter functionality is implemented.
-                //throw new LabyrinthInvalidStateException(
-                //    "A teleporter square needs to have a teleporter attached");
+                throw new LabyrinthInvalidStateException(
+                    "A teleporter square needs to have a teleporter attached");
             }
 
             if (Type != SquareType.Teleporter && Hole != null)
             {
-                //throw new LabyrinthInvalidStateException(
-                //    "A non-teleporter square cannot have a teleporter attached");
+                throw new LabyrinthInvalidStateException(
+                    "A non-teleporter square cannot have a teleporter attached");
             }
         }
     }

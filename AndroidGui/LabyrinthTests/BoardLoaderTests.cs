@@ -16,23 +16,57 @@ namespace LabyrinthTests
         [Test]
         public void When_loading_board_from_xml_should_yield_board()
         {
+            // TODO: Can load this in setup, no need to do in each test.
             string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
 
-            BoardState board = BoardLoader.InitializeFromXml(boardXmlContent);
+            var boardLoader = new BoardLoader(boardXmlContent);
+            BoardState board = boardLoader.Board;
 
             Assert.NotNull(board);
         }
 
         [Test]
-        public void When_loading_board_from_xml_should_load_all_board_properties()
+        public void TestPlayfieldParser()
         {
             string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
 
-            BoardState board = BoardLoader.InitializeFromXml(boardXmlContent);
+            var boardLoader = new BoardLoader(boardXmlContent);
+            BoardState board = boardLoader.Board;
+
+            // TODO: Test dimensions and all board properties.
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void TestHorizontalWallParser()
+        {
+            // Test exterior walls marked
+            // Test interior walls marked
+            // Test that expected walls appear
 
             Assert.Fail("Not implemented");
+        }
 
-            // TODO: Test the returned board to test all features, using public methods.
+        [Test]
+        public void TestVerticalWallParser()
+        {
+            // Test exterior walls marked
+            // Test interior walls marked
+            // Test that expected walls appear
+
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void TestStartingPositionParser()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void TestCentaurParser()
+        {
+            Assert.Fail("Not implemented");
         }
     }
 }
