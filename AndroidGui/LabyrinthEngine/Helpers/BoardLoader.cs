@@ -45,8 +45,8 @@ namespace LabyrinthEngine.Helpers
             Centaur centaur = null;
             var centaurXml = navigator.SelectSingleNode("/LabyrinthLevel/Centaur");
 
-            // TODO: Add code to read and store StartingPositions to BoardState
-            var startingPositions = new List<Position> { null, null };
+            var startingPositionsXml = navigator.SelectSingleNode("/LabyrinthLevel/StartingPositions");
+            var startingPositions = parseStartingPositionsFrom(startingPositionsXml);
 
             return new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
                 centaur, startingPositions);
@@ -215,6 +215,31 @@ namespace LabyrinthEngine.Helpers
             }
 
             return new WallSection(isPassable, hasHamster, isExit, isExterior);
+        }
+
+        private List<Position> parseStartingPositionsFrom(XPathNavigator startingPositionsXml)
+        {
+            var result = new List<Position>();
+
+            var iteratorForAllStartingPositions = startingPositionsXml.Select("PlayerPosition");
+            while (iteratorForAllStartingPositions.MoveNext())
+            {
+                var currentStartingPositionElement = iteratorForAllStartingPositions.Current.Clone();
+
+                try
+                {
+                    var x = int.Parse(currentStartingPositionElement.GetAttribute("x"));
+                    var y = int.Parse(currentStartingPositionElement.GetAttribute("y"));
+
+                    result.Add(new Position(x, y));
+                }
+                catch (Exception)
+                {
+                    throw new LabyrinthParseException("Encountered illegal starting position element");
+                }
+            }
+
+            return result;
         }
     }
 }
