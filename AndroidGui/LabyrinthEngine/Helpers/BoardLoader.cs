@@ -46,8 +46,10 @@ namespace LabyrinthEngine.Helpers
             var centaurXml = navigator.SelectSingleNode("/LabyrinthLevel/Centaur");
 
             // TODO: Add code to read and store StartingPositions to BoardState
+            var startingPositions = new List<Position> { null, null };
 
-            return new BoardState(playfield, horizontalWalls, verticalWalls, holes, centaur);
+            return new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
+                centaur, startingPositions);
         }
 
         private PlayfieldSquare[,] parsePlayfieldFrom(XPathNavigator playfieldElement)
@@ -129,7 +131,7 @@ namespace LabyrinthEngine.Helpers
             {
                 for (int x = 0; x < boardWidth; x++)
                 {
-                    if (w_y == 0 || w_y == boardHeight+1)
+                    if (w_y == 0 || w_y == boardHeight)
                     {
                         result[x, w_y] = new WallSection(false, false, false, isExterior:true);
                     }
@@ -162,7 +164,7 @@ namespace LabyrinthEngine.Helpers
             {
                 for (int y = 0; y < boardHeight; y++)
                 {
-                    if (w_x == 0 || w_x == boardWidth + 1)
+                    if (w_x == 0 || w_x == boardWidth)
                     {
                         result[y, w_x] = new WallSection(false, false, false, isExterior: true);
                     }

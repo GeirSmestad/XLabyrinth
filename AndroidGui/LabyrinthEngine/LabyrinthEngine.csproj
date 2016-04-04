@@ -47,6 +47,7 @@
     <Compile Include="Helpers\BoardLoader.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\LabyrinthExceptions.cs" />
+    <Compile Include="Helpers\Position.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
     <Compile Include="Playfield\BoardState.cs" />

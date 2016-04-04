@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using LabyrinthEngine.Entities;
+using LabyrinthEngine.Helpers;
 
 namespace LabyrinthEngine.Playfield
 {
@@ -17,32 +18,35 @@ namespace LabyrinthEngine.Playfield
          
         Horizontal and vertical walls are defined separately. 
         
-        Each horizontal wall has the coordinates (w_y, x).
-            w_y is the y coordinate of the wall, with 0 being the top wall
+        Each horizontal wall has the coordinates (x, w_y).
             x is the (unambiguous) x coordinate of the playfield squares that the wall borders on
+            w_y is the y coordinate of the wall, with 0 being the top wall
 
-        Each vertical wall has the coordinates (w_x, y).
-            w_x is the x coordinate of the wall, with 0 being the leftmost wall
+        Each vertical wall has the coordinates (y, w_x).
             y is the (unambiguous) y coordinate of the playfield squares that the wall borders on
-
+            w_x is the x coordinate of the wall, with 0 being the leftmost wall
+            
         This grid system was chosen because it lets us abstract away the wall
         coordinate logic, so we don't have to think about it in the game logic. */
 
         private WallSection[,] HorizontalWalls;
         private WallSection[,] VerticalWalls;
         private PlayfieldSquare[,] PlayfieldGrid;
-        private List<Teleporter> Holes; // TODO: Unsure if this needs to be here; might be double bookkeeping
+        private List<Teleporter> Holes;
         private Centaur centaur;
+        public List<Position> StartingPositions { get; private set; }
 
         public BoardState(PlayfieldSquare[,] playfieldGrid, 
             WallSection[,] horizontalWalls, WallSection[,] verticalWalls,
-            List<Teleporter> holes, Centaur centaur)
+            List<Teleporter> holes, Centaur centaur, 
+            List<Position> startingPositions)
         {
             HorizontalWalls = horizontalWalls;
             VerticalWalls = verticalWalls;
             PlayfieldGrid = playfieldGrid;
             Holes = holes;
             this.centaur = centaur;
+            StartingPositions = startingPositions;
         }
 
         public PlayfieldSquare GetPlayfieldSquareAt(int x, int y)
@@ -52,22 +56,22 @@ namespace LabyrinthEngine.Playfield
 
         public WallSection GetWallAbovePlayfieldCoordinate(int x, int y)
         {
-            throw new NotImplementedException();
+            return HorizontalWalls[x, y];
         }
 
         public WallSection GetWallBelowPlayfieldCoordinate(int x, int y)
         {
-            throw new NotImplementedException();
+            return HorizontalWalls[x, y+1];
         }
 
         public WallSection GetWallLeftOfPlayfieldCoordinate(int x, int y)
         {
-            throw new NotImplementedException();
+            return VerticalWalls[y, x];
         }
 
         public WallSection GetWallRightOfPlayfieldCoordinate(int x, int y)
         {
-            throw new NotImplementedException();
+            return VerticalWalls[y, x+1];
         }
     }
 }
