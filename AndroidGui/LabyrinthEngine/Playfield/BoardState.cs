@@ -29,11 +29,11 @@ namespace LabyrinthEngine.Playfield
         This grid system was chosen because it lets us abstract away the wall
         coordinate logic, so we don't have to think about it in the game logic. */
 
-        private WallSection[,] HorizontalWalls;
-        private WallSection[,] VerticalWalls;
-        private PlayfieldSquare[,] PlayfieldGrid;
-        private List<Teleporter> Holes;
-        private Centaur centaur;
+        public WallSection[,] HorizontalWalls { get; private set; }
+        public WallSection[,] VerticalWalls { get; private set; }
+        public PlayfieldSquare[,] PlayfieldGrid { get; private set; }
+        public List<Teleporter> Holes { get; private set; }
+        public Centaur centaur { get; private set; }
         public List<Position> StartingPositions { get; private set; }
 
         public BoardState(PlayfieldSquare[,] playfieldGrid, 

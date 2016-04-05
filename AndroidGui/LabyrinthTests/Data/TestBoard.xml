@@ -55,10 +55,13 @@
     <PlayerPosition x="4" y="4" />
   </StartingPositions>
   
-  <Centaur>
-    <CentaurPosition x="1" y="0" />
-    <CentaurPath>
-    </CentaurPath>
+  <Centaur startX="-1" startY="-1">
+    <CentaurStep x="1" y="1"/>
+    <CentaurStep x="1" y="2" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="2" y="2"/>
+    <CentaurStep x="5" y="5" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="2" y="2" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="1" y="2"/>
   </Centaur>
   
 </LabyrinthLevel>

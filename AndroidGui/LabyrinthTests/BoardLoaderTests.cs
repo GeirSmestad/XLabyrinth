@@ -134,7 +134,14 @@ namespace LabyrinthTests
         [Test]
         public void Centaur_is_parsed()
         {
-            Assert.Fail("Not implemented");
+            var centaur = board.centaur;
+            Assert.True(centaur.X == -1 && centaur.Y == -1);
+            Assert.True(centaur.Path[0].X == 1 && centaur.Path[0].Y == 1 && 
+                centaur.Path[0].IgnoreWallsWhenSteppingHere == false);
+            Assert.True(centaur.Path[1].X == 1 && centaur.Path[1].Y == 2 &&
+                centaur.Path[1].IgnoreWallsWhenSteppingHere == true);
+            Assert.True(centaur.Path[5].X == 1 && centaur.Path[5].Y == 2);
+
         }
     }
 }

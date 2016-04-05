@@ -37,16 +37,15 @@ namespace LabyrinthEngine.Helpers
             var verticalWallsXml = navigator.SelectSingleNode("/LabyrinthLevel/VerticalWalls");
             var verticalWalls = parseVerticalWallsFrom(verticalWallsXml);
 
-            // TODO: Add code to construct teleporters from already-parsed playfield
-            // TODO: Populate playfield X and Y coordinates from already-parsed playfield
-
-            List<Teleporter> holes = null;
-
-            Centaur centaur = null;
             var centaurXml = navigator.SelectSingleNode("/LabyrinthLevel/Centaur");
+            var centaur = parseCentaurFrom(centaurXml);
 
             var startingPositionsXml = navigator.SelectSingleNode("/LabyrinthLevel/StartingPositions");
             var startingPositions = parseStartingPositionsFrom(startingPositionsXml);
+
+            // TODO: Add code to construct teleporters from already-parsed playfield
+            List<Teleporter> holes = null;
+            // populatePlayfieldCoordinates(); // TODO: Populate playfield X and Y coordinates from already-parsed playfield
 
             return new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
                 centaur, startingPositions);
@@ -240,6 +239,45 @@ namespace LabyrinthEngine.Helpers
             }
 
             return result;
+        }
+
+        private Centaur parseCentaurFrom(XPathNavigator centaurXml)
+        {
+            int startX;
+            int startY;
+
+            try
+            {
+                startX = int.Parse(centaurXml.GetAttribute("startX"));
+                startY = int.Parse(centaurXml.GetAttribute("startY"));
+            }
+            catch (Exception)
+            {
+                throw new LabyrinthParseException("Error when parsing starting position for centaur");
+            }
+
+            var centaurPath = new List<CentaurStep>();
+            try
+            {
+                var iteratorForAllCentaurSteps = centaurXml.Select("CentaurStep");
+                while (iteratorForAllCentaurSteps.MoveNext())
+                {
+                    var currentCentaurStepElement = iteratorForAllCentaurSteps.Current.Clone();
+
+                    int x = int.Parse(currentCentaurStepElement.GetAttribute("x"));
+                    int y = int.Parse(currentCentaurStepElement.GetAttribute("y"));
+                    bool ignoreWallsWhenSteppingHere = currentCentaurStepElement
+                        .HasAttributeEqualTo("stepHereIgnoringWalls", "yes");
+
+                    centaurPath.Add(new CentaurStep(x, y, ignoreWallsWhenSteppingHere));
+                }
+            }
+            catch (Exception)
+            {
+                throw new LabyrinthParseException("Encountered illegal centaur step element");
+            }
+
+            return new Centaur(startX, startY, centaurPath);
         }
     }
 }

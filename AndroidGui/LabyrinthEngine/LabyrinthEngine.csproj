@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Centaur.cs" />
+    <Compile Include="Entities\CentaurStep.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Teleporter.cs" />
     <Compile Include="GameState.cs" />
