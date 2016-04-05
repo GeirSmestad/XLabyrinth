@@ -47,6 +47,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="Helpers\BoardLoader.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
+    <Compile Include="Helpers\HelperMethods.cs" />
     <Compile Include="Helpers\LabyrinthExceptions.cs" />
     <Compile Include="Helpers\Position.cs" />
     <Compile Include="Moves\Move.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Playfield\SquareType.cs" />
     <Compile Include="Playfield\WallSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TurnPhase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

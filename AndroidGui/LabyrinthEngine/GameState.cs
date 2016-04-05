@@ -6,48 +6,120 @@ using System.Text;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Moves;
+using LabyrinthEngine.Helpers;
 
 namespace LabyrinthEngine
 {
     public class GameState
     {
-        BoardState Board;
+        public BoardState Board { get; private set; }
 
-        List<Player> Players;
-        List<Action> CompletedMoves;
+        public List<Player> Players { get; private set; }
+        public int MoveCounter { get; private set; } // TODO: Might be redundant copy of completedMoves.Count
+        public TurnPhase CurrentTurnPhase { get; private set; }
 
-        int moveCounter;
-
-        Random randomNumberGenerator;
-        int initialRngSeed; // Must store this to facilitate rebuilding game state from move list
+        private List<Move> completedMoves;
+        private Random randomNumberGenerator;
+        private int initialRngSeed; // Must store this to facilitate rebuilding game state from move list
+        private BoardState initialBoardState;
+        private int currentUndoStep;
 
         public GameState(BoardState board)
         {
             Board = board;
-        }
 
-        public void SetToInitialState()
-        {
+            initialRngSeed = DateTime.Now.GetHashCode();
+            initialBoardState = HelperMethods.DeepClone(Board);
 
+            setGameToInitialState();
         }
 
         /// <summary>
-        /// A move consists of a movement action plus a followup action, which
-        /// is any action that may modify the board: Fire, hamster, hamsterspray or
-        /// cement.
+        /// Sets the game to its initial state, but keep the list of completed moves, if any.
+        /// In effect, this performs an undo back to the very first move of the game.
         /// </summary>
-        /// <returns>A description of the result of the move.</returns>
-        public string PerformMoveForCurrentPlayer(MoveType movement, MoveType followup)
+        private void setGameToInitialState()
         {
-            var currentPlayer = getCurrentPlayer();
+            randomNumberGenerator = new Random(initialRngSeed);
+            MoveCounter = 0;
+            CurrentTurnPhase = TurnPhase.SelectMainAction;
+            Board = HelperMethods.DeepClone(initialBoardState);
+            currentUndoStep = completedMoves.Count;
+        }
 
+        public Player CurrentPlayer()
+        {
+            return Players[MoveCounter % Players.Count];
+        }
+
+        /// <returns>A description of the result of the move.</returns>
+        public string PerformMainActionForCurrentPlayer(MoveType action)
+        {
+            var player = CurrentPlayer();
+
+            // If main action is not movement, go to next player
+
+            teleportIfStandsOnTeleporter(player);
+            removeRedoHistory();
+            updateTurnStateBasedOn(action);
+            
             return "not implemented";
+        }
+
+        /// <returns>A description of the result of the move.</returns>
+        public string PerformFollowupActionForCurrentPlayer(MoveType action)
+        {
+            var player = CurrentPlayer();
+
+            teleportIfStandsOnTeleporter(player);
+            removeRedoHistory();
+            updateTurnStateBasedOn(action);
+            return "not implemented";
+        }
+
+        private void updateTurnStateBasedOn(MoveType previousAction)
+        {
+            MoveCounter++;
+
+            completedMoves.Add(new Move(CurrentPlayer(), previousAction));
+            // TODO: Update TurnPhase and current player based on action & current TurnPhase
+            // TODO: Might replace this with a "resolveTurn" method, which handles more
+        }
+
+        private void teleportIfStandsOnTeleporter(Player player)
+        {
 
         }
 
-        private Player getCurrentPlayer()
+        private void moveCentaur()
         {
-            return Players[moveCounter % Players.Count];
+
+        }
+
+        public void UndoPreviousMove()
+        {
+            // Remember to update TurnPhase
+        }
+
+        public void RedoNextMove()
+        {
+            // Remember to update TurnPhase
+        }
+
+        private void stepToMoveNumber(int n)
+        {
+            setGameToInitialState();
+            // Reset to initial state and replay all moves up to move n in completedMoves.
+        }
+
+        private void removeRedoHistory()
+        {
+            if (currentUndoStep > 0)
+            {
+                // Remove last "currentUndoStep" entries from completed moves.
+                completedMoves.RemoveRange(completedMoves.Count-currentUndoStep, currentUndoStep);
+                currentUndoStep = 0;
+            }
         }
     }
 }

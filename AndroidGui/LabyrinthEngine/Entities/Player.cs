@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LabyrinthEngine.Entities
 {
-    class Player
+    public class Player
     {
         public string Name;
 
@@ -24,8 +24,8 @@ namespace LabyrinthEngine.Entities
         public int Score = 0;
 
         public bool IsAlive = true;
-        public int PosX;
-        public int PosY;
+        public int X;
+        public int Y;
 
         public void Die()
         {

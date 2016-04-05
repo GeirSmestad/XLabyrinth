@@ -12,6 +12,8 @@ namespace LabyrinthEngine.Playfield
     /// An instance of the Board class represents the current state of the
     /// play area.
     /// </summary>
+    ///
+    [Serializable]
     public class BoardState
     {
         /* The playfield is an (x,y)-grid of positive numbers with (0,0) in the top-left.

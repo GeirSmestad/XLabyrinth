@@ -218,6 +218,11 @@ namespace AndroidGui.Tests
         [Test]
         public void Undo_and_redo_moves_should_work()
         {
+            // Test that undo works
+            // Test that redo works
+            // Check that both in combination work
+            // Check that undo and the resuming play does not corrupt game state
+
             Assert.Fail("Not implemented");
         }
     }
