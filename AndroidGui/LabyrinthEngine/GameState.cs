@@ -52,38 +52,109 @@ namespace LabyrinthEngine
             return Players[MoveCounter % Players.Count];
         }
 
+        /// <summary>
+        /// Performs the movement action for the current player. For convenience, if this method
+        /// is called with a non-movement action, it will execute a "DoNothing" action and then
+        /// execute the action as a followup action. This is equivalent to the player skipping
+        /// his movement and then executing the action as a followup.
+        /// </summary>
         /// <returns>A description of the result of the move.</returns>
-        public string PerformMainActionForCurrentPlayer(MoveType action)
+        public string PerformMovementActionForCurrentPlayer(MoveType action)
         {
             var player = CurrentPlayer();
-
-            // If main action is not movement, go to next player
-
-            teleportIfStandsOnTeleporter(player);
+            var move = new Move(player, action);
             removeRedoHistory();
-            updateTurnStateBasedOn(action);
-            
-            return "not implemented";
+
+            if (IsMovementAction(action))
+            {
+                var actionResult = resolveMovementAndReturnResult(move);
+                actionResult += resolvePostMovementEventsFor(player);
+                updateTurnStateBasedOn(move);
+
+                return actionResult;
+            }
+            else
+            {
+                updateTurnStateBasedOn(new Move(player,MoveType.DoNothing));
+                return PerformFollowupActionForCurrentPlayer(action);
+            }
         }
 
         /// <returns>A description of the result of the move.</returns>
         public string PerformFollowupActionForCurrentPlayer(MoveType action)
         {
             var player = CurrentPlayer();
-
-            teleportIfStandsOnTeleporter(player);
+            var move = new Move(player, action);
             removeRedoHistory();
-            updateTurnStateBasedOn(action);
+            
+            updateTurnStateBasedOn(move);
             return "not implemented";
         }
 
-        private void updateTurnStateBasedOn(MoveType previousAction)
+        // TODO: Extract to helper class? These methods could be moved to e.g. an
+        // "ActionPerformer" class which executes the desired actions and returns the
+        // result as a string.
+        private string resolveMovementAndReturnResult(Move move)
         {
-            MoveCounter++;
+            var player = move.PerformedBy;
+            var action = move.ActionType;
+            string actionResultDescription;
 
-            completedMoves.Add(new Move(CurrentPlayer(), previousAction));
-            // TODO: Update TurnPhase and current player based on action & current TurnPhase
-            // TODO: Might replace this with a "resolveTurn" method, which handles more
+            switch (action)
+            {
+                case MoveType.MoveUp:
+                    actionResultDescription = "not implemented";
+                    break;
+                case MoveType.MoveDown:
+                    actionResultDescription = "not implemented";
+                    break;
+                case MoveType.MoveLeft:
+                    actionResultDescription = "not implemented";
+                    break;
+                case MoveType.MoveRight:
+                    actionResultDescription = "not implemented";
+                    break;
+                case MoveType.DoNothing:
+                    actionResultDescription = player.Name + "waits.";
+                    break;
+                case MoveType.FallThroughHole:
+                    //teleportIfStandsOnTeleporter(player);
+                    actionResultDescription = "Fall through teleporter not implemented";
+                    break;
+                default:
+                    throw new InvalidOperationException("Fall-through in game logic: "
+                        + "Action should have been executed as a followup action.");
+            }
+
+            return actionResultDescription;
+        }
+
+        // TODO: Extract to helper class?
+        private string resolvePostMovementEventsFor(Player player)
+        {
+            return "not implemented";
+        }
+
+        private string resolveFollowupAndReturnResult(Move move)
+        {
+            return "not implemented";
+        }
+
+        private void updateTurnStateBasedOn(Move previousMove)
+        {
+            // TODO: This breaks redo functionality. Must be able to execute moves
+            // without modifying the completedMoves list or clearing redo.
+
+            MoveCounter++;
+            completedMoves.Add(previousMove);
+            if (CurrentTurnPhase == TurnPhase.SelectMainAction)
+            {
+                CurrentTurnPhase = TurnPhase.SelectFollowupAction;
+            }
+            else
+            {
+                CurrentTurnPhase = TurnPhase.SelectMainAction;
+            }
         }
 
         private void teleportIfStandsOnTeleporter(Player player)
@@ -98,7 +169,11 @@ namespace LabyrinthEngine
 
         public void UndoPreviousMove()
         {
-            // Remember to update TurnPhase
+            if (currentUndoStep < completedMoves.Count)
+            {
+                currentUndoStep++;
+                stepToBeforeMoveNumber(completedMoves.Count - currentUndoStep);
+            }
         }
 
         public void RedoNextMove()
@@ -106,10 +181,15 @@ namespace LabyrinthEngine
             // Remember to update TurnPhase
         }
 
-        private void stepToMoveNumber(int n)
+        private void stepToBeforeMoveNumber(int n)
         {
             setGameToInitialState();
-            // Reset to initial state and replay all moves up to move n in completedMoves.
+
+            for (int i = 0; i < n; i++)
+            {
+                var nextMoveToExecute = completedMoves[i].ActionType;
+                PerformMovementActionForCurrentPlayer(nextMoveToExecute); // Also performs followup actions
+            }
         }
 
         private void removeRedoHistory()
@@ -117,9 +197,19 @@ namespace LabyrinthEngine
             if (currentUndoStep > 0)
             {
                 // Remove last "currentUndoStep" entries from completed moves.
-                completedMoves.RemoveRange(completedMoves.Count-currentUndoStep, currentUndoStep);
+                completedMoves.RemoveRange(completedMoves.Count - currentUndoStep, currentUndoStep);
                 currentUndoStep = 0;
             }
+        }
+
+        private bool IsMovementAction(MoveType action)
+        {
+            return action == MoveType.DoNothing ||
+                action == MoveType.FallThroughHole ||
+                action == MoveType.MoveDown ||
+                action == MoveType.MoveLeft ||
+                action == MoveType.MoveRight ||
+                action == MoveType.MoveUp;
         }
     }
 }

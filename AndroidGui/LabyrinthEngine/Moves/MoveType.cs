@@ -8,6 +8,7 @@ namespace LabyrinthEngine.Moves
     public enum MoveType
     {
         DoNothing,
+        FallThroughHole,
         MoveUp,
         MoveDown,
         MoveLeft,
