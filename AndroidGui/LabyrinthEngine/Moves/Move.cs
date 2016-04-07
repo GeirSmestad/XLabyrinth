@@ -7,7 +7,7 @@ using LabyrinthEngine.Entities;
 
 namespace LabyrinthEngine.Moves
 {
-    class Move
+    public class Move
     {
         public Player PerformedBy { get; private set; }
         public MoveType ActionType { get; private set; }

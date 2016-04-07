@@ -73,7 +73,8 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\TestBoard.xml" />
+    <Content Include="Data\GameStateTestBoard.xml" />
+    <Content Include="Data\BoardLoaderTestBoard.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LabyrinthEngine\LabyrinthEngine.csproj">

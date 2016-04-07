@@ -6,6 +6,9 @@ using NUnit.Framework;
 
 using LabyrinthEngine;
 using LabyrinthEngine.Playfield;
+using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Entities;
+using LabyrinthEngine.Moves;
 
 namespace AndroidGui.Tests
 {
@@ -15,16 +18,24 @@ namespace AndroidGui.Tests
         BoardState board; 
         GameState game;
 
+        List<Player> players;
+        Player player1;
+
         [SetUp]
         public void SetUp()
         {
+            // Should ideally create these manually to not have tests depend on the parser to work.
+            /* TODO: When writing additional tests, create the local features of the board in the
+               test whenever it's easy to do so. This reduces reliance on the board loader */
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\BoardLoaderTestBoard.xml");
 
-        }
+            var boardLoader = new BoardLoader(boardXmlContent);
+            board = boardLoader.Board;
 
-        [Test]
-        public void Should_pass()
-        {
-            Assert.IsTrue(true);
+            player1 = new Player() { Name = "Geir" };
+            players.Add(player1);
+
+            game = new GameState(board, players);
         }
 
         // Game state tests
@@ -126,15 +137,63 @@ namespace AndroidGui.Tests
         [Test]
         public void When_hitting_wall_player_should_not_move()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 1;
+            player1.Y = 1;
 
-            // Test moving UDLR in walled-off roomand assert position is identical at each step
+            game.PerformMove(MoveType.MoveUp);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 1);
+            Assert.Equals(player1.Y, 1);
+
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 1);
+            Assert.Equals(player1.Y, 1);
+
+            game.PerformMove(MoveType.MoveDown);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 1);
+            Assert.Equals(player1.Y, 1);
+
+            game.PerformMove(MoveType.MoveLeft);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 1);
+            Assert.Equals(player1.Y, 1);
         }
 
         [Test]
         public void When_moving_in_open_area_player_should_move()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 3;
+
+            game.PerformMove(MoveType.MoveUp);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 3);
+            Assert.Equals(player1.Y, 2);
+
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 4);
+            Assert.Equals(player1.Y, 2);
+
+            game.PerformMove(MoveType.MoveDown);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 4);
+            Assert.Equals(player1.Y, 3);
+
+            game.PerformMove(MoveType.MoveLeft);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.Equals(player1.X, 4);
+            Assert.Equals(player1.Y, 4);
         }
 
         [Test]
@@ -156,9 +215,36 @@ namespace AndroidGui.Tests
         [Test]
         public void When_blowing_up_wall_wall_should_disappear()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumGrenades = 4;
+            var expectedMessage = "You blow up the wall.";
 
-            // Test that a bomb has been used
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.ThrowGrenadeUp);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(board.GetWallAbovePlayfieldCoordinate(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeRight);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(board.GetWallRightOfPlayfieldCoordinate(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeDown);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(board.GetWallBelowPlayfieldCoordinate(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeLeft);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(board.GetWallLeftOfPlayfieldCoordinate(1, 1).IsPassable);
+
+            Assert.AreEqual(player1.NumGrenades, 0, "When using grenades, grenade count should decrease");
         }
 
         [Test]
@@ -166,27 +252,70 @@ namespace AndroidGui.Tests
         {
             Assert.Fail("Not implemented");
 
-            // Test that a bomb has been used
         }
 
         [Test]
         public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 1;
+            player1.NumGrenades = 4;
+            var expectedMessage = "A hamster returns your grenade.";
 
-            // Test that a bomb has not been used
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.ThrowGrenadeUp);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallAbovePlayfieldCoordinate(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeRight);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallRightOfPlayfieldCoordinate(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeDown);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallBelowPlayfieldCoordinate(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeLeft);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallLeftOfPlayfieldCoordinate(3, 1).IsPassable);
+
+            Assert.AreEqual(player1.NumGrenades, 4, "Hamster walls should not spend grenades");
         }
 
         [Test]
         public void When_visiting_treasure_player_should_take_it()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 3;
+            board.GetPlayfieldSquareAt(3, 2).NumTreasures = 2;
+
+            game.PerformMove(MoveType.MoveUp);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.True(player1.CarriesTreasure);
+            Assert.AreEqual(board.GetPlayfieldSquareAt(3, 2).NumTreasures, 1);
         }
 
         [Test]
         public void When_visiting_treasure_when_already_carrying_player_should_leave_it()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 3;
+            player1.CarriesTreasure = true;
+            board.GetPlayfieldSquareAt(3, 2).NumTreasures = 2;
+
+            game.PerformMove(MoveType.MoveUp);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.True(player1.CarriesTreasure);
+            Assert.AreEqual(board.GetPlayfieldSquareAt(3, 2).NumTreasures, 2);
         }
 
         [Test]
@@ -207,6 +336,14 @@ namespace AndroidGui.Tests
             Assert.Fail("Not implemented");
         }
 
+        [Test]
+        public void Players_should_take_turns_to_move()
+        {
+            Assert.Fail("Not implemented");
+            // Test both movement moves and follow moves. Test that the GameState intelligently
+            // handles moves given in unexpected order.
+        }
+
         // Game management tests
 
         [Test]
@@ -224,6 +361,12 @@ namespace AndroidGui.Tests
             // Check that undo and the resuming play does not corrupt game state
 
             Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void Redo_state_is_removed_after_move()
+        {
+
         }
     }
 }

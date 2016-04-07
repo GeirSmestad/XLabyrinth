@@ -57,6 +57,7 @@
     <Compile Include="Playfield\SquareType.cs" />
     <Compile Include="Playfield\WallSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TurnController.cs" />
     <Compile Include="TurnPhase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

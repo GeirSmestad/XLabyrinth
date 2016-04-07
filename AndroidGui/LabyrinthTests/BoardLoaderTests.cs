@@ -18,7 +18,7 @@ namespace LabyrinthTests
         [SetUp]
         public void Setup()
         {
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\BoardLoaderTestBoard.xml");
 
             var boardLoader = new BoardLoader(boardXmlContent);
             board = boardLoader.Board;
