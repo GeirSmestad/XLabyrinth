@@ -53,6 +53,14 @@ namespace LabyrinthEngine
         }
 
         /// <summary>
+        /// Performs the next move. Public-exposed.
+        /// </summary>
+        public string PerformMove(MoveType action)
+        {
+
+        }
+
+        /// <summary>
         /// Performs the movement action for the current player. For convenience, if this method
         /// is called with a non-movement action, it will execute a "DoNothing" action and then
         /// execute the action as a followup action. This is equivalent to the player skipping
@@ -63,7 +71,7 @@ namespace LabyrinthEngine
         {
             var player = CurrentPlayer();
             var move = new Move(player, action);
-            removeRedoHistory();
+            //removeRedoHistory(); // Redo history must be removed when player inputs a move.
 
             if (IsMovementAction(action))
             {
@@ -85,7 +93,7 @@ namespace LabyrinthEngine
         {
             var player = CurrentPlayer();
             var move = new Move(player, action);
-            removeRedoHistory();
+            //removeRedoHistory(); // Redo history must be removed when player inputs a move.
             
             updateTurnStateBasedOn(move);
             return "not implemented";
@@ -93,7 +101,7 @@ namespace LabyrinthEngine
 
         // TODO: Extract to helper class? These methods could be moved to e.g. an
         // "ActionPerformer" class which executes the desired actions and returns the
-        // result as a string.
+        // result as a string. ActionController?
         private string resolveMovementAndReturnResult(Move move)
         {
             var player = move.PerformedBy;
@@ -142,11 +150,7 @@ namespace LabyrinthEngine
 
         private void updateTurnStateBasedOn(Move previousMove)
         {
-            // TODO: This breaks redo functionality. Must be able to execute moves
-            // without modifying the completedMoves list or clearing redo.
-
             MoveCounter++;
-            completedMoves.Add(previousMove);
             if (CurrentTurnPhase == TurnPhase.SelectMainAction)
             {
                 CurrentTurnPhase = TurnPhase.SelectFollowupAction;
@@ -154,6 +158,12 @@ namespace LabyrinthEngine
             else
             {
                 CurrentTurnPhase = TurnPhase.SelectMainAction;
+            }
+
+            if (currentUndoStep == 0)
+            {
+                // If no undo operation in progress, add move to list.
+                completedMoves.Add(previousMove);
             }
         }
 
@@ -178,7 +188,11 @@ namespace LabyrinthEngine
 
         public void RedoNextMove()
         {
-            // Remember to update TurnPhase
+            if (currentUndoStep > 0)
+            {
+                stepToBeforeMoveNumber(completedMoves.Count - currentUndoStep-1);
+            }
+            currentUndoStep--;
         }
 
         private void stepToBeforeMoveNumber(int n)
