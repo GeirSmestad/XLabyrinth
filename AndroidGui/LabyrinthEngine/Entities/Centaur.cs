@@ -6,6 +6,7 @@ using System.Text;
 
 namespace LabyrinthEngine.Entities
 {
+    [Serializable]
     public class Centaur
     {
         private int startX { get; set; }

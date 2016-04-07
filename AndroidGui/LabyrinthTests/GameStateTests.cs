@@ -25,14 +25,16 @@ namespace AndroidGui.Tests
         public void SetUp()
         {
             // Should ideally create these manually to not have tests depend on the parser to work.
+
             /* TODO: When writing additional tests, create the local features of the board in the
                test whenever it's easy to do so. This reduces reliance on the board loader */
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\BoardLoaderTestBoard.xml");
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\GameStateTestBoard.xml");
 
             var boardLoader = new BoardLoader(boardXmlContent);
             board = boardLoader.Board;
 
             player1 = new Player() { Name = "Geir" };
+            players = new List<Player>();
             players.Add(player1);
 
             game = new GameState(board, players);
@@ -340,8 +342,19 @@ namespace AndroidGui.Tests
         public void Players_should_take_turns_to_move()
         {
             Assert.Fail("Not implemented");
-            // Test both movement moves and follow moves. Test that the GameState intelligently
-            // handles moves given in unexpected order.
+            // Test both movement moves and followup actions.
+        }
+
+        [Test]
+        public void Movement_as_followup_action_should_be_ignored()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void Followup_action_as_movement_should_skip_movement_and_execute()
+        {
+            Assert.Fail("Not implemented");
         }
 
         // Game management tests

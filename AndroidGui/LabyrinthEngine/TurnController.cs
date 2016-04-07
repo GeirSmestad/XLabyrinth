@@ -41,19 +41,51 @@ namespace LabyrinthEngine
             switch (action)
             {
                 case MoveType.MoveUp:
-                    descriptionOfCurrentMove.Append("not implemented");
+                    if (board.GetWallAbovePlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    {
+                        player.Y++;
+                        descriptionOfCurrentMove.Append("Walked north.");
+                    } else
+                    {
+                        descriptionOfCurrentMove.Append("Hit wall.");
+                    }
+                    
                     break;
                 case MoveType.MoveDown:
-                    descriptionOfCurrentMove.Append("not implemented");
+                    if (board.GetWallBelowPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    {
+                        player.Y--;
+                        descriptionOfCurrentMove.Append("Walked south.");
+                    }
+                    else
+                    {
+                        descriptionOfCurrentMove.Append("Hit wall.");
+                    }
                     break;
                 case MoveType.MoveLeft:
-                    descriptionOfCurrentMove.Append("not implemented");
+                    if (board.GetWallLeftOfPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    {
+                        player.X--;
+                        descriptionOfCurrentMove.Append("Walked west.");
+                    }
+                    else
+                    {
+                        descriptionOfCurrentMove.Append("Hit wall.");
+                    }
                     break;
                 case MoveType.MoveRight:
-                    descriptionOfCurrentMove.Append("not implemented");
+                    if (board.GetWallRightOfPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    {
+                        player.X++;
+                        descriptionOfCurrentMove.Append("Walked east.");
+                    }
+                    else
+                    {
+                        descriptionOfCurrentMove.Append("Hit wall.");
+                    }
                     break;
                 case MoveType.DoNothing:
-                    descriptionOfCurrentMove.Append("not implemented");
+                    descriptionOfCurrentMove.Append("Standing still.");
                     break;
                 case MoveType.FallThroughHole:
                     //teleportIfStandsOnTeleporter(player);
