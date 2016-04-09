@@ -34,6 +34,7 @@ namespace LabyrinthEngine
             initialRngSeed = DateTime.Now.GetHashCode();
             initialBoardState = HelperMethods.DeepClone(Board);
             turnController = new TurnController(this);
+            completedMoves = new List<Move>();
 
             setGameToInitialState();
         }

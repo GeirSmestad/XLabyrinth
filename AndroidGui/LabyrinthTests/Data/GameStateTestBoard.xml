@@ -3,22 +3,15 @@
   <Playfield width="5" height="5">
     <Row>
       <Empty />
-      <Teleporter teleporterIndex="1"/>
-      <Teleporter teleporterIndex="2"/>
-      <Teleporter teleporterIndex="3"/>
-      <Empty />
-    </Row>
-    <Row>
       <Empty />
       <Empty />
-      <Teleporter teleporterIndex="4"/>
       <Empty />
       <Empty />
     </Row>
     <Row>
       <Empty />
-      <FitnessStudio />
-      <Teleporter teleporterIndex="5"/>
+      <Empty />
+      <Empty />
       <Empty />
       <Empty />
     </Row>
@@ -31,25 +24,26 @@
     </Row>
     <Row>
       <Empty />
-      <HamsterStorage />
-      <AmmoStorage />
-      <CementStorage />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Empty />
+    </Row>
+    <Row>
+      <Empty />
+      <Empty />
+      <Empty />
+      <Empty />
       <Empty />
     </Row>
   </Playfield>
     
   <HorizontalWalls>
-    <HorizontalWallSegment w_y="1" x="1" />
-    <HorizontalWallSegment w_y="2" x="1" />
-    <HorizontalWallSegment w_y="3" x="1" hasHamster="yes"/>
-    <HorizontalWallSegment w_y="4" x="1" hasHamster="yes"/>
+
   </HorizontalWalls>
 
   <VerticalWalls>
-    <VerticalWallSegment w_x="1" y="1" />
-    <VerticalWallSegment w_x="2" y="1" />
-    <VerticalWallSegment w_x="3" y="1" hasHamster="yes"/>
-    <VerticalWallSegment w_x="4" y="1" hasHamster="yes"/>
+
     <VerticalWallSegment w_x="5" y="1" isExit="yes" />
     <VerticalWallSegment w_x="5" y="2" isExit="yes" hasHamster="yes"/>
   </VerticalWalls>

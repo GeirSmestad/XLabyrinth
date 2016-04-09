@@ -11,6 +11,7 @@ namespace LabyrinthEngine.Entities
     /// you end up on top of the next hole awaiting your next turn. The holes are connected 
     /// in a loop.
     /// </summary>
+    [Serializable]
     public class Teleporter
     {
         public int TeleporterIndex { get; private set; }

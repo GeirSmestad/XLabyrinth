@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LabyrinthEngine.Entities
 {
+    [Serializable]
     public class CentaurStep
     {
         public int X { get; private set; }

@@ -15,6 +15,13 @@ namespace AndroidGui.Tests
     [TestFixture]
     public class GameStateTests
     {
+        WallSection[,] horizontalWalls;
+        WallSection[,] verticalWalls;
+        PlayfieldSquare[,] playfield;
+        List<Teleporter> holes;
+        Centaur centaur;
+        List<Position> startingPositions;
+
         BoardState board; 
         GameState game;
 
@@ -24,14 +31,15 @@ namespace AndroidGui.Tests
         [SetUp]
         public void SetUp()
         {
-            // Should ideally create these manually to not have tests depend on the parser to work.
+            // Initialize an empty board. You can rebuild it with arbitrary content in each test.
+            playfield = initializeEmptyPlayfield(5, 5);
+            horizontalWalls = initializeEmptyHorizontalWalls(5, 5);
+            verticalWalls = initializeEmptyVerticalWalls(5, 5);
+            startingPositions = new List<Position> { new Position(0, 0) };
+            holes = new List<Teleporter>();
 
-            /* TODO: When writing additional tests, create the local features of the board in the
-               test whenever it's easy to do so. This reduces reliance on the board loader */
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\GameStateTestBoard.xml");
-
-            var boardLoader = new BoardLoader(boardXmlContent);
-            board = boardLoader.Board;
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
+                centaur, startingPositions);
 
             player1 = new Player() { Name = "Geir" };
             players = new List<Player>();
@@ -62,6 +70,12 @@ namespace AndroidGui.Tests
 
         [Test]
         public void When_hit_by_centaur_player_should_die()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void When_near_centaur_should_print_clopclop()
         {
             Assert.Fail("Not implemented");
         }
@@ -139,32 +153,33 @@ namespace AndroidGui.Tests
         [Test]
         public void When_hitting_wall_player_should_not_move()
         {
+            buildWallsAroundSquare(1, 1);
             player1.X = 1;
             player1.Y = 1;
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 1);
-            Assert.Equals(player1.Y, 1);
+            Assert.AreEqual(player1.X, 1);
+            Assert.AreEqual(player1.Y, 1);
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 1);
-            Assert.Equals(player1.Y, 1);
+            Assert.AreEqual(player1.X, 1);
+            Assert.AreEqual(player1.Y, 1);
 
             game.PerformMove(MoveType.MoveDown);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 1);
-            Assert.Equals(player1.Y, 1);
+            Assert.AreEqual(player1.X, 1);
+            Assert.AreEqual(player1.Y, 1);
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 1);
-            Assert.Equals(player1.Y, 1);
+            Assert.AreEqual(player1.X, 1);
+            Assert.AreEqual(player1.Y, 1);
         }
 
         [Test]
@@ -176,26 +191,26 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 3);
-            Assert.Equals(player1.Y, 2);
+            Assert.AreEqual(player1.X, 3);
+            Assert.AreEqual(player1.Y, 2);
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 4);
-            Assert.Equals(player1.Y, 2);
+            Assert.AreEqual(player1.X, 4);
+            Assert.AreEqual(player1.Y, 2);
 
             game.PerformMove(MoveType.MoveDown);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 4);
-            Assert.Equals(player1.Y, 3);
+            Assert.AreEqual(player1.X, 4);
+            Assert.AreEqual(player1.Y, 3);
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.Equals(player1.X, 4);
-            Assert.Equals(player1.Y, 4);
+            Assert.AreEqual(player1.X, 3);
+            Assert.AreEqual(player1.Y, 3);
         }
 
         [Test]
@@ -217,6 +232,7 @@ namespace AndroidGui.Tests
         [Test]
         public void When_blowing_up_wall_wall_should_disappear()
         {
+            buildWallsAroundSquare(1, 1);
             player1.X = 1;
             player1.Y = 1;
             player1.NumGrenades = 4;
@@ -259,10 +275,11 @@ namespace AndroidGui.Tests
         [Test]
         public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
         {
+            buildHamsteredWallsAroundSquare(1, 1);
             player1.X = 3;
             player1.Y = 1;
             player1.NumGrenades = 4;
-            var expectedMessage = "A hamster returns your grenade.";
+            var expectedMessage = "A hamster returns your grenade with the pin inserted.";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
@@ -306,14 +323,17 @@ namespace AndroidGui.Tests
         }
 
         [Test]
-        public void When_visiting_treasure_when_already_carrying_player_should_leave_it()
+        public void When_visiting_treasure_when_already_carrying_player_should_see_and_leave_it()
         {
             player1.X = 3;
             player1.Y = 3;
             player1.CarriesTreasure = true;
             board.GetPlayfieldSquareAt(3, 2).NumTreasures = 2;
 
-            game.PerformMove(MoveType.MoveUp);
+            string moveDescription = game.PerformMove(MoveType.MoveUp);
+
+            Assert.True(moveDescription.Contains("There is treasure here."));
+
             game.PerformMove(MoveType.DoNothing);
 
             Assert.True(player1.CarriesTreasure);
@@ -357,6 +377,16 @@ namespace AndroidGui.Tests
             Assert.Fail("Not implemented");
         }
 
+        [Test]
+        /// <summary>
+        /// If as a followup action e.g. constructing a wall where there is a wall, the
+        /// turn should pass to the next player to avoid exploiting this for quick exploration.
+        /// </summary>
+        public void Blocked_followup_actions_should_execute()
+        {
+            Assert.Fail("Not implemented");
+        }
+
         // Game management tests
 
         [Test]
@@ -379,7 +409,86 @@ namespace AndroidGui.Tests
         [Test]
         public void Redo_state_is_removed_after_move()
         {
+            Assert.Fail("Not implemented");
+        }
 
+        // Helper methods for creating data to test.
+
+        private void buildWallsAroundSquare(int x, int y)
+        {
+            board.GetWallAbovePlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallRightOfPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallBelowPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallLeftOfPlayfieldCoordinate(x, y).IsPassable = false;
+        }
+
+        private void buildHamsteredWallsAroundSquare(int x, int y)
+        {
+            board.GetWallAbovePlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallRightOfPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallBelowPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallLeftOfPlayfieldCoordinate(x, y).IsPassable = false;
+
+            board.GetWallAbovePlayfieldCoordinate(x, y).HasHamster = true;
+            board.GetWallRightOfPlayfieldCoordinate(x, y).HasHamster = true;
+            board.GetWallBelowPlayfieldCoordinate(x, y).HasHamster = true;
+            board.GetWallLeftOfPlayfieldCoordinate(x, y).HasHamster = true;
+        }
+
+        private PlayfieldSquare[,] initializeEmptyPlayfield(int boardWidth, int boardHeight)
+        {
+            var result = new PlayfieldSquare[boardWidth, boardHeight];
+
+            for (int y = 0; y < boardHeight; y++)
+            {
+                for (int x = 0; x < boardWidth; x++)
+                {
+                    result[x, y] = new PlayfieldSquare(SquareType.Empty, 0);
+                }
+            }
+            return result;
+        }
+    
+        private WallSection[,] initializeEmptyHorizontalWalls(int boardWidth, int boardHeight)
+        {
+            var result = new WallSection[boardWidth, boardHeight + 1];
+
+            for (int w_y = 0; w_y <= boardHeight; w_y++)
+            {
+                for (int x = 0; x < boardWidth; x++)
+                {
+                    if (w_y == 0 || w_y == boardHeight)
+                    {
+                        result[x, w_y] = new WallSection(false, false, false, isExterior: true);
+                    }
+                    else
+                    {
+                        result[x, w_y] = new WallSection(true, false, false, false); // No wall
+                    }
+                }
+            }
+            return result;
+        }
+
+        private WallSection[,] initializeEmptyVerticalWalls(int boardWidth, int boardHeight)
+        {
+            var result = new WallSection[boardWidth, boardHeight + 1];
+
+            for (int w_x = 0; w_x <= boardWidth; w_x++)
+            {
+                for (int y = 0; y < boardHeight; y++)
+                {
+                    if (w_x == 0 || w_x == boardWidth)
+                    {
+                        result[y, w_x] = new WallSection(false, false, false, isExterior: true);
+                    }
+                    else
+                    {
+                        result[y, w_x] = new WallSection(true, false, false, false); // No wall
+                    }
+                }
+            }
+            return result;
         }
     }
 }

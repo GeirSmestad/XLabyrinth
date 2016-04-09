@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LabyrinthEngine.Helpers
 {
+    [Serializable]
     public class Position
     {
         public int X { get; private set; }

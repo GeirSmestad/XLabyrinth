@@ -7,6 +7,7 @@ using System.Text;
 
 namespace LabyrinthEngine.Playfield
 {
+    [Serializable]
     public class PlayfieldSquare
     {
         public int NumTreasures { get; set; }

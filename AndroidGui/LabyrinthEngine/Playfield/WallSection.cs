@@ -5,6 +5,7 @@ using System.Text;
 
 namespace LabyrinthEngine.Playfield
 {
+    [Serializable]
     public class WallSection
     {
         public WallSection(bool isPassable, bool hasHamster, 
