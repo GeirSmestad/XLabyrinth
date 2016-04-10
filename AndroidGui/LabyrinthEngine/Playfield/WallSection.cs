@@ -1,3 +1,4 @@
+using LabyrinthEngine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,12 +80,12 @@ namespace LabyrinthEngine.Playfield
         {
             if (IsExit && !IsExterior)
             {
-                throw new InvalidOperationException("The exit must be on an exterior wall");
+                throw new LabyrinthInvalidStateException("The exit must be on an exterior wall");
             }
 
             if (IsPassable && HasHamster)
             {
-                throw new InvalidOperationException("A wall section cannot both have a hamster and be passable");
+                throw new LabyrinthInvalidStateException("A wall section cannot both have a hamster and be passable");
             }
 
         }

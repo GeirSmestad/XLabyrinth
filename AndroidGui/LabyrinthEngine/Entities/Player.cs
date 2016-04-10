@@ -9,11 +9,11 @@ namespace LabyrinthEngine.Entities
     {
         public string Name;
 
-        const int arrowCapacity = 2;
-        const int grenadeCapacity = 2;
-        const int hamsterCapacity = 2;
-        const int hamsterSprayCapacity = 2;
-        const int cementCapacity = 2;
+        public const int ArrowCapacity = 2;
+        public const int GrenadeCapacity = 2;
+        public const int HamsterCapacity = 2;
+        public const int HamsterSprayCapacity = 2;
+        public const int CementCapacity = 2;
 
         public int NumArrows = 2;
         public int NumGrenades = 2;

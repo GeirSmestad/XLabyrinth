@@ -123,23 +123,106 @@ namespace AndroidGui.Tests
         [Test]
         public void When_visiting_ammo_storage_player_should_replenish_weapons()
         {
-            Assert.Fail("Not implemented");
+            playfield[3, 4] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
+                centaur, startingPositions);
+            player1.X = 3;
+            player1.Y = 3;
+            player1.IsAlive = true;
+            player1.NumArrows = 0;
+            player1.NumGrenades = 0;
+
+            game.PerformMove(MoveType.MoveDown);
+
+            Assert.AreEqual(player1.NumArrows, Player.ArrowCapacity);
+            Assert.AreEqual(player1.NumGrenades, Player.GrenadeCapacity);
+
         }
 
         [Test]
         public void When_visiting_hamster_storage_player_should_replenish_hamster_gear()
         {
-            Assert.Fail("Not implemented");
+            playfield[3, 4] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+            player1.X = 3;
+            player1.Y = 3;
+            player1.IsAlive = true;
+            player1.NumHamsters = 0;
+            player1.NumHamsterSprays = 0;
+
+            game.PerformMove(MoveType.MoveDown);
+
+            Assert.AreEqual(player1.NumHamsters, Player.HamsterCapacity);
+            Assert.AreEqual(player1.NumHamsterSprays, Player.HamsterSprayCapacity);
         }
 
         [Test]
         public void When_visiting_fitness_studio_dead_player_should_see_it_and_be_resurrected()
         {
-            Assert.Fail("Not implemented");
+            playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+            player1.X = 3;
+            player1.Y = 3;
+            player1.IsAlive = false;
+            var expectedMessage = "You enter the fitness studio and return to life! ";
+
+            var message = game.PerformMove(MoveType.MoveDown);
+
+            Assert.IsTrue(player1.IsAlive);
+            Assert.AreEqual(message, expectedMessage);
         }
 
         [Test]
         public void When_visiting_fitness_studio_live_player_should_see_empty_room()
+        {
+            playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+            player1.X = 3;
+            player1.Y = 3;
+            player1.IsAlive = true;
+
+            var message = game.PerformMove(MoveType.MoveDown);
+
+            // TODO: Test this to ensure that the contains method works as expected
+            Assert.IsFalse(message.Contains("fitness")); 
+        }
+        
+        [Test]
+        public void Dead_player_should_not_replenish_consumables_when_visiting_storage()
+        {
+            playfield[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            playfield[3, 1] = new PlayfieldSquare(SquareType.CementStorage, 0);
+            playfield[4, 1] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumArrows = 0;
+            player1.NumGrenades = 0;
+            player1.NumHamsters = 0;
+            player1.NumHamsterSprays = 0;
+            player1.NumCement = 0;
+            player1.IsAlive = false;
+
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.MoveRight);
+
+            Assert.AreEqual(player1.NumArrows, 0);
+            Assert.AreEqual(player1.NumGrenades, 0);
+            Assert.AreEqual(player1.NumHamsters, 0);
+            Assert.AreEqual(player1.NumHamsterSprays, 0);
+            Assert.AreEqual(player1.NumCement, 0);
+        }
+
+        [Test]
+        public void Player_should_drop_treasure_and_consumables_when_killed()
         {
             Assert.Fail("Not implemented");
         }
@@ -147,7 +230,17 @@ namespace AndroidGui.Tests
         [Test]
         public void When_visiting_cement_storage_player_should_replenish_cement()
         {
-            Assert.Fail("Not implemented");
+            playfield[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+            player1.X = 3;
+            player1.Y = 3;
+            player1.IsAlive = true;
+            player1.NumCement = 0;
+
+            game.PerformMove(MoveType.MoveDown);
+
+            Assert.AreEqual(player1.NumCement, Player.CementCapacity);
         }
 
         [Test]
@@ -214,19 +307,157 @@ namespace AndroidGui.Tests
         }
 
         [Test]
+        public void When_placing_hamster_hamster_should_be_placed()
+        {
+            buildWallsAroundSquare(1, 1);
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumHamsters = 4;
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterUp);
+
+            Assert.IsTrue(board.GetWallAbove(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterRight);
+
+            Assert.IsTrue(board.GetWallRightOf(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterDown);
+
+            Assert.IsTrue(board.GetWallBelow(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterLeft);
+
+            Assert.IsTrue(board.GetWallLeftOf(1, 1).HasHamster);
+
+            Assert.AreEqual(player1.NumHamsters, 0, "When placing hamster, hamster count should decrease");
+        }
+
+        [Test]
+        public void When_placing_hamster_on_hamstered_wall_should_yield_no_result()
+        {
+            buildHamsteredWallsAroundSquare(1, 1);
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumHamsters = 4;
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterUp);
+
+            Assert.IsTrue(board.GetWallAbove(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterRight);
+
+            Assert.IsTrue(board.GetWallRightOf(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterDown);
+
+            Assert.IsTrue(board.GetWallBelow(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterLeft);
+
+            Assert.IsTrue(board.GetWallLeftOf(1, 1).HasHamster);
+
+            Assert.AreEqual(player1.NumHamsters, 4);
+        }
+
+        [Test]
+        public void When_spraying_hamsters_hamsters_should_die()
+        {
+            buildHamsteredWallsAroundSquare(1, 1);
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumHamsterSprays = 4;
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.HamsterSprayUp);
+
+            Assert.IsFalse(board.GetWallAbove(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.HamsterSprayRight);
+
+            Assert.IsFalse(board.GetWallRightOf(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.HamsterSprayDown);
+
+            Assert.IsFalse(board.GetWallBelow(1, 1).HasHamster);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.HamsterSprayLeft);
+
+            Assert.IsFalse(board.GetWallLeftOf(1, 1).HasHamster);
+
+            Assert.AreEqual(player1.NumHamsterSprays, 0, "When spraying hamsters, should spend hamster spray");
+        }
+
+        [Test]
         public void When_constructing_wall_wall_should_be_created()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumCement = 4;
 
-            // Test that cement has been used
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallUp);
+
+            Assert.IsFalse(board.GetWallAbove(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallRight);
+
+            Assert.IsFalse(board.GetWallRightOf(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallDown);
+
+            Assert.IsFalse(board.GetWallBelow(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallLeft);
+
+            Assert.IsFalse(board.GetWallLeftOf(1, 1).IsPassable);
+
+            Assert.AreEqual(player1.NumCement, 0, "When using cement, cement count should decrease");
         }
 
         [Test]
         public void When_attempting_to_construct_wall_on_wall_should_yield_no_result()
         {
-            Assert.Fail("Not implemented");
+            buildWallsAroundSquare(1, 1);
+            player1.X = 1;
+            player1.Y = 1;
+            player1.NumCement = 4;
 
-            // Test that no cement has been used
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallUp);
+
+            Assert.IsFalse(board.GetWallAbove(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallRight);
+
+            Assert.IsFalse(board.GetWallRightOf(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallDown);
+
+            Assert.IsFalse(board.GetWallBelow(1, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallLeft);
+
+            Assert.IsFalse(board.GetWallLeftOf(1, 1).IsPassable);
+
+            Assert.AreEqual(player1.NumCement, 4, "When building on existing walls, cement should not decrease");
         }
 
         [Test]
@@ -236,31 +467,31 @@ namespace AndroidGui.Tests
             player1.X = 1;
             player1.Y = 1;
             player1.NumGrenades = 4;
-            var expectedMessage = "You blow up the wall.";
+            var expectedMessage = "You blow up the wall. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallAbovePlayfieldCoordinate(1, 1).IsPassable);
+            Assert.IsTrue(board.GetWallAbove(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallRightOfPlayfieldCoordinate(1, 1).IsPassable);
+            Assert.IsTrue(board.GetWallRightOf(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallBelowPlayfieldCoordinate(1, 1).IsPassable);
+            Assert.IsTrue(board.GetWallBelow(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallLeftOfPlayfieldCoordinate(1, 1).IsPassable);
+            Assert.IsTrue(board.GetWallLeftOf(1, 1).IsPassable);
 
             Assert.AreEqual(player1.NumGrenades, 0, "When using grenades, grenade count should decrease");
         }
@@ -268,42 +499,73 @@ namespace AndroidGui.Tests
         [Test]
         public void When_blowing_up_exterior_wall_should_see_message_and_no_result()
         {
-            Assert.Fail("Not implemented");
-
-        }
-
-        [Test]
-        public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
-        {
-            buildHamsteredWallsAroundSquare(1, 1);
-            player1.X = 3;
-            player1.Y = 1;
+            player1.X = 0;
+            player1.Y = 0;
             player1.NumGrenades = 4;
-            var expectedMessage = "A hamster returns your grenade with the pin inserted.";
+            var expectedMessage = "The grenade explodes against an exterior wall. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallAbovePlayfieldCoordinate(3, 1).IsPassable);
-
-            game.PerformMove(MoveType.DoNothing);
-            message = game.PerformMove(MoveType.ThrowGrenadeRight);
-
-            Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallRightOfPlayfieldCoordinate(3, 1).IsPassable);
-
-            game.PerformMove(MoveType.DoNothing);
-            message = game.PerformMove(MoveType.ThrowGrenadeDown);
-
-            Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallBelowPlayfieldCoordinate(3, 1).IsPassable);
+            Assert.IsFalse(board.GetWallAbove(player1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallLeftOfPlayfieldCoordinate(3, 1).IsPassable);
+            Assert.IsFalse(board.GetWallLeftOf(player1).IsPassable);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeRight);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallRightOf(player1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeDown);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallBelow(player1).IsPassable);
+
+            Assert.AreEqual(player1.NumGrenades, 0);
+        }
+
+        [Test]
+        public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
+        {
+            buildHamsteredWallsAroundSquare(3, 1);
+            player1.X = 3;
+            player1.Y = 1;
+            player1.NumGrenades = 4;
+            var expectedMessage = "A hamster returns your grenade with the pin inserted. ";
+
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.ThrowGrenadeUp);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallAbove(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeRight);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallRightOf(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeDown);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallBelow(3, 1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeLeft);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsFalse(board.GetWallLeftOf(3, 1).IsPassable);
 
             Assert.AreEqual(player1.NumGrenades, 4, "Hamster walls should not spend grenades");
         }
@@ -313,13 +575,13 @@ namespace AndroidGui.Tests
         {
             player1.X = 3;
             player1.Y = 3;
-            board.GetPlayfieldSquareAt(3, 2).NumTreasures = 2;
+            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
             Assert.True(player1.CarriesTreasure);
-            Assert.AreEqual(board.GetPlayfieldSquareAt(3, 2).NumTreasures, 1);
+            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 1);
         }
 
         [Test]
@@ -328,7 +590,7 @@ namespace AndroidGui.Tests
             player1.X = 3;
             player1.Y = 3;
             player1.CarriesTreasure = true;
-            board.GetPlayfieldSquareAt(3, 2).NumTreasures = 2;
+            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
@@ -337,7 +599,7 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.DoNothing);
 
             Assert.True(player1.CarriesTreasure);
-            Assert.AreEqual(board.GetPlayfieldSquareAt(3, 2).NumTreasures, 2);
+            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
         [Test]
@@ -416,23 +678,23 @@ namespace AndroidGui.Tests
 
         private void buildWallsAroundSquare(int x, int y)
         {
-            board.GetWallAbovePlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallRightOfPlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallBelowPlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallLeftOfPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallAbove(x, y).IsPassable = false;
+            board.GetWallRightOf(x, y).IsPassable = false;
+            board.GetWallBelow(x, y).IsPassable = false;
+            board.GetWallLeftOf(x, y).IsPassable = false;
         }
 
         private void buildHamsteredWallsAroundSquare(int x, int y)
         {
-            board.GetWallAbovePlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallRightOfPlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallBelowPlayfieldCoordinate(x, y).IsPassable = false;
-            board.GetWallLeftOfPlayfieldCoordinate(x, y).IsPassable = false;
+            board.GetWallAbove(x, y).IsPassable = false;
+            board.GetWallRightOf(x, y).IsPassable = false;
+            board.GetWallBelow(x, y).IsPassable = false;
+            board.GetWallLeftOf(x, y).IsPassable = false;
 
-            board.GetWallAbovePlayfieldCoordinate(x, y).HasHamster = true;
-            board.GetWallRightOfPlayfieldCoordinate(x, y).HasHamster = true;
-            board.GetWallBelowPlayfieldCoordinate(x, y).HasHamster = true;
-            board.GetWallLeftOfPlayfieldCoordinate(x, y).HasHamster = true;
+            board.GetWallAbove(x, y).HasHamster = true;
+            board.GetWallRightOf(x, y).HasHamster = true;
+            board.GetWallBelow(x, y).HasHamster = true;
+            board.GetWallLeftOf(x, y).HasHamster = true;
         }
 
         private PlayfieldSquare[,] initializeEmptyPlayfield(int boardWidth, int boardHeight)

@@ -27,31 +27,31 @@ namespace LabyrinthTests
         [Test]
         public void TestGetPlayfieldSquareAt()
         {
-            Assert.That(board.GetPlayfieldSquareAt(1, 3).Type == SquareType.Teleporter);
+            Assert.That(board.GetPlayfieldSquareOf(1, 3).Type == SquareType.Teleporter);
         }
 
         [Test]
         public void TestGetWallAbovePlayfieldCoordinate()
         {
-            Assert.That(board.GetWallAbovePlayfieldCoordinate(2, 0).IsExterior);
+            Assert.That(board.GetWallAbove(2, 0).IsExterior);
         }
 
         [Test]
         public void TestGetWallBelowPlayfieldCoordinate()
         {
-            Assert.That(board.GetWallBelowPlayfieldCoordinate(1, 4).IsExterior);
+            Assert.That(board.GetWallBelow(1, 4).IsExterior);
         }
 
         [Test]
         public void TestGetWallLeftOfPlayfieldCoordinate()
         {
-            Assert.That(board.GetWallLeftOfPlayfieldCoordinate(0, 3).IsExterior);
+            Assert.That(board.GetWallLeftOf(0, 3).IsExterior);
         }
 
         [Test]
         public void TestGetWallRightOfPlayfieldCoordinate()
         {
-            Assert.That(board.GetWallRightOfPlayfieldCoordinate(4, 3).IsExterior);
+            Assert.That(board.GetWallRightOf(4, 3).IsExterior);
         }
     }
 }

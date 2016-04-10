@@ -41,51 +41,52 @@ namespace LabyrinthEngine
             switch (action)
             {
                 case MoveType.MoveUp:
-                    if (board.GetWallAbovePlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    if (board.GetWallAbove(player).IsPassable)
                     {
                         player.Y--;
-                        descriptionOfCurrentMove.Append("Walked north.");
-                    } else
+                        descriptionOfCurrentMove.Append("Walked north. ");
+                    }
+                    else
                     {
-                        descriptionOfCurrentMove.Append("Hit wall.");
+                        descriptionOfCurrentMove.Append("Hit wall. ");
                     }
                     
                     break;
                 case MoveType.MoveDown:
-                    if (board.GetWallBelowPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    if (board.GetWallBelow(player).IsPassable)
                     {
                         player.Y++;
-                        descriptionOfCurrentMove.Append("Walked south.");
+                        descriptionOfCurrentMove.Append("Walked south. ");
                     }
                     else
                     {
-                        descriptionOfCurrentMove.Append("Hit wall.");
+                        descriptionOfCurrentMove.Append("Hit wall. ");
                     }
                     break;
                 case MoveType.MoveLeft:
-                    if (board.GetWallLeftOfPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    if (board.GetWallLeftOf(player).IsPassable)
                     {
                         player.X--;
-                        descriptionOfCurrentMove.Append("Walked west.");
+                        descriptionOfCurrentMove.Append("Walked west. ");
                     }
                     else
                     {
-                        descriptionOfCurrentMove.Append("Hit wall.");
+                        descriptionOfCurrentMove.Append("Hit wall. ");
                     }
                     break;
                 case MoveType.MoveRight:
-                    if (board.GetWallRightOfPlayfieldCoordinate(player.X, player.Y).IsPassable)
+                    if (board.GetWallRightOf(player).IsPassable)
                     {
                         player.X++;
-                        descriptionOfCurrentMove.Append("Walked east.");
+                        descriptionOfCurrentMove.Append("Walked east. ");
                     }
                     else
                     {
-                        descriptionOfCurrentMove.Append("Hit wall.");
+                        descriptionOfCurrentMove.Append("Hit wall. ");
                     }
                     break;
                 case MoveType.DoNothing:
-                    descriptionOfCurrentMove.Append("Standing still.");
+                    descriptionOfCurrentMove.Append("Standing still. ");
                     break;
                 case MoveType.FallThroughHole:
                     //teleportIfStandsOnTeleporter(player);
@@ -157,17 +158,39 @@ namespace LabyrinthEngine
         {
             var player = move.PerformedBy;
             var action = move.ActionType;
+            WallSection targetWall;
 
             switch (action)
             {
                 case MoveType.BuildWallUp:
-                    return;
+                    targetWall = board.GetWallAbove(player);
+                    break;
                 case MoveType.BuildWallRight:
-                    return;
+                    targetWall = board.GetWallRightOf(player);
+                    break;
                 case MoveType.BuildWallDown:
-                    return;
+                    targetWall = board.GetWallBelow(player);
+                    break;
                 case MoveType.BuildWallLeft:
-                    return;
+                    targetWall = board.GetWallLeftOf(player);
+                    break;
+                default:
+                    throw new InvalidOperationException("handleWallConstruction called with illegal move");
+            }
+
+            if (player.NumCement <= 0)
+            {
+                descriptionOfCurrentMove.Append("You are out of cement. ");
+            }
+            else if (targetWall.IsPassable)
+            {
+                player.NumCement--;
+                targetWall.IsPassable = false;
+                descriptionOfCurrentMove.Append("You construct a new wall. ");
+            }
+            else
+            {
+                descriptionOfCurrentMove.Append("There is already a wall there. ");
             }
         }
 
@@ -175,17 +198,40 @@ namespace LabyrinthEngine
         {
             var player = move.PerformedBy;
             var action = move.ActionType;
+            WallSection targetWall;
 
             switch (action)
             {
                 case MoveType.HamsterSprayUp:
-                    return;
+                    targetWall = board.GetWallAbove(player);
+                    break;
                 case MoveType.HamsterSprayRight:
-                    return;
+                    targetWall = board.GetWallRightOf(player);
+                    break;
                 case MoveType.HamsterSprayDown:
-                    return;
+                    targetWall = board.GetWallBelow(player);
+                    break;
                 case MoveType.HamsterSprayLeft:
-                    return;
+                    targetWall = board.GetWallLeftOf(player);
+                    break;
+                default:
+                    throw new InvalidOperationException("handleHamsterSpraying called with illegal move");
+            }
+
+            if (player.NumHamsterSprays <= 0)
+            {
+                descriptionOfCurrentMove.Append("You are out of cement. ");
+            }
+            else if (targetWall.HasHamster)
+            {
+                player.NumHamsterSprays--;
+                targetWall.HasHamster = false;
+                descriptionOfCurrentMove.Append("Several squeaking hamsters tumble out from the wall. ");
+            }
+            else
+            {
+                player.NumHamsterSprays--;
+                descriptionOfCurrentMove.Append("You spray the wall. ");
             }
         }
 
@@ -193,17 +239,39 @@ namespace LabyrinthEngine
         {
             var player = move.PerformedBy;
             var action = move.ActionType;
+            WallSection targetWall;
 
             switch (action)
             {
                 case MoveType.PlaceHamsterUp:
-                    return;
+                    targetWall = board.GetWallAbove(player);
+                    break;
                 case MoveType.PlaceHamsterRight:
-                    return;
+                    targetWall = board.GetWallRightOf(player);
+                    break;
                 case MoveType.PlaceHamsterDown:
-                    return;
+                    targetWall = board.GetWallBelow(player);
+                    break;
                 case MoveType.PlaceHamsterLeft:
-                    return;
+                    targetWall = board.GetWallLeftOf(player);
+                    break;
+                default:
+                    throw new InvalidOperationException("handleHamsterPlacement called with illegal move");
+            }
+
+            if (player.NumHamsters <= 0)
+            {
+                descriptionOfCurrentMove.Append("You are out of hamsters. ");
+            }
+            else if (!targetWall.HasHamster)
+            {
+                player.NumHamsters--;
+                targetWall.HasHamster = true;
+                descriptionOfCurrentMove.Append("Several squeaking hamsters tumble out from the wall. ");
+            }
+            else
+            {
+                descriptionOfCurrentMove.Append("A family of hamsters angrily repels your rodent. ");
             }
         }
 
@@ -211,17 +279,49 @@ namespace LabyrinthEngine
         {
             var player = move.PerformedBy;
             var action = move.ActionType;
+            WallSection targetWall;
 
             switch (action)
             {
                 case MoveType.ThrowGrenadeUp:
-                    return;
+                    targetWall = board.GetWallAbove(player);
+                    break;
                 case MoveType.ThrowGrenadeRight:
-                    return;
+                    targetWall = board.GetWallRightOf(player);
+                    break;
                 case MoveType.ThrowGrenadeDown:
-                    return;
+                    targetWall = board.GetWallBelow(player);
+                    break;
                 case MoveType.ThrowGrenadeLeft:
-                    return;
+                    targetWall = board.GetWallLeftOf(player);
+                    break;
+                default:
+                    throw new InvalidOperationException("handleGrenadeThrow called with illegal move");
+            }
+
+            if (player.NumGrenades <= 0)
+            {
+                descriptionOfCurrentMove.Append("You are out of grenades.");
+            }
+            else if (targetWall.IsExterior)
+            {
+                player.NumGrenades--;
+                descriptionOfCurrentMove.Append("The grenade explodes against an exterior wall. ");
+            }
+            else if (targetWall.HasHamster)
+            {
+                descriptionOfCurrentMove.Append("A hamster returns your grenade with the pin inserted. ");
+            }
+            else if (targetWall.IsPassable)
+            {
+                player.NumGrenades--;
+                descriptionOfCurrentMove.Append("");
+            }
+            else
+            {
+                player.NumGrenades--;
+                targetWall.IsPassable = true;
+                descriptionOfCurrentMove.Append("You blow up the wall. ");
             }
         }
 

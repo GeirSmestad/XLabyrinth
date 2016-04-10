@@ -51,29 +51,54 @@ namespace LabyrinthEngine.Playfield
             StartingPositions = startingPositions;
         }
 
-        public PlayfieldSquare GetPlayfieldSquareAt(int x, int y)
+        public PlayfieldSquare GetPlayfieldSquareOf(int playfieldX, int playfieldY)
         {
-            return PlayfieldGrid[x, y];
+            return PlayfieldGrid[playfieldX, playfieldY];
         }
 
-        public WallSection GetWallAbovePlayfieldCoordinate(int x, int y)
+        public PlayfieldSquare GetPlayfieldSquareOf(Player player)
         {
-            return HorizontalWalls[x, y];
+            return GetPlayfieldSquareOf(player.X, player.Y);
         }
 
-        public WallSection GetWallBelowPlayfieldCoordinate(int x, int y)
+        public WallSection GetWallAbove(int playfieldX, int playfieldY)
         {
-            return HorizontalWalls[x, y+1];
+            return HorizontalWalls[playfieldX, playfieldY];
         }
 
-        public WallSection GetWallLeftOfPlayfieldCoordinate(int x, int y)
+        public WallSection GetWallAbove(Player player)
         {
-            return VerticalWalls[y, x];
+            return GetWallAbove(player.X, player.Y);
         }
 
-        public WallSection GetWallRightOfPlayfieldCoordinate(int x, int y)
+        public WallSection GetWallBelow(int playfieldX, int playfieldY)
         {
-            return VerticalWalls[y, x+1];
+            return HorizontalWalls[playfieldX, playfieldY + 1];
+        }
+
+        public WallSection GetWallBelow(Player player)
+        {
+            return GetWallBelow(player.X, player.Y);
+        }
+
+        public WallSection GetWallLeftOf(int playfieldX, int playfieldY)
+        {
+            return VerticalWalls[playfieldY, playfieldX];
+        }
+
+        public WallSection GetWallLeftOf(Player player)
+        {
+            return GetWallLeftOf(player.X, player.Y);
+        }
+
+        public WallSection GetWallRightOf(int playfieldX, int playfieldY)
+        {
+            return VerticalWalls[playfieldY, playfieldX + 1];
+        }
+
+        public WallSection GetWallRightOf(Player player)
+        {
+            return GetWallRightOf(player.X, player.Y);
         }
     }
 }
