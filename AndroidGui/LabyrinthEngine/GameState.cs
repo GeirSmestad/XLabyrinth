@@ -39,6 +39,18 @@ namespace LabyrinthEngine
             setGameToInitialState();
         }
 
+        public GameState(BoardState board, List<Player> players, int initialRngSeed)
+        {
+            Board = board;
+            Players = players;
+
+            initialBoardState = HelperMethods.DeepClone(Board);
+            turnController = new TurnController(this);
+            completedMoves = new List<Move>();
+
+            setGameToInitialState();
+        }
+
         /// <summary>
         /// Sets the game to its initial state, but keep the list of completed moves, if any.
         /// In effect, this performs an undo back to the very first move of the game.

@@ -37,6 +37,7 @@ namespace AndroidGui.Tests
             verticalWalls = initializeEmptyVerticalWalls(5, 5);
             startingPositions = new List<Position> { new Position(0, 0) };
             holes = new List<Teleporter>();
+            centaur = new Centaur(-1, -1, new List<CentaurStep>());
 
             board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
                 centaur, startingPositions);
@@ -75,7 +76,13 @@ namespace AndroidGui.Tests
         }
 
         [Test]
-        public void When_near_centaur_should_print_clopclop()
+        public void When_player_moves_near_centaur_should_print_clopclop()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void When_centaur_moves_near_player_should_print_clopclop()
         {
             Assert.Fail("Not implemented");
         }
@@ -83,6 +90,10 @@ namespace AndroidGui.Tests
         [Test]
         public void When_moving_to_hole_player_should_move_to_next_hole()
         {
+            // TODO: Ensure that tests complete both movement and followup, and that
+            // the player is only moved to the next hole and not two holes up.
+            // There is room for subtle bugs in this functionality since teleporters
+            // can be entered in many ways.
             Assert.Fail("Not implemented");
         }
 
@@ -93,20 +104,211 @@ namespace AndroidGui.Tests
         }
 
         [Test]
-        public void Random_events_in_identical_game_states_should_resolve_identically()
-        {
-            Assert.Fail("Not implemented");
-        }
-
-        [Test]
         public void When_shot_player_should_die()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 2;
+            player1.Y = 2;
+            player1.NumArrows = 4;
+
+            var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
+            players.Add(nemesis);
+            nemesis.X = 2;
+            nemesis.Y = 0;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireUp);
+            Assert.IsFalse(nemesis.IsAlive);
+
+            nemesis.X = 4;
+            nemesis.Y = 2;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireRight);
+            Assert.IsFalse(nemesis.IsAlive);
+
+            nemesis.X = 2;
+            nemesis.Y = 4;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireDown);
+            Assert.IsFalse(nemesis.IsAlive);
+
+            nemesis.X = 0;
+            nemesis.Y = 2;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireLeft);
+            Assert.IsFalse(nemesis.IsAlive);
+
+            Assert.AreEqual(player1.NumArrows, 0, "Should spend arrows when shooting.");
         }
 
         [Test]
         public void When_shot_through_wall_player_should_survive()
         {
+            player1.X = 2;
+            player1.Y = 2;
+            player1.NumArrows = 4;
+            buildWallsAroundSquare(0, 2);
+            buildWallsAroundSquare(4, 2);
+            buildWallsAroundSquare(2, 4);
+            buildWallsAroundSquare(0, 2);
+
+            var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
+            players.Add(nemesis);
+            nemesis.X = 2;
+            nemesis.Y = 0;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireUp);
+            Assert.IsTrue(nemesis.IsAlive);
+
+            nemesis.X = 4;
+            nemesis.Y = 2;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireRight);
+            Assert.IsTrue(nemesis.IsAlive);
+
+            nemesis.X = 2;
+            nemesis.Y = 4;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireDown);
+            Assert.IsTrue(nemesis.IsAlive);
+
+            nemesis.X = 0;
+            nemesis.Y = 2;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireLeft);
+            Assert.IsTrue(nemesis.IsAlive);
+        }
+
+        [Test]
+        public void When_shooting_arrow_should_hit_the_first_player_it_encounters()
+        {
+            player1.X = 2;
+            player1.Y = 2;
+            player1.NumArrows = 4;
+
+            var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
+            var innocentBystander = new Player() { Name = "InnocentBystander", IsAlive = true };
+            players.Add(nemesis);
+            players.Add(innocentBystander);
+
+            nemesis.X = 2;
+            nemesis.Y = 1;
+            innocentBystander.X = 2;
+            innocentBystander.Y = 0;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireUp);
+            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsTrue(innocentBystander.IsAlive);
+
+            nemesis.X = 3;
+            nemesis.Y = 2;
+            innocentBystander.X = 4;
+            innocentBystander.Y = 2;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireRight);
+            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsTrue(innocentBystander.IsAlive);
+
+            nemesis.X = 2;
+            nemesis.Y = 3;
+            innocentBystander.X = 2;
+            innocentBystander.Y = 4;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireDown);
+            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsTrue(innocentBystander.IsAlive);
+
+            nemesis.X = 1;
+            nemesis.Y = 2;
+            innocentBystander.X = 0;
+            innocentBystander.Y = 2;
+            nemesis.IsAlive = true;
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireLeft);
+            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsTrue(innocentBystander.IsAlive);
+        }
+
+        [Test]
+        public void When_shooting_centaur_should_see_message_and_miss_player_behind_centaur()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        /// <summary>
+        /// Ensure that when firing on a square with many players, the player that is selected
+        /// randomly to die is the same when the game state is identical.
+        /// </summary>
+        [Test]
+        public void When_shooting_at_multiple_players_random_death_should_be_consistent()
+        {
+            int initialRngSeed = 1337;
+
+            player1.X = 2;
+            player1.Y = 2;
+            player1.NumArrows = 4;
+
+            var player2 = new Player() { Name = "Shrodinger1", IsAlive = true };
+            var player3 = new Player() { Name = "Shrodinger2", IsAlive = true };
+            var player4 = new Player() { Name = "Shrodinger3", IsAlive = true };
+            var player5 = new Player() { Name = "Shrodinger4", IsAlive = true };
+
+            players.Add(player2);
+            players.Add(player3);
+            players.Add(player4);
+            players.Add(player5);
+
+            player2.X = player3.X = player4.X = player5.X = 2;
+            player2.Y = player3.Y = player4.Y = player5.Y = 0;
+            initializeNewGameStateFromSetupParameters(initialRngSeed);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireUp);
+            // TODO: Step through code and see which player dies, then assert this
+            //Assert.IsFalse(nemesis.IsAlive);
+
+
+            player2.X = player3.X = player4.X = player5.X = 4;
+            player2.Y = player3.Y = player4.Y = player5.Y = 2;
+            player2.IsAlive = player3.IsAlive = player4.IsAlive = player5.IsAlive = true;
+            initializeNewGameStateFromSetupParameters(initialRngSeed);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireRight);
+            // TODO: Step through code and see which player dies, then assert this
+            //Assert.IsFalse(nemesis.IsAlive);
+
+            player2.X = player3.X = player4.X = player5.X = 2;
+            player2.Y = player3.Y = player4.Y = player5.Y = 4;
+            player2.IsAlive = player3.IsAlive = player4.IsAlive = player5.IsAlive = true;
+            initializeNewGameStateFromSetupParameters(initialRngSeed);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireDown);
+            // TODO: Step through code and see which player dies, then assert this
+            //Assert.IsFalse(nemesis.IsAlive);
+
+            player2.X = player3.X = player4.X = player5.X = 0;
+            player2.Y = player3.Y = player4.Y = player5.Y = 2;
+            player2.IsAlive = player3.IsAlive = player4.IsAlive = player5.IsAlive = true;
+            initializeNewGameStateFromSetupParameters(initialRngSeed);
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireLeft);
+            // TODO: Step through code and see which player dies, then assert this
+            //Assert.IsFalse(nemesis.IsAlive);
+
             Assert.Fail("Not implemented");
         }
 
@@ -124,8 +326,8 @@ namespace AndroidGui.Tests
         public void When_visiting_ammo_storage_player_should_replenish_weapons()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
+
             player1.X = 3;
             player1.Y = 3;
             player1.IsAlive = true;
@@ -143,8 +345,8 @@ namespace AndroidGui.Tests
         public void When_visiting_hamster_storage_player_should_replenish_hamster_gear()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
+
             player1.X = 3;
             player1.Y = 3;
             player1.IsAlive = true;
@@ -161,33 +363,31 @@ namespace AndroidGui.Tests
         public void When_visiting_fitness_studio_dead_player_should_see_it_and_be_resurrected()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
+
             player1.X = 3;
             player1.Y = 3;
             player1.IsAlive = false;
-            var expectedMessage = "You enter the fitness studio and return to life! ";
 
             var message = game.PerformMove(MoveType.MoveDown);
 
             Assert.IsTrue(player1.IsAlive);
-            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(message.Contains("fitness studio"));
         }
 
         [Test]
         public void When_visiting_fitness_studio_live_player_should_see_empty_room()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
+
             player1.X = 3;
             player1.Y = 3;
             player1.IsAlive = true;
 
             var message = game.PerformMove(MoveType.MoveDown);
 
-            // TODO: Test this to ensure that the contains method works as expected
-            Assert.IsFalse(message.Contains("fitness")); 
+            Assert.IsFalse(message.Contains("fitness studio")); 
         }
         
         [Test]
@@ -196,8 +396,7 @@ namespace AndroidGui.Tests
             playfield[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
             playfield[3, 1] = new PlayfieldSquare(SquareType.CementStorage, 0);
             playfield[4, 1] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
 
             player1.X = 1;
             player1.Y = 1;
@@ -224,15 +423,44 @@ namespace AndroidGui.Tests
         [Test]
         public void Player_should_drop_treasure_and_consumables_when_killed()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 0;
+            player1.Y = 0;
+            player1.NumArrows = 1;
+            board.GetPlayfieldSquareOf(1, 0).NumTreasures = 0;
+
+            var victim = new Player()
+            {
+                Name = "Victim",
+                IsAlive = true,
+                CarriesTreasure = true,
+                NumArrows = 2,
+                NumGrenades = 2,
+                NumHamsters = 2,
+                NumHamsterSprays = 2,
+                NumCement = 2
+            };
+            players.Add(victim);
+            victim.X = 1;
+            victim.Y = 0;
+            
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireRight);
+
+            Assert.IsFalse(victim.CarriesTreasure);
+            Assert.AreEqual(victim.NumArrows, 0);
+            Assert.AreEqual(victim.NumGrenades, 0);
+            Assert.AreEqual(victim.NumHamsters, 0);
+            Assert.AreEqual(victim.NumHamsterSprays, 0);
+            Assert.AreEqual(victim.NumCement, 0);
+            Assert.AreEqual(board.GetPlayfieldSquareOf(victim).NumTreasures, 1);
         }
 
         [Test]
         public void When_visiting_cement_storage_player_should_replenish_cement()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            initializeNewBoardStateFromSetupParameters();
+
             player1.X = 3;
             player1.Y = 3;
             player1.IsAlive = true;
@@ -594,11 +822,24 @@ namespace AndroidGui.Tests
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
-            Assert.True(moveDescription.Contains("There is treasure here."));
-
-            game.PerformMove(MoveType.DoNothing);
-
+            Assert.True(moveDescription.Contains("There is treasure here"));
             Assert.True(player1.CarriesTreasure);
+            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
+        }
+
+        [Test]
+        public void When_visiting_treasure_dead_player_should_see_and_leave_it()
+        {
+            player1.X = 3;
+            player1.Y = 3;
+            player1.CarriesTreasure = false;
+            player1.IsAlive = false;
+            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+
+            string moveDescription = game.PerformMove(MoveType.MoveUp);
+
+            Assert.True(moveDescription.Contains("There is treasure here"));
+            Assert.False(player1.CarriesTreasure);
             Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
@@ -751,6 +992,22 @@ namespace AndroidGui.Tests
                 }
             }
             return result;
+        }
+
+        private void initializeNewBoardStateFromSetupParameters()
+        {
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
+        }
+        
+        private void initializeNewGameStateFromSetupParameters()
+        {
+            game = new GameState(board, players);
+        }
+
+        private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed)
+        {
+            game = new GameState(board, players, withInitialRngSeed);
         }
     }
 }

@@ -49,6 +49,12 @@ namespace LabyrinthEngine.Playfield
             Holes = holes;
             this.centaur = centaur;
             StartingPositions = startingPositions;
+
+            if (centaur == null)
+            {
+                throw new InvalidOperationException("The centaur cannot be null. If you want " +
+                    "to play without the centaur, set its starting position to (-1,-1).");
+            }
         }
 
         public PlayfieldSquare GetPlayfieldSquareOf(int playfieldX, int playfieldY)
