@@ -17,6 +17,7 @@ namespace LabyrinthEngine.Moves
         FireDown,
         FireLeft,
         FireRight,
+        FireAtSameSquare,
         ThrowGrenadeUp,
         ThrowGrenadeDown,
         ThrowGrenadeLeft,

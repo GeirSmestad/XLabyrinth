@@ -26,11 +26,5 @@ namespace LabyrinthEngine.Entities
         public bool IsAlive = true;
         public int X;
         public int Y;
-
-        public void Die()
-        {
-            IsAlive = false;
-            NumArrows = NumGrenades = NumHamsters = NumHamsterSprays = 0;
-        }
     }
 }

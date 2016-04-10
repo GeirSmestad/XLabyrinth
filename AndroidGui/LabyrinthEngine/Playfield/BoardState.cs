@@ -106,5 +106,16 @@ namespace LabyrinthEngine.Playfield
         {
             return GetWallRightOf(player.X, player.Y);
         }
+
+        /// <summary>
+        /// Since humans are good at remembering spatial information, this method allows you to rotate
+        /// a particular board in order to make it less likely that the operator remembers which board
+        /// has been selected. The internal geometry of the board remains unmodified.
+        /// </summary>
+        /// <param name="multipleOf90Degrees">Should be 0, 1, 2 or 3.</param>
+        public void RotateRight(int howMany90DegreesToRotate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

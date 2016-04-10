@@ -33,7 +33,6 @@ namespace LabyrinthEngine
 
             initialRngSeed = DateTime.Now.GetHashCode();
             initialBoardState = HelperMethods.DeepClone(Board);
-            turnController = new TurnController(this);
             completedMoves = new List<Move>();
 
             setGameToInitialState();
@@ -44,8 +43,8 @@ namespace LabyrinthEngine
             Board = board;
             Players = players;
 
+            this.initialRngSeed = initialRngSeed;
             initialBoardState = HelperMethods.DeepClone(Board);
-            turnController = new TurnController(this);
             completedMoves = new List<Move>();
 
             setGameToInitialState();
@@ -61,12 +60,23 @@ namespace LabyrinthEngine
             MoveCounter = 0;
             CurrentTurnPhase = TurnPhase.SelectMainAction;
             Board = HelperMethods.DeepClone(initialBoardState);
+            turnController = new TurnController(Board, Players, randomNumberGenerator);
             currentUndoStep = completedMoves.Count;
         }
 
         public Player CurrentPlayer()
         {
-            return Players[MoveCounter % Players.Count];
+            // Moves are always executed & stored in pairs, with each player performing two moves -
+            // one main action and one followup action. This implementation detail is hidden from
+            // the public API.
+            if (MoveCounter % 2 == 0)
+            {
+                return Players[MoveCounter/2 % Players.Count];
+            }
+            else
+            {
+                return Players[(MoveCounter-1)/2 % Players.Count];
+            }
         }
 
         /// <summary>

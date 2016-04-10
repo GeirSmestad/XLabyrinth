@@ -1,4 +1,5 @@
 ﻿using LabyrinthEngine.Entities;
+using LabyrinthEngine.Helpers;
 using LabyrinthEngine.Moves;
 using LabyrinthEngine.Playfield;
 using System;
@@ -18,13 +19,15 @@ namespace LabyrinthEngine
     {
         private BoardState board;
         private List<Player> players;
+        private Random randomNumberGenerator;
 
         private StringBuilder descriptionOfCurrentMove;
 
-        public TurnController(GameState game)
+        public TurnController(BoardState board, List<Player> players, Random randomNumberGenerator)
         {
-            board = game.Board;
-            players = game.Players;
+            this.board = board;
+            this.players = players;
+            this.randomNumberGenerator = randomNumberGenerator;
         }
 
         public string DescriptionOfExecutedMove()
@@ -106,9 +109,10 @@ namespace LabyrinthEngine
             if (action == MoveType.FireUp ||
                 action == MoveType.FireRight ||
                 action == MoveType.FireDown ||
-                action == MoveType.FireLeft)
+                action == MoveType.FireLeft ||
+                action == MoveType.FireAtSameSquare)
             {
-                handleShot(move);
+                handleShooting(move);
             }
             else if (action == MoveType.ThrowGrenadeUp ||
                      action == MoveType.ThrowGrenadeRight ||
@@ -301,7 +305,7 @@ namespace LabyrinthEngine
 
             if (player.NumGrenades <= 0)
             {
-                descriptionOfCurrentMove.Append("You are out of grenades.");
+                descriptionOfCurrentMove.Append("You are out of grenades. ");
             }
             else if (targetWall.IsExterior)
             {
@@ -325,22 +329,103 @@ namespace LabyrinthEngine
             }
         }
 
-        private void handleShot(Move move)
+        private void handleShooting(Move move)
         {
-            // TODO: This function has complex logic!
             var player = move.PerformedBy;
             var action = move.ActionType;
+            Player victim = null;
+            bool centaurWasHit = false;
 
-            switch (action)
+            bool arrowWasBlockedByWall = false;
+            int arrowX = player.X;
+            int arrowY = player.Y;
+
+            while (victim == null && centaurWasHit == false)
             {
-                case MoveType.FireUp:
-                    return;
-                case MoveType.FireRight:
-                    return;
-                case MoveType.FireDown:
-                    return;
-                case MoveType.FireLeft:
-                    return;
+                switch (action)
+                {
+                    case MoveType.FireUp:
+                        arrowWasBlockedByWall =
+                            board.GetWallAbove(arrowX, arrowY).IsExterior ||
+                            !board.GetWallAbove(arrowX, arrowY).IsPassable;
+                        arrowY--;
+                        break;
+                    case MoveType.FireRight:
+                        arrowWasBlockedByWall =
+                            board.GetWallRightOf(arrowX, arrowY).IsExterior ||
+                            !board.GetWallRightOf(arrowX, arrowY).IsPassable;
+                        arrowX++;
+                        break;
+                    case MoveType.FireDown:
+                        arrowWasBlockedByWall =
+                            board.GetWallBelow(arrowX, arrowY).IsExterior ||
+                            !board.GetWallBelow(arrowX, arrowY).IsPassable;
+                        arrowY++;
+                        break;
+                    case MoveType.FireLeft:
+                        arrowWasBlockedByWall =
+                            board.GetWallLeftOf(arrowX, arrowY).IsExterior ||
+                            !board.GetWallLeftOf(arrowX, arrowY).IsPassable;
+                        arrowX--;
+                        break;
+                    case MoveType.FireAtSameSquare:
+                        var victimCandidates = findAllLivingPlayersAt(player.X, player.Y);
+                        bool removedShooterFromCandidates = victimCandidates.Remove(player);
+
+                        if (!removedShooterFromCandidates)
+                        {
+                            throw new LabyrinthInvalidStateException("Could not find shooter among players " +
+                                "on shooter's square. Likely logic error in equality operator of Player.");
+                        }
+
+                        if (victimCandidates.Count > 0)
+                        {
+                            var victimIndex = randomNumberGenerator.Next(0, victimCandidates.Count - 1);
+                            victim = victimCandidates[victimIndex];
+                        }
+                        arrowWasBlockedByWall = true;
+                        break;
+                }
+
+                if (arrowWasBlockedByWall)
+                {
+                    // Stop evaluating arrow path when we (eventually) encounter a wall.
+                    // This always happens if there is no other obstacle.
+                    break;
+                }
+                
+                if (board.centaur.X == arrowX && board.centaur.Y == arrowY)
+                {
+                    centaurWasHit = true;
+                }
+                else if (findAllLivingPlayersAt(arrowX, arrowY).Count > 0)
+                {
+                    victim = pickRandomLivingPlayerAt(arrowX, arrowY);
+                }
+            }
+
+            if (player.NumArrows <= 0)
+            {
+                descriptionOfCurrentMove.Append("You are out of ammo. Dang. ");
+            }
+            else
+            {
+                player.NumArrows--;
+
+                if (centaurWasHit)
+                {
+                    descriptionOfCurrentMove.Append("The centaur snatches the arrow out " 
+                        + "of the air and stares ominously at you. ");
+                }
+                else if (victim == null)
+                {
+                    descriptionOfCurrentMove.Append("You missed. ");
+                }
+                else
+                {
+                    killPlayer(victim);
+                    descriptionOfCurrentMove.AppendFormat("You killed {0}! ", victim.Name);
+                }
             }
         }
 
@@ -499,6 +584,25 @@ namespace LabyrinthEngine
                 victim.CarriesTreasure = false;
                 board.GetPlayfieldSquareOf(victim).NumTreasures++;
             }
+        }
+
+        private List<Player> findAllLivingPlayersAt(int x, int y)
+        {
+            return players.FindAll(player => player.X == x && player.Y == y && player.IsAlive);
+        }
+
+        private Player pickRandomLivingPlayerAt(int x, int y)
+        {
+            var candidates = findAllLivingPlayersAt(x, y);
+
+            if (candidates.Count == 0)
+            {
+                throw new InvalidOperationException("pickRandomLivingPlayerAt called " +
+                    "on coordinates with no players.");
+            }
+
+            var indexOfLuckyPlayer = randomNumberGenerator.Next(0, candidates.Count - 1);
+            return candidates[indexOfLuckyPlayer];
         }
 
         public static bool IsMovementAction(MoveType action)
