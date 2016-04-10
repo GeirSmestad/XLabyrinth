@@ -344,7 +344,7 @@ namespace AndroidGui.Tests
 
         [Test]
         public void When_shooting_centaur_should_see_message_and_miss_player_behind_centaur()
-        {/*
+        {
             player1.X = 2;
             player1.Y = 2;
             player1.NumArrows = 4;
@@ -355,7 +355,6 @@ namespace AndroidGui.Tests
             centaur = new Centaur(2, 1, new List<CentaurStep>());
             innocentBystander.X = 2;
             innocentBystander.Y = 0;
-            initializeNewBoardStateFromSetupParameters();
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.FireUp);
@@ -365,7 +364,6 @@ namespace AndroidGui.Tests
             centaur = new Centaur(3, 2, new List<CentaurStep>());
             innocentBystander.X = 4;
             innocentBystander.Y = 2;
-            initializeNewBoardStateFromSetupParameters();
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireRight);
@@ -375,7 +373,6 @@ namespace AndroidGui.Tests
             centaur = new Centaur(2, 3, new List<CentaurStep>());
             innocentBystander.X = 2;
             innocentBystander.Y = 4;
-            initializeNewBoardStateFromSetupParameters();
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireDown);
@@ -385,12 +382,11 @@ namespace AndroidGui.Tests
             centaur = new Centaur(1, 2, new List<CentaurStep>());
             innocentBystander.X = 0;
             innocentBystander.Y = 2;
-            initializeNewBoardStateFromSetupParameters();
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireLeft);
             Assert.IsTrue(message.Contains("centaur"));
-            Assert.IsTrue(innocentBystander.IsAlive);*/
+            Assert.IsTrue(innocentBystander.IsAlive);
         }
 
         /// <summary>
@@ -474,7 +470,7 @@ namespace AndroidGui.Tests
         public void When_visiting_ammo_storage_player_should_replenish_weapons()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 3;
             player1.Y = 3;
@@ -493,7 +489,7 @@ namespace AndroidGui.Tests
         public void When_visiting_hamster_storage_player_should_replenish_hamster_gear()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 3;
             player1.Y = 3;
@@ -511,7 +507,7 @@ namespace AndroidGui.Tests
         public void When_visiting_fitness_studio_dead_player_should_see_it_and_be_resurrected()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 3;
             player1.Y = 3;
@@ -527,7 +523,7 @@ namespace AndroidGui.Tests
         public void When_visiting_fitness_studio_live_player_should_see_empty_room()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 3;
             player1.Y = 3;
@@ -544,7 +540,7 @@ namespace AndroidGui.Tests
             playfield[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
             playfield[3, 1] = new PlayfieldSquare(SquareType.CementStorage, 0);
             playfield[4, 1] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 1;
             player1.Y = 1;
@@ -607,7 +603,7 @@ namespace AndroidGui.Tests
         public void When_visiting_cement_storage_player_should_replenish_cement()
         {
             playfield[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
-            initializeNewBoardStateFromSetupParameters();
+            initializeNewGameStateFromSetupParameters();
 
             player1.X = 3;
             player1.Y = 3;
@@ -625,8 +621,6 @@ namespace AndroidGui.Tests
             buildWallsAroundSquare(1, 1);
             player1.X = 1;
             player1.Y = 1;
-
-            initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
@@ -814,8 +808,6 @@ namespace AndroidGui.Tests
             player1.X = 1;
             player1.Y = 1;
             player1.NumCement = 4;
-
-            initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallUp);
@@ -1071,6 +1063,11 @@ namespace AndroidGui.Tests
 
         private void buildWallsAroundSquare(int x, int y)
         {
+            //horizontalWalls[x, y] = new WallSection(false, false, false, false);
+            //horizontalWalls[x, y+1] = new WallSection(false, false, false, false);
+            //verticalWalls[y, x] = new WallSection(false, false, false, false);
+            //verticalWalls[y, x + 1] = new WallSection(false, false, false, false);
+
             board.GetWallAbove(x, y).IsPassable = false;
             board.GetWallRightOf(x, y).IsPassable = false;
             board.GetWallBelow(x, y).IsPassable = false;
@@ -1145,21 +1142,18 @@ namespace AndroidGui.Tests
             }
             return result;
         }
-
-        private void initializeNewBoardStateFromSetupParameters()
-        {
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
-
-        }
         
         private void initializeNewGameStateFromSetupParameters()
         {
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
             game = new GameState(board, players);
         }
 
         private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed)
         {
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
             game = new GameState(board, players, withInitialRngSeed);
         }
     }
