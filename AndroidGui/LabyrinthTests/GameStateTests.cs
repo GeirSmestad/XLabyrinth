@@ -9,6 +9,7 @@ using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Helpers;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Moves;
+using System.Collections.ObjectModel;
 
 namespace AndroidGui.Tests
 {
@@ -28,6 +29,9 @@ namespace AndroidGui.Tests
         List<Player> players;
         Player player1;
 
+        // TODO: This test file is getting very long -- should split up in separate test files.
+        // Need to think out a decent way to initialize the game state tests; they use the same functions.
+
         [SetUp]
         public void SetUp()
         {
@@ -37,6 +41,7 @@ namespace AndroidGui.Tests
             verticalWalls = initializeEmptyVerticalWalls(5, 5);
             startingPositions = new List<Position> { new Position(0, 0) };
             holes = new List<Teleporter>();
+
             centaur = new Centaur(-1, -1, new List<CentaurStep>());
 
             board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
@@ -49,16 +54,204 @@ namespace AndroidGui.Tests
             game = new GameState(board, players);
         }
 
+        // TODO: When rewriting tests to support undo/redo, we can use properties, e.g. like
+        //public Player player9
+        //{
+        //    get { return game.Players[9];  }
+        //}
+
         // Game state tests
 
         [Test]
         public void At_end_of_turn_centaur_should_move()
+        {
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(0,0,false),
+                new CentaurStep(1,0,false)
+            };
+            centaur = new Centaur(-1, -1, centaurMoves);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+        }
+
+        [Test]
+        public void Centaur_with_no_moves_should_remain_stationary()
+        {
+            var centaurMoves = new List<CentaurStep>();
+            centaur = new Centaur(1, 1, centaurMoves);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+        }
+
+        [Test]
+        public void Centaur_with_only_one_move_should_remain_stationary_except_for_initial_move()
+        {
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+            };
+            centaur = new Centaur(0, 0, centaurMoves);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+        }
+
+        [Test]
+        public void Centaur_should_rotate_through_its_move_list_in_both_directions_and_reverse_correctly()
+        {
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(0,0,false),
+                new CentaurStep(1,0,false),
+                new CentaurStep(3,3,false)
+            };
+            centaur = new Centaur(-1, -1, centaurMoves);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            // Forwards
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.Board.centaur.ReverseDirection();
+
+            // Backwards
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+
+            // Repeat, except with the shortest path possible
+
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(0,0,false),
+                new CentaurStep(1,0,false),
+            };
+            centaur = new Centaur(-1, -1, centaurMoves);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.Board.centaur.ReverseDirection();
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+        }
+
+        [Test]
+        public void Centaur_should_move_through_wall_when_explicitly_specified()
         {
             Assert.Fail("Not implemented");
         }
 
         [Test]
         public void When_blocked_by_wall_centaur_should_reverse()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void When_walled_in_centaur_should_stop_moving()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void When_released_walled_in_centaur_should_start_moving_again()
         {
             Assert.Fail("Not implemented");
         }

@@ -158,6 +158,131 @@ namespace LabyrinthEngine
             }
         }
 
+
+        public void ResolvePostMovementEventsFor(Player player)
+        {
+            var newSquare = board.GetPlayfieldSquareOf(player);
+
+            if (newSquare.NumTreasures > 0)
+            {
+                if (player.IsAlive && !player.CarriesTreasure)
+                {
+                    player.CarriesTreasure = true;
+                    newSquare.NumTreasures--;
+                    descriptionOfCurrentMove.Append("You have found treasure! ");
+                }
+                else if (player.IsAlive && player.CarriesTreasure)
+                {
+                    descriptionOfCurrentMove.Append("There is treasure here, " +
+                        "but your hands are full. ");
+                }
+                else if (!player.IsAlive)
+                {
+                    descriptionOfCurrentMove.Append("There is treasure here, " +
+                        "but your ghost hands can't carry it. ");
+                }
+            }
+
+            if (newSquare.Type == SquareType.FitnessStudio)
+            {
+                if (!player.IsAlive)
+                {
+                    player.IsAlive = true;
+                    descriptionOfCurrentMove.Append("You enter the fitness studio " +
+                        "and return to life! ");
+                }
+            }
+
+            if (board.centaur.X == player.X && board.centaur.Y == player.Y)
+            {
+                if (player.IsAlive)
+                {
+                    killPlayer(player);
+                    descriptionOfCurrentMove.Append("You are trampled to death by the centaur. ");
+                }
+                else
+                {
+                    descriptionOfCurrentMove.Append("The centaur ignores your ghostly form. ");
+                }
+            }
+
+            if (newSquare.Type == SquareType.AmmoStorage)
+            {
+                if (player.IsAlive)
+                {
+                    player.NumArrows = Player.ArrowCapacity;
+                    player.NumGrenades = Player.GrenadeCapacity;
+                    descriptionOfCurrentMove.Append("You are in the ammo storage and load up " +
+                        "on arrows and grenades. ");
+                }
+                else
+                {
+                    descriptionOfCurrentMove.Append("You are in the ammo storage. ");
+                }
+            }
+
+            if (newSquare.Type == SquareType.HamsterStorage)
+            {
+                if (player.IsAlive)
+                {
+                    player.NumHamsters = Player.HamsterCapacity;
+                    player.NumHamsterSprays = Player.HamsterSprayCapacity;
+                    descriptionOfCurrentMove.Append("You are in the hamster storage and stock " +
+                        "up on hamsters and hamster spray. ");
+                }
+                else
+                {
+                    descriptionOfCurrentMove.Append("You are in the hamster storage. ");
+                }
+            }
+
+            if (newSquare.Type == SquareType.CementStorage)
+            {
+                if (player.IsAlive)
+                {
+                    player.NumCement = Player.CementCapacity;
+                    descriptionOfCurrentMove.Append("You are in the cement storage and " +
+                        "replenish your supply. ");
+                }
+                else
+                {
+                    descriptionOfCurrentMove.Append("You are in the cement storage. ");
+                }
+            }
+
+            if (newSquare.Type == SquareType.Teleporter)
+            {
+                // TODO: Implement teleportation
+            }
+
+            if (isCentaurAdjacentTo(player))
+            {
+                descriptionOfCurrentMove.Append("Clop clop... ");
+            }
+        }
+
+        public void ResolveEndOfTurnEvents()
+        {
+            moveCentaur();
+
+            foreach (Player player in players)
+            {
+                if (isCentaurAdjacentTo(player))
+                {
+                    descriptionOfCurrentMove.AppendFormat("Clop clop, {0}... ", player.Name);
+                }
+            }
+
+            var centaurVictims = findAllLivingPlayersAt(board.centaur.X, board.centaur.Y);
+            foreach (Player player in centaurVictims)
+            {
+                killPlayer(player);
+                descriptionOfCurrentMove.AppendFormat("{0} is savagely trampled by the centaur and dies. ",
+                    player.Name);
+            }
+
+        }
+
         private void handleWallConstruction(Move move)
         {
             var player = move.PerformedBy;
@@ -429,140 +554,44 @@ namespace LabyrinthEngine
             }
         }
 
-        public void ResolvePostMovementEventsFor(Player player)
-        {
-            var newSquare = board.GetPlayfieldSquareOf(player);
-
-            if (newSquare.NumTreasures > 0)
-            {
-                if (player.IsAlive && !player.CarriesTreasure)
-                {
-                    player.CarriesTreasure = true;
-                    newSquare.NumTreasures--;
-                    descriptionOfCurrentMove.Append("You have found treasure! ");
-                }
-                else if (player.IsAlive && player.CarriesTreasure)
-                {
-                    descriptionOfCurrentMove.Append("There is treasure here, " +
-                        "but your hands are full. ");
-                }
-                else if (!player.IsAlive)
-                {
-                    descriptionOfCurrentMove.Append("There is treasure here, " +
-                        "but your ghost hands can't carry it. ");
-                }
-            }
-            
-            if (newSquare.Type == SquareType.FitnessStudio)
-            {
-                if (!player.IsAlive)
-                {
-                    player.IsAlive = true;
-                    descriptionOfCurrentMove.Append("You enter the fitness studio " +
-                        "and return to life! ");
-                }
-            }
-
-            if (board.centaur.X == player.X && board.centaur.Y == player.Y)
-            {
-                if (player.IsAlive)
-                {
-                    killPlayer(player);
-                    descriptionOfCurrentMove.Append("You are trampled to death by the centaur. ");
-                }
-                else
-                {
-                    descriptionOfCurrentMove.Append("The centaur ignores your ghostly form. ");
-                }
-            }
-            
-            if (newSquare.Type == SquareType.AmmoStorage)
-            {
-                if (player.IsAlive)
-                {
-                    player.NumArrows = Player.ArrowCapacity;
-                    player.NumGrenades = Player.GrenadeCapacity;
-                    descriptionOfCurrentMove.Append("You are in the ammo storage and load up " +
-                        "on arrows and grenades. ");
-                }
-                else
-                {
-                    descriptionOfCurrentMove.Append("You are in the ammo storage. ");
-                }
-            }
-
-            if (newSquare.Type == SquareType.HamsterStorage)
-            {
-                if (player.IsAlive)
-                {
-                    player.NumHamsters = Player.HamsterCapacity;
-                    player.NumHamsterSprays = Player.HamsterSprayCapacity;
-                    descriptionOfCurrentMove.Append("You are in the hamster storage and stock " +
-                        "up on hamsters and hamster spray. ");
-                }
-                else
-                {
-                    descriptionOfCurrentMove.Append("You are in the hamster storage. ");
-                }
-            }
-
-            if (newSquare.Type == SquareType.CementStorage)
-            {
-                if (player.IsAlive)
-                {
-                    player.NumCement = Player.CementCapacity;
-                    descriptionOfCurrentMove.Append("You are in the cement storage and "+ 
-                        "replenish your supply. ");
-                }
-                else
-                {
-                    descriptionOfCurrentMove.Append("You are in the cement storage. ");
-                }
-            }
-
-            if (newSquare.Type == SquareType.Teleporter)
-            {
-                // TODO: Implement teleportation
-            }
-
-            if (isCentaurAdjacentTo(player))
-            {
-                descriptionOfCurrentMove.Append("Clop clop... ");
-            }
-        }
-
-        private void ResolveEndOfTurn()
-        {
-            // Move centaur if end of turn
-            // Print clopclop messages for the relevant players
-
-        }
-
+        /// <summary>
+        /// This method summarizes the logic of centaur movement, if you want to know.
+        /// </summary>
         private void moveCentaur()
         {
-            // TODO: Implement centaur movement
+            var centaur = board.centaur;
+
+            var nextCentaurPosition = centaur.NextPositionInPath();
+
+            if (!HelperMethods.AreAdjacent(centaur.X, centaur.Y,
+                nextCentaurPosition.X, nextCentaurPosition.Y))
+            {
+                centaur.MoveToNextPositionInPath();
+                return;
+            }
+
+            if (HelperMethods.NextMoveOfCentaurIsBlockedByWall(centaur, board))
+            {
+                if (nextCentaurPosition.IgnoreWallsWhenSteppingHere)
+                {
+                    centaur.MoveToNextPositionInPath();
+                    return;
+                }
+
+                centaur.ReverseDirection();
+                if (HelperMethods.NextMoveOfCentaurIsBlockedByWall(centaur, board))
+                {
+                    return;
+                }
+            }
+
+            centaur.MoveToNextPositionInPath();
         }
 
         private bool isCentaurAdjacentTo(Player player)
         {
             var centaur = board.centaur;
-
-            if (centaur.X == player.X)
-            {
-                if (player.Y == centaur.Y-1 || player.Y == centaur.Y+1)
-                {
-                    return true;
-                }
-            }
-            else if (centaur.Y == player.Y)
-            {
-                if (player.X == centaur.X - 1 || player.X == centaur.X + 1)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return HelperMethods.AreAdjacent(centaur.X, centaur.Y, player.X, player.Y);
         }
 
         private void killPlayer(Player victim)

@@ -64,6 +64,7 @@ namespace LabyrinthEngine
              * the link to the objects that the tests are initialized from. Have to rewrite
              * the tests in a clever way before this (and hence undo) can be implemented. */
             //Board = HelperMethods.DeepClone(initialBoardState);
+            // TODO: Also need to reset player state for undo/redo to work.
 
             turnController = new TurnController(Board, Players, randomNumberGenerator);
             currentUndoStep = completedMoves.Count;
@@ -123,14 +124,11 @@ namespace LabyrinthEngine
                 turnController.ResolveMovementAction(move);
                 turnController.ResolvePostMovementEventsFor(player);
                 updateTurnStateBasedOn(move);
-
-                //return turnController.DescriptionOfExecutedMove();
             }
             else
             {
                 updateTurnStateBasedOn(new Move(player,MoveType.DoNothing));
                 performFollowupActionForCurrentPlayer(action);
-                //return turnController.DescriptionOfExecutedMove();
             }
         }
 
@@ -141,9 +139,13 @@ namespace LabyrinthEngine
             var player = CurrentPlayer();
             var move = new Move(player, action);
             turnController.ResolveFollowupAction(move);
-            
+
+            if (CurrentPlayer() == Players[Players.Count - 1])
+            {
+                turnController.ResolveEndOfTurnEvents();
+            }
+
             updateTurnStateBasedOn(move);
-            //return turnController.DescriptionOfExecutedMove();
         }
 
         private void updateTurnStateBasedOn(Move previousMove)
