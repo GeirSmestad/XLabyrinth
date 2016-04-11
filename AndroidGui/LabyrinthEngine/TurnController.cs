@@ -579,7 +579,9 @@ namespace LabyrinthEngine
                 }
 
                 centaur.ReverseDirection();
-                if (HelperMethods.NextMoveOfCentaurIsBlockedByWall(centaur, board))
+                nextCentaurPosition = centaur.NextPositionInPath();
+                if (HelperMethods.NextMoveOfCentaurIsBlockedByWall(centaur, board) &&
+                       !nextCentaurPosition.IgnoreWallsWhenSteppingHere)
                 {
                     return;
                 }

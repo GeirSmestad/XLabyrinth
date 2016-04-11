@@ -77,14 +77,9 @@ namespace AndroidGui.Tests
 
             initializeNewGameStateFromSetupParameters();
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
         }
 
@@ -99,14 +94,9 @@ namespace AndroidGui.Tests
 
             initializeNewGameStateFromSetupParameters();
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
         }
 
@@ -126,14 +116,9 @@ namespace AndroidGui.Tests
 
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
-
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
         }
 
@@ -155,40 +140,26 @@ namespace AndroidGui.Tests
 
             // Forwards
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
             // Backwards
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
 
             // Repeat, except with the shortest path possible
@@ -204,38 +175,66 @@ namespace AndroidGui.Tests
             player1.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-
-            game.PerformMove(MoveType.DoNothing);
-            game.PerformMove(MoveType.DoNothing);
+            makePlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
         }
 
         [Test]
-        public void Centaur_should_move_through_wall_when_explicitly_specified()
+        public void Centaur_should_move_through_wall_only_when_explicitly_specified()
         {
-            Assert.Fail("Not implemented");
+            buildWallsAroundSquare(2, 2);
+            var centaurMoves = new List<CentaurStep>()
+            {
+                // Move through four walls from both directions, but crash in wall
+                // immediately afterwards
+                new CentaurStep(1,2,true),
+                new CentaurStep(2,2,true),
+                new CentaurStep(2,1,true),
+                new CentaurStep(2,2,true),
+                new CentaurStep(3,2,true),
+                new CentaurStep(2,2,true),
+                new CentaurStep(2,3,true),
+                new CentaurStep(2,2,true),
+                new CentaurStep(2,1,false),
+            };
+            centaur = new Centaur(2, 2, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 3 && centaur.Y == 2);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 3);
+            makePlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            makePlayerDoNothing();
+
+            Assert.IsFalse(centaur.X == 2 && centaur.Y == 1);
         }
 
         [Test]
@@ -1278,6 +1277,12 @@ namespace AndroidGui.Tests
             board.GetWallRightOf(x, y).HasHamster = true;
             board.GetWallBelow(x, y).HasHamster = true;
             board.GetWallLeftOf(x, y).HasHamster = true;
+        }
+
+        private void makePlayerDoNothing()
+        {
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
         }
 
         private PlayfieldSquare[,] initializeEmptyPlayfield(int boardWidth, int boardHeight)
