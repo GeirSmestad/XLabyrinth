@@ -92,6 +92,11 @@ namespace LabyrinthEngine
         /// <returns>A description of what happened during and after the move.</returns>
         public string PerformMove(MoveType action)
         {
+            // TODO: Insert logic for skipping followup action when a player has exited the labyrinth.
+            // This might necessitate updating the code for CurrentPlayer.
+            // In fact, the best solution is probably to accept moves for players who are outside,
+            // skip them and let the GUI choose how to represent this in the game.
+
             removeRedoHistory();
 
             if (CurrentTurnPhase == TurnPhase.SelectMainAction)

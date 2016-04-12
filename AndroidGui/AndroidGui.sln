@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabyrinthTests", "Labyrinth
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LabyrinthEngine", "LabyrinthEngine\LabyrinthEngine.csproj", "{48CCC159-96B9-478C-BD15-ADA83AC296ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGame", "ConsoleGame\ConsoleGame.csproj", "{01910358-133B-4315-A271-DFC46273DF58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48CCC159-96B9-478C-BD15-ADA83AC296ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01910358-133B-4315-A271-DFC46273DF58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01910358-133B-4315-A271-DFC46273DF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01910358-133B-4315-A271-DFC46273DF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01910358-133B-4315-A271-DFC46273DF58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
