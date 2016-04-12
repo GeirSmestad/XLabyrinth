@@ -163,6 +163,8 @@ namespace LabyrinthEngine
         {
             var newSquare = board.GetPlayfieldSquareOf(player);
 
+            // TODO: Resolve what happens if the player has left the labyrinth.
+
             if (newSquare.NumTreasures > 0)
             {
                 if (player.IsAlive && !player.CarriesTreasure)
@@ -432,7 +434,7 @@ namespace LabyrinthEngine
             {
                 descriptionOfCurrentMove.Append("You are out of grenades. ");
             }
-            else if (targetWall.IsExterior)
+            else if (targetWall.IsExterior && !targetWall.IsExit)
             {
                 player.NumGrenades--;
                 descriptionOfCurrentMove.Append("The grenade explodes against an exterior wall. ");

@@ -77,9 +77,9 @@ namespace AndroidGui.Tests
 
             initializeNewGameStateFromSetupParameters();
 
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
         }
 
@@ -94,9 +94,9 @@ namespace AndroidGui.Tests
 
             initializeNewGameStateFromSetupParameters();
 
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
         }
 
@@ -116,9 +116,9 @@ namespace AndroidGui.Tests
 
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
         }
 
@@ -139,31 +139,28 @@ namespace AndroidGui.Tests
             initializeNewGameStateFromSetupParameters();
 
             // Forwards
-
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
             // Backwards
-
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
 
             // Repeat, except with the shortest path possible
-
             centaurMoves = new List<CentaurStep>()
             {
                 new CentaurStep(0,0,false),
@@ -175,20 +172,20 @@ namespace AndroidGui.Tests
             player1.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
         }
 
@@ -216,23 +213,23 @@ namespace AndroidGui.Tests
 
             initializeNewGameStateFromSetupParameters();
 
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 1 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 1);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 3 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 3);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
             Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
-            makePlayerDoNothing();
+            makeCurrentPlayerDoNothing();
 
             Assert.IsFalse(centaur.X == 2 && centaur.Y == 1);
         }
@@ -240,43 +237,359 @@ namespace AndroidGui.Tests
         [Test]
         public void When_blocked_by_wall_centaur_should_reverse()
         {
-            Assert.Fail("Not implemented");
+            // First case: Left-to-right movement
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(2,1,false),
+                new CentaurStep(3,1,false),
+                new CentaurStep(4,1,false),
+                new CentaurStep(3,1,false),
+                new CentaurStep(2,1,false)
+            };
+            centaur = new Centaur(0, 1, centaurMoves);
+            player1.X = 0;
+            player1.Y = 0;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallRightOf(2, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1);
+
+            // Second case: Up-and-down movement
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,2,false),
+                new CentaurStep(1,3,false),
+                new CentaurStep(1,4,false),
+                new CentaurStep(1,3,false),
+                new CentaurStep(1,2,false)
+            };
+            centaur = new Centaur(1, 0, centaurMoves);
+            player1.X = 0;
+            player1.Y = 0;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallBelow(1, 2).IsPassable = false;
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2);
         }
 
         [Test]
         public void When_walled_in_centaur_should_stop_moving()
         {
-            Assert.Fail("Not implemented");
+            // First case: Left-to-right movement
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(2,1,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(0,1,false)
+            };
+            centaur = new Centaur(0, 1, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallRightOf(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+
+            // Second case: Up-and-down movement
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,2,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,0,false)
+            };
+            centaur = new Centaur(1, 0, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallBelow(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
         }
 
         [Test]
         public void When_released_walled_in_centaur_should_start_moving_again()
         {
-            Assert.Fail("Not implemented");
+            // First case: Centaur is walled in when moving, and released to the right
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(2,1,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(0,1,false)
+            };
+            centaur = new Centaur(0, 1, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallRightOf(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            game.Board.GetWallRightOf(1, 1).IsPassable = true;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1); // Centaur resumes to the right
+
+            // Second case: Centaur is walled in when moving, and released to the left
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(2,1,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(0,1,false)
+            };
+            centaur = new Centaur(0, 1, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+            game.Board.GetWallLeftOf(1, 1).IsPassable = true; // Reset walls for this
+            game.Board.GetWallRightOf(1, 1).IsPassable = true;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallRightOf(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            game.Board.GetWallLeftOf(1, 1).IsPassable = true;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 0 && centaur.Y == 1); // Centaur resumes to the left
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+
+            // Third case: Centaur is walled in when moving, and released upwards
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,2,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,0,false)
+            };
+            centaur = new Centaur(1, 0, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallBelow(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            game.Board.GetWallAbove(1, 1).IsPassable = true;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0); // Centaur resumes up
+
+            // Fourth case: Centaur is walled in when moving, and released downwards
+            centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,2,false),
+                new CentaurStep(1,1,false),
+                new CentaurStep(1,0,false)
+            };
+            centaur = new Centaur(1, 0, centaurMoves);
+            player1.X = 4;
+            player1.Y = 4;
+            game.Board.GetWallAbove(1, 1).IsPassable = true; // Reset walls for this
+            game.Board.GetWallBelow(1, 1).IsPassable = true;
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
+            game.Board.GetWallBelow(1, 1).IsPassable = false;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            game.Board.GetWallBelow(1, 1).IsPassable = true;
+            makeCurrentPlayerDoNothing();
+            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2); // Centaur resumes down
         }
 
         [Test]
         public void When_moving_to_centaur_player_should_die()
         {
-            Assert.Fail("Not implemented");
+            var centaurMoves = new List<CentaurStep>();
+            centaur = new Centaur(1, 1, centaurMoves);
+
+            player1.X = 2;
+            player1.Y = 1;
+            player1.IsAlive = true;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.MoveLeft);
+
+            Assert.IsFalse(game.Players[0].IsAlive);
         }
 
         [Test]
         public void When_hit_by_centaur_player_should_die()
         {
-            Assert.Fail("Not implemented");
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(2,2, false),
+                new CentaurStep(2,3, false)
+            };
+            centaur = new Centaur(-1, -1, centaurMoves);
+
+            player1.X = 2;
+            player1.Y = 2;
+            player1.IsAlive = true;
+
+            var player2 = new Player() { Name = "Nemesis", IsAlive = true};
+            players.Add(player2);
+            player2.X = 2;
+            player2.Y = 3;
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            Assert.IsFalse(game.Players[0].IsAlive);
+            Assert.IsTrue(game.Players[1].IsAlive);
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            Assert.IsFalse(game.Players[1].IsAlive);
         }
 
         [Test]
         public void When_player_moves_near_centaur_should_print_clopclop()
         {
-            Assert.Fail("Not implemented");
+            var centaurMoves = new List<CentaurStep>();
+            centaur = new Centaur(2, 2, centaurMoves);
+
+            player1.X = 0;
+            player1.Y = 2;
+
+            var player2 = new Player() { Name = "player2", X = 2, Y = 0 };
+            var player3 = new Player() { Name = "player2", X = 2, Y = 4 };
+            var player4 = new Player() { Name = "player2", X = 4, Y = 2 };
+
+            players.Add(player2);
+            players.Add(player3);
+            players.Add(player4);
+
+            initializeNewGameStateFromSetupParameters();
+
+            var message = game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(message.Contains("clop"));
+
+            message = game.PerformMove(MoveType.MoveDown);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(message.Contains("clop"));
+
+            message = game.PerformMove(MoveType.MoveUp);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(message.Contains("clop"));
+
+            message = game.PerformMove(MoveType.MoveLeft);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(message.Contains("clop"));
         }
 
         [Test]
         public void When_centaur_moves_near_player_should_print_clopclop()
         {
-            Assert.Fail("Not implemented");
+            // Move in square pattern to approach each player from a separate direction
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(2,1, false),
+                new CentaurStep(3,1, false),
+                new CentaurStep(3,2, false),
+                new CentaurStep(2,2, false),
+            };
+            centaur = new Centaur(1, 1, centaurMoves);
+
+            player1.X = 2;
+            player1.Y = 0;
+
+            var player2 = new Player() { Name = "player2", X = 4, Y = 1 };
+            var player3 = new Player() { Name = "player3", X = 3, Y = 3 };
+            var player4 = new Player() { Name = "player4", X = 1, Y = 2 };
+
+            players.Add(player2);
+            players.Add(player3);
+            players.Add(player4);
+
+            initializeNewGameStateFromSetupParameters();
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(message.Contains("clop"));
+            Assert.IsTrue(message.Contains(game.Players[0].Name));
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(message.Contains("clop"));
+            Assert.IsTrue(message.Contains(game.Players[1].Name));
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(message.Contains("clop"));
+            Assert.IsTrue(message.Contains(game.Players[2].Name));
+
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            makeCurrentPlayerDoNothing();
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.DoNothing);
+
+            Assert.IsTrue(message.Contains("clop"));
+            Assert.IsTrue(message.Contains(game.Players[3].Name));
         }
 
         [Test]
@@ -293,6 +606,17 @@ namespace AndroidGui.Tests
         public void When_waiting_in_hole_player_should_move_to_next_hole()
         {
             Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void When_starting_game_players_are_alive()
+        {
+            var player2 = new Player() { Name = "Nemesis"};
+            players.Add(player2);
+            initializeNewGameStateFromSetupParameters();
+
+            Assert.IsTrue(game.Players[0].IsAlive);
+            Assert.IsTrue(game.Players[1].IsAlive);
         }
 
         [Test]
@@ -1099,6 +1423,54 @@ namespace AndroidGui.Tests
         }
 
         [Test]
+        public void When_blowing_up_hidden_exit_should_remove_wall()
+        {
+            player1.X = 0;
+            player1.Y = 0;
+            player1.NumGrenades = 4;
+            var expectedMessage = "You blow up the wall. ";
+
+            var firstHiddenExit = board.GetWallAbove(0, 0);
+            var secondHiddenExit = board.GetWallLeftOf(0, 0);
+            var thirdHiddenExit = board.GetWallRightOf(4, 4);
+            var fourthHiddenExit = board.GetWallBelow(4, 4);
+
+            firstHiddenExit.IsExit = secondHiddenExit.IsExit = 
+                thirdHiddenExit.IsExit = fourthHiddenExit.IsExit = true;
+            firstHiddenExit.IsPassable = secondHiddenExit.IsPassable = 
+                thirdHiddenExit.IsPassable = fourthHiddenExit.IsPassable = false;
+            firstHiddenExit.IsExterior = secondHiddenExit.IsExterior = 
+                thirdHiddenExit.IsExterior = fourthHiddenExit.IsExterior = true;
+
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.ThrowGrenadeUp);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(game.Board.GetWallAbove(player1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeLeft);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(game.Board.GetWallLeftOf(player1).IsPassable);
+
+            player1.X = 4;
+            player1.Y = 4;
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeRight);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(game.Board.GetWallRightOf(player1).IsPassable);
+
+            game.PerformMove(MoveType.DoNothing);
+            message = game.PerformMove(MoveType.ThrowGrenadeDown);
+
+            Assert.AreEqual(message, expectedMessage);
+            Assert.IsTrue(game.Board.GetWallBelow(player1).IsPassable);
+        }
+
+        [Test]
         public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
         {
             buildHamsteredWallsAroundSquare(3, 1);
@@ -1180,21 +1552,79 @@ namespace AndroidGui.Tests
         }
 
         [Test]
-        public void When_exiting_maze_player_should_skip_turn_and_reenter()
+        public void When_exiting_labyrinth_in_single_player_should_stay_outside_for_one_move_sequence()
         {
-            Assert.Fail("Not implemented");
+            Assert.Fail("Not sure how to implement this yet");
         }
 
         [Test]
-        public void When_exiting_maze_with_treasure_player_should_get_point()
+        public void When_exiting_labyrinth_player_should_skip_turn_and_reenter()
         {
-            Assert.Fail("Not implemented");
+            var player2 = new Player() { Name = "Spelunker", X = 4, Y = 4 };
+            players.Add(player2);
+            player1.X = 0;
+            player1.Y = 0;
+
+            var firstExit = game.Board.GetWallAbove(0, 0);
+            var secondExit = game.Board.GetWallLeftOf(0, 0);
+            var thirdExit = game.Board.GetWallRightOf(4, 4);
+            var fourthExit = game.Board.GetWallBelow(4, 4);
+
+            firstExit.IsExit = secondExit.IsExit = thirdExit.IsExit = fourthExit.IsExit = true;
+            firstExit.IsPassable = secondExit.IsPassable = thirdExit.IsPassable = fourthExit.IsPassable = true;
+            firstExit.IsExterior = secondExit.IsExterior = thirdExit.IsExterior = fourthExit.IsExterior = true;
+
+            game.PerformMove(MoveType.MoveUp);
+            // Weird edge case: No players eligible to perform an action. How do we signal this to the game?
+            Assert.IsTrue(game.CurrentPlayer() == game.Players[333]);
+
+            game.PerformMove(MoveType.MoveLeft);
+
+            game.PerformMove(MoveType.MoveRight);
+
+            game.PerformMove(MoveType.MoveDown);
+
+            Assert.Fail("Not sure how to implement this yet");
         }
 
         [Test]
-        public void When_exiting_maze_without_treasure_player_should_get_message_but_no_points()
+        public void When_exiting_labyrinth_with_treasure_player_should_get_point()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 4;
+            player1.Y = 2;
+            player1.CarriesTreasure = true;
+            player1.Score = 0;
+
+            var exit = board.GetWallRightOf(4, 2);
+
+            exit.IsExit = true;
+            exit.IsPassable = true;
+            exit.IsExterior = true;
+
+            game.PerformMove(MoveType.MoveRight);
+
+            Assert.IsFalse(player1.CarriesTreasure);
+            Assert.IsTrue(player1.Score == 1);
+        }
+
+        [Test]
+        public void When_exiting_labyrinth_without_treasure_player_should_get_message_but_no_points()
+        {
+            player1.X = 2;
+            player1.Y = 4;
+            player1.CarriesTreasure = false;
+            player1.Score = 0;
+
+            var exit = board.GetWallBelow(4, 2);
+
+            exit.IsExit = true;
+            exit.IsPassable = true;
+            exit.IsExterior = true;
+
+            var message = game.PerformMove(MoveType.MoveDown);
+
+            Assert.IsTrue(player1.Score == 0);
+            Assert.IsTrue(message.Contains("outside"));
         }
 
         [Test]
@@ -1279,7 +1709,7 @@ namespace AndroidGui.Tests
             board.GetWallLeftOf(x, y).HasHamster = true;
         }
 
-        private void makePlayerDoNothing()
+        private void makeCurrentPlayerDoNothing()
         {
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.DoNothing);
