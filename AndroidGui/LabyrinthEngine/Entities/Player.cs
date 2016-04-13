@@ -1,3 +1,4 @@
+using LabyrinthEngine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,5 +27,12 @@ namespace LabyrinthEngine.Entities
         public bool IsAlive = true;
         public int X;
         public int Y;
+        public Position PositionBeforePreviousMovementAction;
+        public OutsideLabyrinthPhase OutsideLabyrinthPhase;
+
+        public bool IsOutsideLabyrinth()
+        {
+            return OutsideLabyrinthPhase != OutsideLabyrinthPhase.Inside;
+        }
     }
 }

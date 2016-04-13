@@ -41,10 +41,20 @@ namespace LabyrinthEngine
             var action = move.ActionType;
             descriptionOfCurrentMove = new StringBuilder();
 
+            if (player.IsOutsideLabyrinth())
+            {
+                descriptionOfCurrentMove.Append("You are outside, enjoying the sunshine. ");
+                return;
+            }
+
+            WallSection wallToCross = null;
+            player.PositionBeforePreviousMovementAction = new Position(player.X, player.Y);
+
             switch (action)
             {
                 case MoveType.MoveUp:
-                    if (board.GetWallAbove(player).IsPassable)
+                    wallToCross = board.GetWallAbove(player);
+                    if (wallToCross.IsPassable)
                     {
                         player.Y--;
                         descriptionOfCurrentMove.Append("Walked north. ");
@@ -56,7 +66,8 @@ namespace LabyrinthEngine
                     
                     break;
                 case MoveType.MoveDown:
-                    if (board.GetWallBelow(player).IsPassable)
+                    wallToCross = board.GetWallBelow(player);
+                    if (wallToCross.IsPassable)
                     {
                         player.Y++;
                         descriptionOfCurrentMove.Append("Walked south. ");
@@ -67,7 +78,8 @@ namespace LabyrinthEngine
                     }
                     break;
                 case MoveType.MoveLeft:
-                    if (board.GetWallLeftOf(player).IsPassable)
+                    wallToCross = board.GetWallLeftOf(player);
+                    if (wallToCross.IsPassable)
                     {
                         player.X--;
                         descriptionOfCurrentMove.Append("Walked west. ");
@@ -78,7 +90,8 @@ namespace LabyrinthEngine
                     }
                     break;
                 case MoveType.MoveRight:
-                    if (board.GetWallRightOf(player).IsPassable)
+                    wallToCross = board.GetWallRightOf(player);
+                    if (wallToCross.IsPassable)
                     {
                         player.X++;
                         descriptionOfCurrentMove.Append("Walked east. ");
@@ -99,12 +112,40 @@ namespace LabyrinthEngine
                     throw new InvalidOperationException("Fall-through in game logic: "
                         + "Action should have been executed as a followup action.");
             }
+
+            if (wallToCross != null && wallToCross.IsExit && wallToCross.IsPassable)
+            {
+                playerFoundTheExit(player);
+            }
         }
 
         public void ResolveFollowupAction(Move move)
         {
             var action = move.ActionType;
+            var player = move.PerformedBy;
+
             descriptionOfCurrentMove = new StringBuilder();
+
+            if (player.IsOutsideLabyrinth())
+            {
+                var outsidePhase = player.OutsideLabyrinthPhase;
+                if (outsidePhase == OutsideLabyrinthPhase.ExitedDuringThisMovementPhase)
+                {
+                    player.OutsideLabyrinthPhase = OutsideLabyrinthPhase.SkippingThisTurn;
+                    descriptionOfCurrentMove.Append("You are outside and have to skip the next turn. ");
+                    return;
+                }
+                else if (outsidePhase == OutsideLabyrinthPhase.SkippingThisTurn)
+                {
+                    player.OutsideLabyrinthPhase = OutsideLabyrinthPhase.Inside;
+                    player.X = player.PositionBeforePreviousMovementAction.X;
+                    player.Y = player.PositionBeforePreviousMovementAction.Y;
+
+                    descriptionOfCurrentMove.Append("You re-enter the labyrinth, " + 
+                        "ready for action. ");
+                    return;
+                }
+            }
 
             if (action == MoveType.FireUp ||
                 action == MoveType.FireRight ||
@@ -161,6 +202,8 @@ namespace LabyrinthEngine
 
         public void ResolvePostMovementEventsFor(Player player)
         {
+            if (player.IsOutsideLabyrinth()) { return; }
+
             var newSquare = board.GetPlayfieldSquareOf(player);
 
             // TODO: Resolve what happens if the player has left the labyrinth.
@@ -283,6 +326,23 @@ namespace LabyrinthEngine
                     player.Name);
             }
 
+        }
+
+        private void playerFoundTheExit(Player player)
+        {
+            player.OutsideLabyrinthPhase = OutsideLabyrinthPhase.ExitedDuringThisMovementPhase;
+            if (player.CarriesTreasure)
+            {
+                player.CarriesTreasure = false;
+                player.Score++;
+                descriptionOfCurrentMove.AppendFormat("You have found the exit! You stow away your " +
+                    "hard-earned treasure. You have {0} points. ", player.Score);
+            }
+            else
+            {
+                descriptionOfCurrentMove.Append("You are outside! You decide to take a " + 
+                    "stroll in the nice weather. ");
+            }
         }
 
         private void handleWallConstruction(Move move)

@@ -52,6 +52,7 @@
     <Compile Include="Helpers\Position.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
+    <Compile Include="OutsideLabyrinthPhase.cs" />
     <Compile Include="Playfield\BoardState.cs" />
     <Compile Include="Playfield\PlayfieldSquare.cs" />
     <Compile Include="Playfield\SquareType.cs" />

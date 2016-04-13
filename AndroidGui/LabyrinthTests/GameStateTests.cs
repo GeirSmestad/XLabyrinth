@@ -1293,6 +1293,8 @@ namespace AndroidGui.Tests
             player1.X = 1;
             player1.Y = 1;
             player1.NumCement = 4;
+            board.GetWallAbove(1, 1).IsExterior = true;
+            board.GetWallAbove(1, 1).IsExit = true;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallUp);
@@ -1554,7 +1556,36 @@ namespace AndroidGui.Tests
         [Test]
         public void When_exiting_labyrinth_in_single_player_should_stay_outside_for_one_move_sequence()
         {
-            Assert.Fail("Not sure how to implement this yet");
+            player1.X = 0;
+            player1.Y = 3;
+            player1.NumHamsters = 1;
+            player1.NumArrows = 1;
+            player1.NumCement = 1;
+            var exit = board.GetWallLeftOf(0, 3);
+
+            exit.IsExit = true;
+            exit.IsPassable = true;
+            exit.IsExterior = true;
+
+            var message1 = game.PerformMove(MoveType.MoveLeft);
+            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            var message2 = game.PerformMove(MoveType.PlaceHamsterRight); // No effect, outside
+            Assert.AreEqual(player1.NumHamsters, 1);
+            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            var message3 = game.PerformMove(MoveType.MoveRight);  // No effect, outside
+            Assert.IsTrue(player1.IsOutsideLabyrinth()); 
+            Assert.IsTrue(player1.X == -1 && player1.Y == 3);
+            var message4 = game.PerformMove(MoveType.BuildWallRight); // No effect, outside
+            Assert.AreEqual(player1.NumCement, 1);
+
+            Assert.IsFalse(player1.IsOutsideLabyrinth());
+            game.PerformMove(MoveType.MoveRight);
+            Assert.IsTrue(player1.X == 1 && player1.Y == 3);
+
+            Assert.True(message1.Contains("outside"));
+            Assert.True(message2.Contains("outside"));
+            Assert.True(message3.Contains("outside"));
+            Assert.True(message4.Contains("enter"));
         }
 
         [Test]
@@ -1566,13 +1597,17 @@ namespace AndroidGui.Tests
             player1.Y = 0;
 
             var firstExit = game.Board.GetWallAbove(0, 0);
-            var secondExit = game.Board.GetWallLeftOf(0, 0);
-            var thirdExit = game.Board.GetWallRightOf(4, 4);
-            var fourthExit = game.Board.GetWallBelow(4, 4);
+            //var secondExit = game.Board.GetWallLeftOf(0, 0);
+            //var thirdExit = game.Board.GetWallRightOf(4, 4);
+            //var fourthExit = game.Board.GetWallBelow(4, 4);
 
-            firstExit.IsExit = secondExit.IsExit = thirdExit.IsExit = fourthExit.IsExit = true;
-            firstExit.IsPassable = secondExit.IsPassable = thirdExit.IsPassable = fourthExit.IsPassable = true;
-            firstExit.IsExterior = secondExit.IsExterior = thirdExit.IsExterior = fourthExit.IsExterior = true;
+            firstExit.IsExterior = true;
+            firstExit.IsPassable = true;
+            firstExit.IsExit = true;
+
+            //firstExit.IsExit = secondExit.IsExit = thirdExit.IsExit = fourthExit.IsExit = true;
+            //firstExit.IsPassable = secondExit.IsPassable = thirdExit.IsPassable = fourthExit.IsPassable = true;
+            //firstExit.IsExterior = secondExit.IsExterior = thirdExit.IsExterior = fourthExit.IsExterior = true;
 
             game.PerformMove(MoveType.MoveUp);
             // Weird edge case: No players eligible to perform an action. How do we signal this to the game?
@@ -1615,11 +1650,12 @@ namespace AndroidGui.Tests
             player1.CarriesTreasure = false;
             player1.Score = 0;
 
-            var exit = board.GetWallBelow(4, 2);
+            var exit = board.GetWallBelow(2, 4);
 
+            exit.IsExterior = true;
             exit.IsExit = true;
             exit.IsPassable = true;
-            exit.IsExterior = true;
+            
 
             var message = game.PerformMove(MoveType.MoveDown);
 
