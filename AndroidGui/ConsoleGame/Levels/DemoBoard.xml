@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LabyrinthLevel>
+  <Playfield width="5" height="5">
+    <Row>
+      <Empty />
+      <Empty treasures="1"/>
+      <FitnessStudio treasures="2"/>
+      <FitnessStudio />
+      <Teleporter teleporterIndex="3"/>
+    </Row>
+    <Row>
+      <AmmoStorage />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Teleporter teleporterIndex="5"/>
+    </Row>
+    <Row>
+      <Empty />
+      <Empty />
+      <Empty />
+      <CementStorage />
+      <HamsterStorage />
+    </Row>
+    <Row>
+      <Empty />
+      <Teleporter teleporterIndex="1"/>
+      <Empty />
+      <Empty />
+      <Teleporter teleporterIndex="2"/>
+    </Row>
+    <Row>
+      <Empty />
+      <Empty />
+      <Empty />
+      <Teleporter teleporterIndex="4"/>
+      <Empty />
+    </Row>
+  </Playfield>
+    
+  <HorizontalWalls>
+    <HorizontalWallSegment w_y="5" x="4" isExit="yes" isPassable="yes"/>
+    <HorizontalWallSegment w_y="3" x="1" hasHamster="yes"/>
+    <HorizontalWallSegment w_y="3" x="2" />
+    <HorizontalWallSegment w_y="3" x="3" />
+  </HorizontalWalls>
+
+  <VerticalWalls>
+    <VerticalWallSegment w_x="5" y="4" isExit="yes" hasHamster="yes"/>
+    <VerticalWallSegment w_x="3" y="4" />
+  </VerticalWalls>
+
+  <StartingPositions>
+    <PlayerPosition x="3" y="2" />
+    <PlayerPosition x="4" y="4" />
+  </StartingPositions>
+  
+  <Centaur startX="-1" startY="-1">
+    <CentaurStep x="1" y="1"/>
+    <CentaurStep x="1" y="2" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="2" y="2"/>
+    <CentaurStep x="5" y="5" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="2" y="2" stepHereIgnoringWalls="yes"/>
+    <CentaurStep x="1" y="2"/>
+  </Centaur>
+  
+</LabyrinthLevel>

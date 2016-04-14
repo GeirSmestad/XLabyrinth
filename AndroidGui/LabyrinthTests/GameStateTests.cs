@@ -63,6 +63,12 @@ namespace AndroidGui.Tests
         // Game state tests
 
         [Test]
+        public void When_starting_game_players_should_be_at_starting_positions()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
         public void At_end_of_turn_centaur_should_move()
         {
             var centaurMoves = new List<CentaurStep>()
@@ -1582,44 +1588,89 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.MoveRight);
             Assert.IsTrue(player1.X == 1 && player1.Y == 3);
 
-            Assert.True(message1.Contains("outside"));
-            Assert.True(message2.Contains("outside"));
-            Assert.True(message3.Contains("outside"));
-            Assert.True(message4.Contains("enter"));
+            // TODO: I don't know if the original rules specify that return to inside
+            // happens on the end of the second or the beginning of the third turn.
+            // May have to rewrite this functionality.
+
+            Assert.IsTrue(message1.Contains("outside"));
+            Assert.IsTrue(message2.Contains("outside"));
+            Assert.IsTrue(message3.Contains("outside"));
+            Assert.IsTrue(message4.Contains("enter"));
+        }
+
+        [Test]
+        public void When_exiting_labyrinth_player_should_return_at_end_of_second_turn()
+        {
+            player1.X = 0;
+            player1.Y = 1;
+            var exit = board.GetWallLeftOf(0, 1);
+
+            exit.IsExit = true;
+            exit.IsPassable = true;
+            exit.IsExterior = true;
+
+            game.PerformMove(MoveType.MoveLeft);
+            game.PerformMove(MoveType.DoNothing);
+            
+            game.PerformMove(MoveType.DoNothing); 
+            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsFalse(player1.IsOutsideLabyrinth());
+
+            // TODO: I don't know if the original rules specify that return to inside
+            // happens on the end of the second or the beginning of the third turn.
+            // May have to rewrite this functionality.
         }
 
         [Test]
         public void When_exiting_labyrinth_player_should_skip_turn_and_reenter()
         {
-            var player2 = new Player() { Name = "Spelunker", X = 4, Y = 4 };
+            var player2 = new Player() { Name = "Spelunker", X = 0, Y = 0 };
             players.Add(player2);
             player1.X = 0;
             player1.Y = 0;
+            player2.NumArrows = 1;
 
-            var firstExit = game.Board.GetWallAbove(0, 0);
-            //var secondExit = game.Board.GetWallLeftOf(0, 0);
-            //var thirdExit = game.Board.GetWallRightOf(4, 4);
-            //var fourthExit = game.Board.GetWallBelow(4, 4);
+            var exit = game.Board.GetWallAbove(0, 0);
 
-            firstExit.IsExterior = true;
-            firstExit.IsPassable = true;
-            firstExit.IsExit = true;
+            exit.IsExterior = true;
+            exit.IsPassable = true;
+            exit.IsExit = true;
 
-            //firstExit.IsExit = secondExit.IsExit = thirdExit.IsExit = fourthExit.IsExit = true;
-            //firstExit.IsPassable = secondExit.IsPassable = thirdExit.IsPassable = fourthExit.IsPassable = true;
-            //firstExit.IsExterior = secondExit.IsExterior = thirdExit.IsExterior = fourthExit.IsExterior = true;
+            game.PerformMove(MoveType.MoveUp); // Player 1 exits
+            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            Assert.IsTrue(player1.X == 0 && player1.Y == -1);
+            var player1Message = game.PerformMove(MoveType.PlaceHamsterLeft);
+            Assert.IsTrue(player1Message.Contains("outside"));
 
-            game.PerformMove(MoveType.MoveUp);
-            // Weird edge case: No players eligible to perform an action. How do we signal this to the game?
-            Assert.IsTrue(game.CurrentPlayer() == game.Players[333]);
+            var player2Message = game.PerformMove(MoveType.MoveUp); // Player 2 exits
+            Assert.IsTrue(player2.IsOutsideLabyrinth());
+            Assert.IsTrue(player2.X == 0 && player2.Y == -1);
+            Assert.IsTrue(player2Message.Contains("outside"));
+            game.PerformMove(MoveType.FireAtSameSquare);
+            Assert.IsTrue(player1.IsAlive);
+            Assert.AreEqual(player2.NumArrows, 1);
 
-            game.PerformMove(MoveType.MoveLeft);
+            player1Message = game.PerformMove(MoveType.MoveRight);
+            Assert.IsTrue(player1Message.Contains("outside"));
+            Assert.IsTrue(player1.X == 0 && player1.Y == -1);
+            player1Message = game.PerformMove(MoveType.MoveRight);
+            Assert.IsTrue(player1Message.Contains("enter"));
+            Assert.IsTrue(player1.X == 0 && player1.Y == 0);
 
-            game.PerformMove(MoveType.MoveRight);
+            player2Message = game.PerformMove(MoveType.FireDown);
+            Assert.AreEqual(player2.NumArrows, 1);
+            Assert.IsFalse(player2.IsOutsideLabyrinth());
+            Assert.IsTrue(player2.X == 0 && player2.Y == 0);
+            Assert.IsTrue(player2Message.Contains("enter"));
 
             game.PerformMove(MoveType.MoveDown);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(player1.X == 0 && player1.Y == 1);
 
-            Assert.Fail("Not sure how to implement this yet");
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.IsTrue(player2.X == 1 && player2.Y == 0);
         }
 
         [Test]
