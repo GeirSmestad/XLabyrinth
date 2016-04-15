@@ -190,7 +190,7 @@ namespace LabyrinthEngine
                      action == MoveType.MoveDown ||
                      action == MoveType.MoveLeft)
             {
-                return; // Skip invalid followup actions.
+                descriptionOfCurrentMove.Append("Doing nothing. ");
             }
             else
             {
