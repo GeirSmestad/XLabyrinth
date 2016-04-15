@@ -23,7 +23,7 @@ namespace AndroidGui.Tests
         Centaur centaur;
         List<Position> startingPositions;
 
-        BoardState board; 
+        BoardState board;
         GameState game;
 
         List<Player> players;
@@ -44,7 +44,7 @@ namespace AndroidGui.Tests
 
             centaur = new Centaur(-1, -1, new List<CentaurStep>());
 
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
                 centaur, startingPositions);
 
             player1 = new Player() { Name = "Geir" };
@@ -601,23 +601,75 @@ namespace AndroidGui.Tests
         [Test]
         public void When_moving_to_hole_player_should_move_to_next_hole()
         {
-            // TODO: Ensure that tests complete both movement and followup, and that
-            // the player is only moved to the next hole and not two holes up.
-            // There is room for subtle bugs in this functionality since teleporters
-            // can be entered in many ways.
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 2;
+
+            var teleporter3 = new Teleporter(2, null, 4, 3);
+            var teleporter2 = new Teleporter(1, teleporter3, 4, 4);
+            var teleporter1 = new Teleporter(0, teleporter2, 3, 3);
+            teleporter3.NextHole = teleporter1;
+            holes.Add(teleporter1);
+            holes.Add(teleporter2);
+            holes.Add(teleporter3);
+            playfield[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
+            playfield[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
+            playfield[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.MoveDown);
+            Assert.That(player1.X == 4 && player1.Y == 4);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.That(player1.X == 4 && player1.Y == 4);
+
+            game.PerformMove(MoveType.MoveUp);
+            Assert.That(player1.X == 3 && player1.Y == 3);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.That(player1.X == 3 && player1.Y == 3);
         }
 
         [Test]
-        public void When_waiting_in_hole_player_should_move_to_next_hole()
+        public void When_jumping_into_hole_player_should_move_to_next_hole_but_not_when_waiting()
         {
-            Assert.Fail("Not implemented");
+            player1.X = 3;
+            player1.Y = 3;
+
+            var teleporter3 = new Teleporter(2, null, 4, 3);
+            var teleporter2 = new Teleporter(1, teleporter3, 4, 4);
+            var teleporter1 = new Teleporter(0, teleporter2, 3, 3);
+            teleporter3.NextHole = teleporter1;
+            holes.Add(teleporter1);
+            holes.Add(teleporter2);
+            holes.Add(teleporter3);
+            playfield[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
+            playfield[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
+            playfield[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.DoNothing);
+            Assert.That(player1.X == 3 && player1.Y == 3);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.That(player1.X == 3 && player1.Y == 3);
+
+            game.PerformMove(MoveType.FallThroughHole);
+            Assert.That(player1.X == 4 && player1.Y == 4);
+            game.PerformMove(MoveType.FallThroughHole); // Invalid operation, should have no effect
+            Assert.That(player1.X == 4 && player1.Y == 4);
+
+            game.PerformMove(MoveType.FallThroughHole);
+            Assert.That(player1.X == 4 && player1.Y == 3);
+            game.PerformMove(MoveType.ThrowGrenadeDown);
+            Assert.That(player1.X == 4 && player1.Y == 3);
+
+            game.PerformMove(MoveType.FallThroughHole);
+            Assert.That(player1.X == 3 && player1.Y == 3);
+            game.PerformMove(MoveType.DoNothing);
+            Assert.That(player1.X == 3 && player1.Y == 3);
         }
 
         [Test]
         public void When_starting_game_players_are_alive()
         {
-            var player2 = new Player() { Name = "Nemesis"};
+            var player2 = new Player() { Name = "Nemesis" };
             players.Add(player2);
             initializeNewGameStateFromSetupParameters();
 
@@ -1053,9 +1105,9 @@ namespace AndroidGui.Tests
 
             var message = game.PerformMove(MoveType.MoveDown);
 
-            Assert.IsFalse(message.Contains("fitness studio")); 
+            Assert.IsFalse(message.Contains("fitness studio"));
         }
-        
+
         [Test]
         public void Dead_player_should_not_replenish_consumables_when_visiting_storage()
         {
@@ -1108,7 +1160,7 @@ namespace AndroidGui.Tests
             players.Add(victim);
             victim.X = 1;
             victim.Y = 0;
-            
+
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireRight);
 
@@ -1443,11 +1495,11 @@ namespace AndroidGui.Tests
             var thirdHiddenExit = board.GetWallRightOf(4, 4);
             var fourthHiddenExit = board.GetWallBelow(4, 4);
 
-            firstHiddenExit.IsExit = secondHiddenExit.IsExit = 
+            firstHiddenExit.IsExit = secondHiddenExit.IsExit =
                 thirdHiddenExit.IsExit = fourthHiddenExit.IsExit = true;
-            firstHiddenExit.IsPassable = secondHiddenExit.IsPassable = 
+            firstHiddenExit.IsPassable = secondHiddenExit.IsPassable =
                 thirdHiddenExit.IsPassable = fourthHiddenExit.IsPassable = false;
-            firstHiddenExit.IsExterior = secondHiddenExit.IsExterior = 
+            firstHiddenExit.IsExterior = secondHiddenExit.IsExterior =
                 thirdHiddenExit.IsExterior = fourthHiddenExit.IsExterior = true;
 
             game.PerformMove(MoveType.DoNothing);
@@ -1579,7 +1631,7 @@ namespace AndroidGui.Tests
             Assert.AreEqual(player1.NumHamsters, 1);
             Assert.IsTrue(player1.IsOutsideLabyrinth());
             var message3 = game.PerformMove(MoveType.MoveRight);  // No effect, outside
-            Assert.IsTrue(player1.IsOutsideLabyrinth()); 
+            Assert.IsTrue(player1.IsOutsideLabyrinth());
             Assert.IsTrue(player1.X == -1 && player1.Y == 3);
             var message4 = game.PerformMove(MoveType.BuildWallRight); // No effect, outside
             Assert.AreEqual(player1.NumCement, 1);
@@ -1611,8 +1663,8 @@ namespace AndroidGui.Tests
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
-            
-            game.PerformMove(MoveType.DoNothing); 
+
+            game.PerformMove(MoveType.DoNothing);
             Assert.IsTrue(player1.IsOutsideLabyrinth());
             game.PerformMove(MoveType.DoNothing);
             Assert.IsFalse(player1.IsOutsideLabyrinth());
@@ -1706,7 +1758,7 @@ namespace AndroidGui.Tests
             exit.IsExterior = true;
             exit.IsExit = true;
             exit.IsPassable = true;
-            
+
 
             var message = game.PerformMove(MoveType.MoveDown);
 
@@ -1815,7 +1867,7 @@ namespace AndroidGui.Tests
             }
             return result;
         }
-    
+
         private WallSection[,] initializeEmptyHorizontalWalls(int boardWidth, int boardHeight)
         {
             var result = new WallSection[boardWidth, boardHeight + 1];
@@ -1857,7 +1909,7 @@ namespace AndroidGui.Tests
             }
             return result;
         }
-        
+
         private void initializeNewGameStateFromSetupParameters()
         {
             board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,

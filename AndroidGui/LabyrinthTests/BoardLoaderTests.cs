@@ -55,11 +55,48 @@ namespace LabyrinthTests
         [Test]
         public void Teleporters_are_parsed()
         {
-            Assert.That(board.GetPlayfieldSquareOf(1,3).Hole.TeleporterIndex == 1);
-            Assert.That(board.GetPlayfieldSquareOf(4,3).Hole.TeleporterIndex == 2);
-            Assert.That(board.GetPlayfieldSquareOf(4,0).Hole.TeleporterIndex == 3);
-            Assert.That(board.GetPlayfieldSquareOf(3,4).Hole.TeleporterIndex == 4);
-            Assert.That(board.GetPlayfieldSquareOf(4,1).Hole.TeleporterIndex == 5);
+            var firstTeleporter = board.GetPlayfieldSquareOf(1, 3).Hole;
+            var secondTeleporter = board.GetPlayfieldSquareOf(4, 3).Hole;
+            var thirdTeleporter = board.GetPlayfieldSquareOf(4, 0).Hole;
+            var fourthTeleporter = board.GetPlayfieldSquareOf(3, 4).Hole;
+            var fifthTeleporter = board.GetPlayfieldSquareOf(4, 1).Hole;
+
+            Assert.That(firstTeleporter.TeleporterIndex == 1);
+            Assert.That(secondTeleporter.TeleporterIndex == 2);
+            Assert.That(thirdTeleporter.TeleporterIndex == 3);
+            Assert.That(fourthTeleporter.TeleporterIndex == 5); // Test non-contiguous numbering
+            Assert.That(fifthTeleporter.TeleporterIndex == 6);
+
+            Assert.That(firstTeleporter.NextHole == secondTeleporter);
+            Assert.That(secondTeleporter.NextHole == thirdTeleporter);
+            Assert.That(thirdTeleporter.NextHole == fourthTeleporter);
+            Assert.That(fourthTeleporter.NextHole == fifthTeleporter);
+            Assert.That(fifthTeleporter.NextHole == firstTeleporter);
+        }
+
+        [Test]
+        public void Teleporters_are_added_to_board()
+        {
+            Assert.That(board.Holes[0].TeleporterIndex == 1);
+            Assert.That(board.Holes[1].TeleporterIndex == 2);
+            Assert.That(board.Holes[2].TeleporterIndex == 3);
+            Assert.That(board.Holes[3].TeleporterIndex == 5); // Test non-contiguous numbering
+            Assert.That(board.Holes[4].TeleporterIndex == 6);
+
+            Assert.That(board.Holes[0].X == 1 && board.Holes[0].Y == 3);
+        }
+
+        [Test]
+        public void Playfield_coordinates_are_populated()
+        {
+            for (int x = 0; x < 5; x++)
+            {
+                for (int y = 0; y < 5; y++)
+                {
+                    var playfieldSquare = board.GetPlayfieldSquareOf(x, y);
+                    Assert.That(playfieldSquare.X == x && playfieldSquare.Y == y);
+                }
+            }
         }
 
         [Test]

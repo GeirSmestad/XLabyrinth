@@ -13,7 +13,7 @@
       <Empty />
       <Empty />
       <Empty />
-      <Teleporter teleporterIndex="5"/>
+      <Teleporter teleporterIndex="6"/>
     </Row>
     <Row>
       <Empty />
@@ -33,7 +33,7 @@
       <Empty />
       <Empty />
       <Empty />
-      <Teleporter teleporterIndex="4"/>
+      <Teleporter teleporterIndex="5"/>
       <Empty />
     </Row>
   </Playfield>

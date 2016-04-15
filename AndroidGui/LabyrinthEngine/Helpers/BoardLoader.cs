@@ -17,9 +17,22 @@ namespace LabyrinthEngine.Helpers
         private int boardWidth;
         private int boardHeight;
 
+        private PlayfieldSquare[,] playfield;
+
         public BoardLoader(string xmlToInitializeBoardFrom)
         {
             Board = initializeBoardFromXml(xmlToInitializeBoardFrom);
+        }
+
+        /// <summary>
+        /// Since humans are good at remembering spatial information, this method allows you to rotate
+        /// a particular board in order to make it less likely that the operator remembers which board
+        /// has been selected. The internal geometry of the board remains unmodified.
+        /// </summary>
+        /// <param name="multipleOf90Degrees">Should be 0, 1, 2 or 3.</param>
+        public void RotateRight(int howMany90DegreesToRotate)
+        {
+            throw new NotImplementedException();
         }
 
         private BoardState initializeBoardFromXml(string xml)
@@ -29,7 +42,7 @@ namespace LabyrinthEngine.Helpers
             var navigator = xmlDocument.CreateNavigator();
 
             var playfieldXml = navigator.SelectSingleNode("/LabyrinthLevel/Playfield");
-            var playfield = parsePlayfieldFrom(playfieldXml);
+            playfield = parsePlayfieldFrom(playfieldXml);
 
             var horizontalWallsXml = navigator.SelectSingleNode("/LabyrinthLevel/HorizontalWalls");
             var horizontalWalls = parseHorizontalWallsFrom(horizontalWallsXml);
@@ -43,12 +56,62 @@ namespace LabyrinthEngine.Helpers
             var startingPositionsXml = navigator.SelectSingleNode("/LabyrinthLevel/StartingPositions");
             var startingPositions = parseStartingPositionsFrom(startingPositionsXml);
 
-            // TODO: Add code to construct teleporters from already-parsed playfield
-            List<Teleporter> holes = null;
-            // populatePlayfieldCoordinates(); // TODO: Populate playfield X and Y coordinates from already-parsed playfield
+            List<Teleporter> holes = populateTeleportersFromPlayfield();
+            populatePlayfieldCoordinates();
 
             return new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
                 centaur, startingPositions);
+        }
+
+        private void populatePlayfieldCoordinates()
+        {
+            for (int x = 0; x < playfield.GetLength(0); x++)
+            {
+                for (int y = 0; y < playfield.GetLength(1); y++)
+                {
+                    var playfieldSquare = playfield[x, y];
+                    playfieldSquare.X = x;
+                    playfieldSquare.Y = y;
+                }
+            }
+        }
+
+        private List<Teleporter> populateTeleportersFromPlayfield()
+        {
+            var result = new List<Teleporter>();
+
+            for (int x = 0; x < playfield.GetLength(0); x++)
+            {
+                for (int y = 0; y < playfield.GetLength(1); y++)
+                {
+                    var playfieldSquare = playfield[x, y];
+                    if (playfieldSquare.Type == SquareType.Teleporter)
+                    {
+                        result.Add(playfieldSquare.Hole);
+                    }
+                }
+            }
+
+            result.Sort((teleporter1, teleporter2) =>
+                teleporter1.TeleporterIndex.CompareTo(teleporter2.TeleporterIndex));
+
+            if (result.Count == 0)
+            {
+                return result;
+            }
+            else if (result.Count == 1)
+            {
+                result[0].NextHole = result[0];
+                return result;
+            }
+
+            for (int teleporterIndex = 0 ; teleporterIndex < result.Count - 1; teleporterIndex++)
+            {
+                result[teleporterIndex].NextHole = result[teleporterIndex + 1];
+            }
+            result[result.Count - 1].NextHole = result[0];
+
+            return result;
         }
 
         private PlayfieldSquare[,] parsePlayfieldFrom(XPathNavigator playfieldElement)
@@ -72,7 +135,8 @@ namespace LabyrinthEngine.Helpers
                     {
                         iteratorForAllSquares.MoveNext();
                         var currentPlayfieldSquare = iteratorForAllSquares.Current.Clone();
-                        result[x, y] = parsePlayfieldSquareFrom(currentPlayfieldSquare);
+                        result[x, y] = parsePlayfieldSquareFrom(currentPlayfieldSquare,
+                            withXCoordinate: x, andYCoordinate:y);
                     }
                 }
             }
@@ -91,8 +155,11 @@ namespace LabyrinthEngine.Helpers
             return result;
         }
 
-        private PlayfieldSquare parsePlayfieldSquareFrom(XPathNavigator playfieldSquareElement)
+        private PlayfieldSquare parsePlayfieldSquareFrom(XPathNavigator playfieldSquareElement,
+            int withXCoordinate, int andYCoordinate)
         {
+            int x = withXCoordinate;
+            int y = andYCoordinate;
             int numTreasures = 0;
             SquareType type;
             Teleporter teleporter;
@@ -112,10 +179,10 @@ namespace LabyrinthEngine.Helpers
 
             if (type == SquareType.Teleporter)
             {
-                // Teleporters must be converted to a linked list once all have been parsed.
-
+                // Teleporters are converted to linked list once all have been parsed, afterwards.
                 var index = int.Parse(playfieldSquareElement.GetAttribute("teleporterIndex"));
-                teleporter = new Teleporter(index, null);
+                teleporter = new Teleporter(index, null, x, y);
+
                 return new PlayfieldSquare(type, numTreasures, teleporter);
             }
 

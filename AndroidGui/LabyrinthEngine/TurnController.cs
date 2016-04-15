@@ -22,6 +22,7 @@ namespace LabyrinthEngine
         private Random randomNumberGenerator;
 
         private StringBuilder descriptionOfCurrentMove;
+        private Move mostRecentlyExecutedMove;
 
         public TurnController(BoardState board, List<Player> players, Random randomNumberGenerator)
         {
@@ -37,8 +38,10 @@ namespace LabyrinthEngine
 
         public void ResolveMovementAction(Move move)
         {
+            mostRecentlyExecutedMove = move;
             var player = move.PerformedBy;
             var action = move.ActionType;
+
             descriptionOfCurrentMove = new StringBuilder();
 
             if (player.IsOutsideLabyrinth())
@@ -63,7 +66,7 @@ namespace LabyrinthEngine
                     {
                         descriptionOfCurrentMove.Append("Hit wall. ");
                     }
-                    
+
                     break;
                 case MoveType.MoveDown:
                     wallToCross = board.GetWallBelow(player);
@@ -105,8 +108,17 @@ namespace LabyrinthEngine
                     descriptionOfCurrentMove.Append("Standing still. ");
                     break;
                 case MoveType.FallThroughHole:
-                    descriptionOfCurrentMove.Append("Standing still. ");
-                    // TODO: I think the correct solution is to handle this in ResolvePostMovementEvents.
+                    if (board.GetPlayfieldSquareOf(player).Type == SquareType.Teleporter)
+                    {
+                        var nextHole = board.GetPlayfieldSquareOf(player).Hole.NextHole;
+                        player.X = nextHole.X;
+                        player.Y = nextHole.Y;
+                        descriptionOfCurrentMove.Append("You jump into the hole. ");
+                    }
+                    else
+                    {
+                        descriptionOfCurrentMove.Append("Standing still. ");
+                    }
                     break;
                 default:
                     throw new InvalidOperationException("Fall-through in game logic: "
@@ -121,6 +133,7 @@ namespace LabyrinthEngine
 
         public void ResolveFollowupAction(Move move)
         {
+            mostRecentlyExecutedMove = move;
             var action = move.ActionType;
             var player = move.PerformedBy;
 
@@ -141,7 +154,7 @@ namespace LabyrinthEngine
                     player.X = player.PositionBeforePreviousMovementAction.X;
                     player.Y = player.PositionBeforePreviousMovementAction.Y;
 
-                    descriptionOfCurrentMove.Append("You re-enter the labyrinth, " + 
+                    descriptionOfCurrentMove.Append("You re-enter the labyrinth, " +
                         "ready for action. ");
                     return;
                 }
@@ -183,7 +196,7 @@ namespace LabyrinthEngine
             {
                 handleWallConstruction(move);
             }
-            else if (action == MoveType.DoNothing || 
+            else if (action == MoveType.DoNothing ||
                      action == MoveType.FallThroughHole ||
                      action == MoveType.MoveUp ||
                      action == MoveType.MoveRight ||
@@ -204,16 +217,14 @@ namespace LabyrinthEngine
         {
             if (player.IsOutsideLabyrinth()) { return; }
 
-            var newSquare = board.GetPlayfieldSquareOf(player);
+            var squareAfterMoving = board.GetPlayfieldSquareOf(player);
 
-            // TODO: Resolve what happens if the player has left the labyrinth.
-
-            if (newSquare.NumTreasures > 0)
+            if (squareAfterMoving.NumTreasures > 0)
             {
                 if (player.IsAlive && !player.CarriesTreasure)
                 {
                     player.CarriesTreasure = true;
-                    newSquare.NumTreasures--;
+                    squareAfterMoving.NumTreasures--;
                     descriptionOfCurrentMove.Append("You have found treasure! ");
                 }
                 else if (player.IsAlive && player.CarriesTreasure)
@@ -228,7 +239,7 @@ namespace LabyrinthEngine
                 }
             }
 
-            if (newSquare.Type == SquareType.FitnessStudio)
+            if (squareAfterMoving.Type == SquareType.FitnessStudio)
             {
                 if (!player.IsAlive)
                 {
@@ -251,7 +262,7 @@ namespace LabyrinthEngine
                 }
             }
 
-            if (newSquare.Type == SquareType.AmmoStorage)
+            if (squareAfterMoving.Type == SquareType.AmmoStorage)
             {
                 if (player.IsAlive)
                 {
@@ -266,7 +277,7 @@ namespace LabyrinthEngine
                 }
             }
 
-            if (newSquare.Type == SquareType.HamsterStorage)
+            if (squareAfterMoving.Type == SquareType.HamsterStorage)
             {
                 if (player.IsAlive)
                 {
@@ -281,7 +292,7 @@ namespace LabyrinthEngine
                 }
             }
 
-            if (newSquare.Type == SquareType.CementStorage)
+            if (squareAfterMoving.Type == SquareType.CementStorage)
             {
                 if (player.IsAlive)
                 {
@@ -295,9 +306,22 @@ namespace LabyrinthEngine
                 }
             }
 
-            if (newSquare.Type == SquareType.Teleporter)
+            if (squareAfterMoving.Type == SquareType.Teleporter)
             {
-                // TODO: Implement teleportation
+                if (mostRecentlyExecutedMove.ActionType == MoveType.DoNothing ||
+                    mostRecentlyExecutedMove.ActionType == MoveType.FallThroughHole)
+                {
+                    // Special case: Do nothing. Post-movement teleportation only happens when 
+                    // player deliberately moved onto a new square -- not when waiting or
+                    // immediately after teleporting.
+                }
+                else
+                {
+                    var nextHole = squareAfterMoving.Hole.NextHole;
+                    player.X = nextHole.X;
+                    player.Y = nextHole.Y;
+                    descriptionOfCurrentMove.Append("You fell into a hole. ");
+                }
             }
 
             if (isCentaurAdjacentTo(player))
@@ -340,7 +364,7 @@ namespace LabyrinthEngine
             }
             else
             {
-                descriptionOfCurrentMove.Append("You are outside! You decide to take a " + 
+                descriptionOfCurrentMove.Append("You are outside! You decide to take a " +
                     "stroll in the nice weather. ");
             }
         }
@@ -580,7 +604,7 @@ namespace LabyrinthEngine
                     // This always happens if there is no other obstacle.
                     break;
                 }
-                
+
                 if (board.centaur.X == arrowX && board.centaur.Y == arrowY)
                 {
                     centaurWasHit = true;
@@ -601,7 +625,7 @@ namespace LabyrinthEngine
 
                 if (centaurWasHit)
                 {
-                    descriptionOfCurrentMove.Append("The centaur snatches the arrow out " 
+                    descriptionOfCurrentMove.Append("The centaur snatches the arrow out "
                         + "of the air and stares ominously at you. ");
                 }
                 else if (victim == null)

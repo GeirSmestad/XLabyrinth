@@ -15,14 +15,16 @@ namespace LabyrinthEngine.Entities
     public class Teleporter
     {
         public int TeleporterIndex { get; private set; }
-        public Teleporter NextHole { get; private set; }
-        //public PlayfieldSquare Square { get; private set; }
+        public Teleporter NextHole { get; set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
         
-        public Teleporter(int teleporterIndex, Teleporter nextHole)
+        public Teleporter(int teleporterIndex, Teleporter nextHole, int x, int y)
         {
             TeleporterIndex = teleporterIndex;
             NextHole = nextHole;
-            //Square = square;
+            X = x;
+            Y = y;
         }
     }
 }

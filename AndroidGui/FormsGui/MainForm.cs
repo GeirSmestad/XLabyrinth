@@ -23,7 +23,7 @@ namespace FormsGui
         BoardState board;
         GameState game;
 
-        const int fontSize = 10;
+        const int fontSize = 9;
         const int startX = 75;
         const int startY = 30;
         const int squareHeight = 70;
@@ -49,7 +49,13 @@ namespace FormsGui
             canvas.Invalidate();
             printPlayerState();
             textBoxMessages.Text += "Game started." + Environment.NewLine;
+            printGameState();
         }
+
+        // TODO: Lighter-colored players when dead
+
+        // TODO: Undo & redo
+        // TODO: Undo & redo properly implemented in the interface
 
         private void executeAction(MoveType move)
         {
@@ -63,6 +69,23 @@ namespace FormsGui
             textBoxMessages.SelectionStart = textBoxMessages.Text.Length;
             textBoxMessages.ScrollToCaret();
             printPlayerState();
+            printGameState();
+        }
+
+        private void printGameState()
+        {
+            if (game.CurrentTurnPhase == TurnPhase.SelectMainAction)
+            {
+                labelStatus.Text = 
+                    string.Format("Move {0}. Action phase: Movement. {1}'s turn.", 
+                    game.MoveCounter, game.CurrentPlayer().Name);
+            }
+            else
+            {
+                labelStatus.Text = 
+                    string.Format("Move {0}. Action phase: Followup action.  {1}'s turn.", 
+                    game.MoveCounter, game.CurrentPlayer().Name);
+            }
         }
 
         private void printPlayerState()
@@ -106,8 +129,19 @@ namespace FormsGui
                 for (int w_y = 0; w_y < board.HorizontalWalls.GetLength(1); w_y++)
                 {
                     Pen pen;
-                    if (board.HorizontalWalls[x, w_y].IsExit)
+                    if (board.HorizontalWalls[x, w_y].IsExit &&
+                        !board.HorizontalWalls[x, w_y].IsPassable)
                     {
+                        pen = new Pen(Color.Yellow, 4);
+                    }
+                    else if (board.HorizontalWalls[x, w_y].IsExit &&
+                        board.HorizontalWalls[x, w_y].HasHamster)
+                    {
+                        pen = new Pen(Color.LightGreen, 4);
+                    }
+                    else if (board.HorizontalWalls[x, w_y].IsExit)
+                    {
+                        // Standard exit, open
                         continue;
                     }
                     else if (board.HorizontalWalls[x, w_y].IsPassable)
@@ -121,12 +155,6 @@ namespace FormsGui
                     else
                     {
                         pen = new Pen(Color.Black, 4);
-                    }
-
-                    if (board.HorizontalWalls[x, w_y].IsExit &&
-                        board.HorizontalWalls[x, w_y].HasHamster)
-                    {
-                        pen = new Pen(Color.LightGreen);
                     }
 
                     e.Graphics.DrawLine(pen,
@@ -144,8 +172,19 @@ namespace FormsGui
                 for (int w_x = 0; w_x < board.HorizontalWalls.GetLength(1); w_x++)
                 {
                     Pen pen;
-                    if (board.VerticalWalls[y, w_x].IsExit)
+                    if (board.VerticalWalls[y, w_x].IsExit &&
+                        !board.VerticalWalls[y, w_x].IsPassable)
                     {
+                        pen = new Pen(Color.Yellow, 4);
+                    }
+                    else if (board.VerticalWalls[y, w_x].IsExit &&
+                        board.VerticalWalls[y, w_x].HasHamster)
+                    {
+                        pen = new Pen(Color.LightGreen, 4);
+                    }
+                    else if (board.VerticalWalls[y, w_x].IsExit)
+                    {
+                        // Standard exit, open
                         continue;
                     }
                     else if (board.VerticalWalls[y, w_x].IsPassable)
@@ -159,12 +198,6 @@ namespace FormsGui
                     else
                     {
                         pen = new Pen(Color.Black, 4);
-                    }
-
-                    if (board.VerticalWalls[y, w_x].IsExit &&
-                        board.VerticalWalls[y, w_x].HasHamster)
-                    {
-                        pen = new Pen(Color.LightGreen);
                     }
 
                     e.Graphics.DrawLine(pen,
@@ -189,32 +222,33 @@ namespace FormsGui
                             squareHeight / 3, squareHeight / 3);
                     }
 
-                    var squareType = board.PlayfieldGrid[x, y].Type;
-                    var drawX = startX + x * squareWidth + squareWidth / 2 - fontSize / 2;
-                    var drawY = startY + y * squareHeight + squareHeight / 2 - fontSize / 2;
+                    var square = board.PlayfieldGrid[x, y];
+                    var drawX = startX + x * squareWidth + squareWidth / 2 - fontSize*6 / 2;
+                    var drawY = startY + y * squareHeight + squareHeight / 2 - fontSize*6 / 2;
 
                     var font = new Font(FontFamily.GenericMonospace, fontSize);
 
 
-                    switch (squareType)
+                    switch (square.Type)
                     {
                         case SquareType.Empty:
                             break;
                         case SquareType.AmmoStorage:
-                            e.Graphics.DrawString("A", font, Brushes.Black, drawX, drawY);
+                            e.Graphics.DrawString("Ammo   ", font, Brushes.Black, drawX, drawY);
                             break;
                         case SquareType.HamsterStorage:
-                            e.Graphics.DrawString("H", font, Brushes.Black, drawX, drawY);
+                            e.Graphics.DrawString("Hamster", font, Brushes.Black, drawX, drawY);
                             break;
                         case SquareType.FitnessStudio:
-                            e.Graphics.DrawString("F", font, Brushes.Black, drawX, drawY);
+                            e.Graphics.DrawString("Fitness", font, Brushes.Black, drawX, drawY);
                             break;
                         case SquareType.CementStorage:
-                            e.Graphics.DrawString("C", font, Brushes.Black, drawX, drawY);
+                            e.Graphics.DrawString("Cement ", font, Brushes.Black, drawX, drawY);
                             break;
                         case SquareType.Teleporter:
-                            // TODO: Teleporter numbering
-                            e.Graphics.DrawString("T", font, Brushes.Black, drawX, drawY);
+                            e.Graphics.DrawString(
+                                string.Format("Hole {0} ", square.Hole.TeleporterIndex), 
+                                font, Brushes.Black, drawX, drawY);
                             break;
                     }
 
@@ -229,7 +263,7 @@ namespace FormsGui
                  startY + squareHeight * centaur.Y + squareHeight / 4,
                  squareHeight / 4, squareHeight / 4);
 
-            Brush[] playerBrushes = { Brushes.Blue, Brushes.Red, Brushes.Yellow, Brushes.Green };
+            Brush[] playerBrushes = { Brushes.Blue, Brushes.HotPink, Brushes.Yellow, Brushes.Green };
 
             for (int playerIndex = 0; playerIndex < game.Players.Count; playerIndex++)
             {
@@ -362,9 +396,12 @@ namespace FormsGui
             }
         }
 
-        private void panel2_Paint(object sender, PaintEventArgs e)
+        private void bShootHere_Click(object sender, EventArgs e)
         {
-
+            if (rbShoot.Checked)
+            {
+                executeAction(MoveType.FireAtSameSquare);
+            }
         }
     }
 }
