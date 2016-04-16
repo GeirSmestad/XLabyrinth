@@ -65,11 +65,39 @@ namespace AndroidGui.Tests
         [Test]
         public void When_starting_game_players_should_be_at_starting_positions()
         {
-            // TODO: Test correct starting positions when more positions than players
-            // TODO: Test correct starting positions same number of positions as players
-            // TODO: Test correct starting positions when less positions than players
+            startingPositions = new List<Position>()
+            {
+                new Position(1,1),
+                new Position(2,2),
+                new Position(3,3)
+            };
+            var player2 = new Player();
+            players.Add(player2);
+            initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions:true);
 
-            Assert.Fail("Not implemented");
+            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player2.X == 2 && player2.Y == 2);
+
+            var player3 = new Player();
+            players.Add(player3);
+            player1.X = player1.Y = player2.X = player2.Y = 0; // Reset positions for next test case
+            initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions: true);
+
+            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player2.X == 2 && player2.Y == 2);
+            Assert.That(player3.X == 3 && player3.Y == 3);
+
+            int initialRngSeed = 1338;
+            var player4 = new Player();
+            players.Add(player4);
+            player1.X = player1.Y = player2.X = player2.Y = player3.X = player3.Y = 0;
+            initializeNewGameStateFromSetupParameters(initialRngSeed, 
+                useBoardDefinedStartingPositions: true);
+
+            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player2.X == 2 && player2.Y == 2);
+            Assert.That(player3.X == 3 && player3.Y == 3);
+            Assert.IsFalse(player4.X == 0 && player4.Y == 0); // Player 4 gets random position
         }
 
         [Test]
@@ -488,7 +516,7 @@ namespace AndroidGui.Tests
             player1.Y = 2;
             player1.IsAlive = true;
 
-            var player2 = new Player() { Name = "Nemesis", IsAlive = true};
+            var player2 = new Player() { Name = "Nemesis", IsAlive = true };
             players.Add(player2);
             player2.X = 2;
             player2.Y = 3;
@@ -987,7 +1015,7 @@ namespace AndroidGui.Tests
             var player5 = new Player() { Name = "Shrodinger4", IsAlive = true };
 
             // This turns out to be the unlucky victim for this particular RNG seed.
-            var playerThatWillDieForThisRngSeed = player4;
+            var playerThatWillDieForThisRngSeed = player3;
 
             players.Add(player2);
             players.Add(player3);
@@ -1914,7 +1942,7 @@ namespace AndroidGui.Tests
             return result;
         }
 
-        private void initializeNewGameStateFromSetupParameters()
+        private void initializeNewGameStateFromSetupParameters(bool useBoardDefinedStartingPositions = false)
         {
             var playerStatePreInitialization = HelperMethods.DeepClone(players);
 
@@ -1922,17 +1950,19 @@ namespace AndroidGui.Tests
                 centaur, startingPositions);
             game = new GameState(board, players);
 
-            for (int i = 0; i < game.Players.Count; i++)
+            if (!useBoardDefinedStartingPositions)
             {
-                // Preserve the player positions that were defined in the test, rather than
-                // using the positions that the game chooses based on the board-defined
-                // initial starting positions
-                game.Players[i].X = playerStatePreInitialization[i].X;
-                game.Players[i].Y = playerStatePreInitialization[i].Y;
+                for (int i = 0; i < game.Players.Count; i++)
+                {
+                    // Preserve the player positions that were defined in the test
+                    game.Players[i].X = playerStatePreInitialization[i].X;
+                    game.Players[i].Y = playerStatePreInitialization[i].Y;
+                }
             }
         }
 
-        private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed)
+        private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed,
+            bool useBoardDefinedStartingPositions = false)
         {
             var playerStatePreInitialization = HelperMethods.DeepClone(players);
 
@@ -1940,13 +1970,14 @@ namespace AndroidGui.Tests
                 centaur, startingPositions);
             game = new GameState(board, players, withInitialRngSeed);
 
-            for (int i = 0; i < game.Players.Count; i++)
+            if (!useBoardDefinedStartingPositions)
             {
-                // Preserve the player positions that were defined in the test, rather than
-                // using the positions that the game chooses based on the board-defined
-                // initial starting positions
-                game.Players[i].X = playerStatePreInitialization[i].X;
-                game.Players[i].Y = playerStatePreInitialization[i].Y;
+                for (int i = 0; i < game.Players.Count; i++)
+                {
+                    // Preserve the player positions that were defined in the test
+                    game.Players[i].X = playerStatePreInitialization[i].X;
+                    game.Players[i].Y = playerStatePreInitialization[i].Y;
+                }
             }
         }
     }
