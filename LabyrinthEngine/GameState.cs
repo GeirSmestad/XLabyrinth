@@ -64,11 +64,8 @@ namespace LabyrinthEngine
             MoveCounter = 0;
             CurrentTurnPhase = TurnPhase.SelectMainAction;
 
-            /* TODO: Resetting the board from initial state breaks most tests since it removes
-             * the link to the objects that the tests are initialized from. Have to rewrite
-             * the tests in a clever way before this (and hence undo) can be implemented. */
-            //Board = HelperMethods.DeepClone(initialBoardState);
-            // TODO: Also need to reset player state for undo/redo to work.
+            Board = HelperMethods.DeepClone(initialBoardState);
+            Players = HelperMethods.DeepClone(initialPlayersState);
 
             setPlayersToInitialPositions();
             turnController = new TurnController(Board, Players, randomNumberGenerator);

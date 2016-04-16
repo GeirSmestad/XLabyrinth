@@ -67,6 +67,15 @@ namespace AndroidGui.Tests
             game = new GameState(board_initial, players_initial);
         }
 
+        // Accessors for the finished GameState object
+        Player Player1 { get { return game.Players[0]; } }
+        Player Player2 { get { return game.Players[1]; } }
+        Player Player3 { get { return game.Players[2]; } }
+        Player Player4 { get { return game.Players[3]; } }
+        Player Player5 { get { return game.Players[4]; } }
+        Player Player6 { get { return game.Players[5]; } }
+        BoardState Board { get { return game.Board; } }
+
         // TODO: When rewriting tests to support undo/redo, we can use properties, e.g. like
         //public Player player9
         //{
@@ -727,50 +736,55 @@ namespace AndroidGui.Tests
         {
             player1_initial.X = 2;
             player1_initial.Y = 2;
-            player1_initial.NumArrows = 5;
+            player1_initial.NumArrows = 1;
 
-            var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
-            players_initial.Add(nemesis);
-            nemesis.X = 2;
-            nemesis.Y = 0;
+            var player2_initial = new Player() { Name = "Nemesis", IsAlive = true };
+            players_initial.Add(player2_initial);
+            player2_initial.X = 2;
+            player2_initial.Y = 0;
+
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireUp);
-            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsFalse(Player2.IsAlive);
+            Assert.AreEqual(Player1.NumArrows, 0, "Should spend arrows when shooting.");
 
-            nemesis.X = 4;
-            nemesis.Y = 2;
-            nemesis.IsAlive = true;
+            player2_initial.X = 4;
+            player2_initial.Y = 2;
+            player2_initial.IsAlive = true;
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireRight);
-            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsFalse(Player2.IsAlive);
+            Assert.AreEqual(Player1.NumArrows, 0, "Should spend arrows when shooting.");
 
-            nemesis.X = 2;
-            nemesis.Y = 4;
-            nemesis.IsAlive = true;
+            player2_initial.X = 2;
+            player2_initial.Y = 4;
+            player2_initial.IsAlive = true;
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireDown);
-            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsFalse(Player2.IsAlive);
+            Assert.AreEqual(Player1.NumArrows, 0, "Should spend arrows when shooting.");
 
-            nemesis.X = 0;
-            nemesis.Y = 2;
-            nemesis.IsAlive = true;
+            player2_initial.X = 0;
+            player2_initial.Y = 2;
+            player2_initial.IsAlive = true;
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireLeft);
-            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsFalse(Player2.IsAlive);
+            Assert.AreEqual(Player1.NumArrows, 0, "Should spend arrows when shooting.");
 
-            nemesis.X = player1_initial.X;
-            nemesis.Y = player1_initial.Y;
-            nemesis.IsAlive = true;
+            player2_initial.X = player1_initial.X;
+            player2_initial.Y = player1_initial.Y;
+            player2_initial.IsAlive = true;
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireAtSameSquare);
-            Assert.IsFalse(nemesis.IsAlive);
+            Assert.IsFalse(Player2.IsAlive);
+            Assert.AreEqual(Player1.NumArrows, 0, "Should spend arrows when shooting.");
 
-            Assert.AreEqual(player1_initial.NumArrows, 0, "Should spend arrows when shooting.");
         }
 
         [Test]
@@ -1258,16 +1272,16 @@ namespace AndroidGui.Tests
         public void When_visiting_cement_storage_player_should_replenish_cement()
         {
             playfield_initial[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
-            initializeNewGameStateFromSetupParameters();
-
             player1_initial.X = 3;
             player1_initial.Y = 3;
             player1_initial.IsAlive = true;
             player1_initial.NumCement = 0;
 
+            initializeNewGameStateFromSetupParameters();
+
             game.PerformMove(MoveType.MoveDown);
 
-            Assert.AreEqual(player1_initial.NumCement, Player.CementCapacity);
+            Assert.AreEqual(Player1.NumCement, Player.CementCapacity);
         }
 
         [Test]
@@ -1531,36 +1545,38 @@ namespace AndroidGui.Tests
             player1_initial.X = 0;
             player1_initial.Y = 0;
             player1_initial.NumGrenades = 4;
+            initializeNewGameStateFromSetupParameters();
+
             var expectedMessage = "The grenade explodes against an exterior wall. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallAbove(player1_initial).IsPassable);
+            Assert.IsFalse(Board.GetWallAbove(Player1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallLeftOf(player1_initial).IsPassable);
+            Assert.IsFalse(Board.GetWallLeftOf(Player1).IsPassable);
 
-            player1_initial.X = 4;
-            player1_initial.Y = 4;
+            Player1.X = 4;
+            Player1.Y = 4;
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallRightOf(player1_initial).IsPassable);
+            Assert.IsFalse(Board.GetWallRightOf(Player1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallBelow(player1_initial).IsPassable);
+            Assert.IsFalse(Board.GetWallBelow(Player1).IsPassable);
 
-            Assert.AreEqual(player1_initial.NumGrenades, 0);
+            Assert.AreEqual(Player1.NumGrenades, 0);
         }
 
         [Test]
@@ -1582,33 +1598,34 @@ namespace AndroidGui.Tests
                 thirdHiddenExit.IsPassable = fourthHiddenExit.IsPassable = false;
             firstHiddenExit.IsExterior = secondHiddenExit.IsExterior =
                 thirdHiddenExit.IsExterior = fourthHiddenExit.IsExterior = true;
+            initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallAbove(player1_initial).IsPassable);
+            Assert.IsTrue(Board.GetWallAbove(Player1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallLeftOf(player1_initial).IsPassable);
+            Assert.IsTrue(Board.GetWallLeftOf(Player1).IsPassable);
 
-            player1_initial.X = 4;
-            player1_initial.Y = 4;
+            Player1.X = 4;
+            Player1.Y = 4;
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallRightOf(player1_initial).IsPassable);
+            Assert.IsTrue(Board.GetWallRightOf(Player1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallBelow(player1_initial).IsPassable);
+            Assert.IsTrue(Board.GetWallBelow(Player1).IsPassable);
         }
 
         [Test]
@@ -1618,33 +1635,35 @@ namespace AndroidGui.Tests
             player1_initial.X = 3;
             player1_initial.Y = 1;
             player1_initial.NumGrenades = 4;
+            initializeNewGameStateFromSetupParameters();
+
             var expectedMessage = "A hamster returns your grenade with the pin inserted. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallAbove(3, 1).IsPassable);
+            Assert.IsFalse(Board.GetWallAbove(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallRightOf(3, 1).IsPassable);
+            Assert.IsFalse(Board.GetWallRightOf(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallBelow(3, 1).IsPassable);
+            Assert.IsFalse(Board.GetWallBelow(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board_initial.GetWallLeftOf(3, 1).IsPassable);
+            Assert.IsFalse(Board.GetWallLeftOf(3, 1).IsPassable);
 
-            Assert.AreEqual(player1_initial.NumGrenades, 4, "Hamster walls should not spend grenades");
+            Assert.AreEqual(Player1.NumGrenades, 4, "Hamster walls should not spend grenades");
         }
 
         [Test]
@@ -1653,12 +1672,13 @@ namespace AndroidGui.Tests
             player1_initial.X = 3;
             player1_initial.Y = 3;
             board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.True(player1_initial.CarriesTreasure);
-            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 1);
+            Assert.True(Player1.CarriesTreasure);
+            Assert.AreEqual(Board.GetPlayfieldSquareOf(3, 2).NumTreasures, 1);
         }
 
         [Test]
@@ -1668,12 +1688,13 @@ namespace AndroidGui.Tests
             player1_initial.Y = 3;
             player1_initial.CarriesTreasure = true;
             board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            initializeNewGameStateFromSetupParameters();
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
             Assert.True(moveDescription.Contains("There is treasure here"));
-            Assert.True(player1_initial.CarriesTreasure);
-            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
+            Assert.True(Player1.CarriesTreasure);
+            Assert.AreEqual(Board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
         [Test]
@@ -1684,12 +1705,13 @@ namespace AndroidGui.Tests
             player1_initial.CarriesTreasure = false;
             player1_initial.IsAlive = false;
             board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            initializeNewGameStateFromSetupParameters();
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
             Assert.True(moveDescription.Contains("There is treasure here"));
-            Assert.False(player1_initial.CarriesTreasure);
-            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
+            Assert.False(Player1.CarriesTreasure);
+            Assert.AreEqual(Board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
         [Test]
@@ -1705,21 +1727,22 @@ namespace AndroidGui.Tests
             exit.IsExit = true;
             exit.IsPassable = true;
             exit.IsExterior = true;
+            initializeNewGameStateFromSetupParameters();
 
             var message1 = game.PerformMove(MoveType.MoveLeft);
-            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
+            Assert.IsTrue(Player1.IsOutsideLabyrinth());
             var message2 = game.PerformMove(MoveType.PlaceHamsterRight); // No effect, outside
-            Assert.AreEqual(player1_initial.NumHamsters, 1);
-            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
+            Assert.AreEqual(Player1.NumHamsters, 1);
+            Assert.IsTrue(Player1.IsOutsideLabyrinth());
             var message3 = game.PerformMove(MoveType.MoveRight);  // No effect, outside
-            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
-            Assert.IsTrue(player1_initial.X == -1 && player1_initial.Y == 3);
+            Assert.IsTrue(Player1.IsOutsideLabyrinth());
+            Assert.IsTrue(Player1.X == -1 && Player1.Y == 3);
             var message4 = game.PerformMove(MoveType.BuildWallRight); // No effect, outside
-            Assert.AreEqual(player1_initial.NumCement, 1);
+            Assert.AreEqual(Player1.NumCement, 1);
 
-            Assert.IsFalse(player1_initial.IsOutsideLabyrinth());
+            Assert.IsFalse(Player1.IsOutsideLabyrinth());
             game.PerformMove(MoveType.MoveRight);
-            Assert.IsTrue(player1_initial.X == 1 && player1_initial.Y == 3);
+            Assert.IsTrue(Player1.X == 1 && Player1.Y == 3);
 
             // TODO: I don't know if the original rules specify that return to inside
             // happens on the end of the second or the beginning of the third turn.
@@ -1741,14 +1764,15 @@ namespace AndroidGui.Tests
             exit.IsExit = true;
             exit.IsPassable = true;
             exit.IsExterior = true;
+            initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
 
             game.PerformMove(MoveType.DoNothing);
-            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
+            Assert.IsTrue(Player1.IsOutsideLabyrinth());
             game.PerformMove(MoveType.DoNothing);
-            Assert.IsFalse(player1_initial.IsOutsideLabyrinth());
+            Assert.IsFalse(Player1.IsOutsideLabyrinth());
 
             // TODO: I don't know if the original rules specify that return to inside
             // happens on the end of the second or the beginning of the third turn.
