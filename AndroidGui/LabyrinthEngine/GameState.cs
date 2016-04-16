@@ -59,13 +59,14 @@ namespace LabyrinthEngine
             randomNumberGenerator = new Random(initialRngSeed);
             MoveCounter = 0;
             CurrentTurnPhase = TurnPhase.SelectMainAction;
-            
+
             /* TODO: Resetting the board from initial state breaks most tests since it removes
              * the link to the objects that the tests are initialized from. Have to rewrite
              * the tests in a clever way before this (and hence undo) can be implemented. */
             //Board = HelperMethods.DeepClone(initialBoardState);
             // TODO: Also need to reset player state for undo/redo to work.
 
+            setPlayersToInitialPositions();
             turnController = new TurnController(Board, Players, randomNumberGenerator);
             currentUndoStep = completedMoves.Count;
         }
@@ -214,6 +215,34 @@ namespace LabyrinthEngine
             {
                 var nextMoveToExecute = completedMoves[i].ActionType;
                 performMainActionForCurrentPlayer(nextMoveToExecute); // Also performs followup actions
+            }
+        }
+
+        private void setPlayersToInitialPositions()
+        {
+            var startingPositions = Board.StartingPositions;
+
+            if (startingPositions.Count >= Players.Count)
+            {
+                for (int i = 0; i < Players.Count; i++)
+                {
+                    Players[i].X = startingPositions[i].X;
+                    Players[i].Y = startingPositions[i].Y;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < startingPositions.Count; i++)
+                {
+                    Players[i].X = startingPositions[i].X;
+                    Players[i].Y = startingPositions[i].Y;
+                }
+
+                for (int j = startingPositions.Count; j < Players.Count; j++)
+                {
+                    Players[j].X = randomNumberGenerator.Next(0, Board.Width - 1);
+                    Players[j].Y = randomNumberGenerator.Next(0, Board.Width - 1);
+                }
             }
         }
     }

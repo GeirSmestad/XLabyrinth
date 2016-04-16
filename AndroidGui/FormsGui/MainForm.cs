@@ -22,6 +22,7 @@ namespace FormsGui
     {
         BoardState board;
         GameState game;
+        List<Player> players;
 
         const int fontSize = 9;
         const int startX = 75;
@@ -33,26 +34,52 @@ namespace FormsGui
         {
             InitializeComponent();
 
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Levels\TestBoard.xml");
-
-            var loader = new BoardLoader(boardXmlContent);
-            board = loader.Board;
-
+            // Load default game state, we can change it in the UI later
             var player1 = new Player() { Name = "Geir", X = 3, Y = 3 };
             var player2 = new Player() { Name = "Nemesis", X = 1, Y = 0 };
-            var players = new List<Player>();
+            players = new List<Player>();
             players.Add(player1);
             players.Add(player2);
 
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void askForPlayersWithNames(int howManyPlayers)
+        {
+            players = new List<Player>();
+            for (int i = 0; i < howManyPlayers; i++)
+            {
+                players.Add(getPlayerFromUserInput(playerNumber:i+1));
+            }
+        }
+
+        private void startNewGameWithSelectedPlayers()
+        {
+            board = loadBoard();
             game = new GameState(board, players);
 
             canvas.Invalidate();
             printPlayerState();
-            textBoxMessages.Text += "Game started." + Environment.NewLine;
+            textBoxMessages.Text = "Game started." + Environment.NewLine;
             printGameState();
         }
 
-        // TODO: Lighter-colored players when dead
+        private BoardState loadBoard()
+        {
+            string boardXmlContent;
+            try
+            {
+                boardXmlContent = System.IO.File.ReadAllText(@"..\..\Levels\TestBoard.xml");
+                var loader = new BoardLoader(boardXmlContent);
+                return loader.Board;
+            }
+            catch (Exception)
+            {
+                boardXmlContent = System.IO.File.ReadAllText(@"TestBoard.xml");
+                var loader = new BoardLoader(boardXmlContent);
+                return loader.Board;
+            }
+        }
 
         // TODO: Undo & redo
         // TODO: Undo & redo properly implemented in the interface
@@ -102,7 +129,6 @@ namespace FormsGui
             result.Append(Environment.NewLine);
             result.AppendFormat("Score: {0}", player.Score);
             result.Append(Environment.NewLine);
-
             result.AppendFormat("Arrows: {0}", player.NumArrows);
             result.Append(Environment.NewLine);
             result.AppendFormat("Grenades: {0}", player.NumGrenades);
@@ -263,12 +289,24 @@ namespace FormsGui
                  startY + squareHeight * centaur.Y + squareHeight / 4,
                  squareHeight / 4, squareHeight / 4);
 
-            Brush[] playerBrushes = { Brushes.Blue, Brushes.HotPink, Brushes.Yellow, Brushes.Green };
+            Brush[] playerBrushes = { Brushes.Blue, Brushes.Green, Brushes.Yellow, Brushes.DarkViolet, Brushes.HotPink, Brushes.DarkCyan };
+            Brush[] deadPlayerBrushes = { Brushes.LightBlue, Brushes.LightGreen, Brushes.LightYellow, Brushes.MediumOrchid, Brushes.Pink, Brushes.Cyan};
 
             for (int playerIndex = 0; playerIndex < game.Players.Count; playerIndex++)
             {
                 var player = game.Players[playerIndex];
-                e.Graphics.FillEllipse(playerBrushes[playerIndex],
+
+                Brush brush;
+                if (player.IsAlive)
+                {
+                    brush = playerBrushes[playerIndex];
+                }
+                else
+                {
+                    brush = deadPlayerBrushes[playerIndex];
+                }
+
+                e.Graphics.FillEllipse(brush,
                     startX + squareWidth * player.X + squareWidth / 2,
                     startY + squareHeight * player.Y + squareHeight / 2,
                     squareHeight / 4, squareHeight / 4);
@@ -401,6 +439,62 @@ namespace FormsGui
             if (rbShoot.Checked)
             {
                 executeAction(MoveType.FireAtSameSquare);
+            }
+        }
+
+        private void bFallThrough_Click(object sender, EventArgs e)
+        {
+            executeAction(MoveType.FallThroughHole);
+        }
+
+        private void newGameWith1Player_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(1);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void newGameWith2Players_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(2);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void newGameWith3Players_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(3);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void newGameWith4Players_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(4);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void newGameWith5Players_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(5);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private void newGameWith6Players_Click(object sender, EventArgs e)
+        {
+            askForPlayersWithNames(6);
+            startNewGameWithSelectedPlayers();
+        }
+
+        private Player getPlayerFromUserInput(int playerNumber)
+        {
+            var name = NewPlayerPrompt.ShowDialog(
+                string.Format("Player {0} name:", playerNumber.ToString()),
+                "New game");
+            if (!string.IsNullOrEmpty(name))
+            {
+                return new Player() { Name = name };
+            }
+            else
+            {
+                return new Player() { Name = "The Unsung" };
             }
         }
     }

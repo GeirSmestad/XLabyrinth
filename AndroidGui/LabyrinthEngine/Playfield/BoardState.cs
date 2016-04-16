@@ -57,6 +57,16 @@ namespace LabyrinthEngine.Playfield
             }
         }
 
+        public int Width
+        {
+            get { return PlayfieldGrid.GetLength(0); }
+        }
+
+        public int Height
+        {
+            get { return PlayfieldGrid.GetLength(1); }
+        }
+
         public PlayfieldSquare GetPlayfieldSquareOf(int playfieldX, int playfieldY)
         {
             return PlayfieldGrid[playfieldX, playfieldY];

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LabyrinthLevel>
+  <!-- Number of rows and elements must match board dimensions for parsing to work. -->
   <Playfield width="5" height="5">
     <Row>
       <Empty />
@@ -37,7 +38,11 @@
       <Empty />
     </Row>
   </Playfield>
-    
+
+  <!-- w_y: Y position of wall, counting from the top outer wall.
+       x: (unambiguous) X coordinate of the playfield square the wall is adjacent to.
+       Outer walls are impassable by default. Contradictory wall flags trigger crash
+       on load. You may define exterior walls and exits that are not on the playfield edge. -->
   <HorizontalWalls>
     <HorizontalWallSegment w_y="5" x="4" isExit="yes" isPassable="yes"/>
     <HorizontalWallSegment w_y="3" x="1" hasHamster="yes"/>
@@ -45,16 +50,27 @@
     <HorizontalWallSegment w_y="3" x="3" />
   </HorizontalWalls>
 
+  
+  <!-- w_x: X position of wall, counting from the left outer wall.
+       y: (unambiguous) Y coordinate of the playfield square the wall is adjacent to.
+       Outer walls are impassable by default. Contradictory wall flags trigger crash
+       on load. You may define exterior walls and exits that are not on the playfield edge. -->
   <VerticalWalls>
-    <VerticalWallSegment w_x="5" y="4" isExit="yes" hasHamster="yes"/>
+    <VerticalWallSegment w_x="5" y="4" isExit="yes" hasHamster="yes" isExterior="yes"/>
     <VerticalWallSegment w_x="3" y="4" />
   </VerticalWalls>
 
+  <!-- Starting coordinates of players. If more players than coordinates, start positions
+       are chosen randomly within the outermost dimensions of the board.-->
   <StartingPositions>
     <PlayerPosition x="3" y="2" />
     <PlayerPosition x="4" y="4" />
   </StartingPositions>
   
+  <!-- Centaur moves from start to end of list, and then resumes from start. Wall flag is
+       ignored unless square before and square with flag are adjacent on the board.
+       Centaur reverses when encountering an impassable wall, stops when walled in and
+       resumes if released by players. Centaur jumps between non-adjacent squares in its path. -->
   <Centaur startX="-1" startY="-1">
     <CentaurStep x="1" y="1"/>
     <CentaurStep x="1" y="2" stepHereIgnoringWalls="yes"/>

@@ -482,7 +482,7 @@ namespace LabyrinthEngine
             {
                 player.NumHamsters--;
                 targetWall.HasHamster = true;
-                descriptionOfCurrentMove.Append("Several squeaking hamsters tumble out from the wall. ");
+                descriptionOfCurrentMove.Append("Your hamster happily scurries into a crack in the masonry. ");
             }
             else
             {

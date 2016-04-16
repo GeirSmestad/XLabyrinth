@@ -65,6 +65,10 @@ namespace AndroidGui.Tests
         [Test]
         public void When_starting_game_players_should_be_at_starting_positions()
         {
+            // TODO: Test correct starting positions when more positions than players
+            // TODO: Test correct starting positions same number of positions as players
+            // TODO: Test correct starting positions when less positions than players
+
             Assert.Fail("Not implemented");
         }
 
