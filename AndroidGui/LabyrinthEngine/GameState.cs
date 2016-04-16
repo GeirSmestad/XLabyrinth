@@ -12,6 +12,8 @@ namespace LabyrinthEngine
 {
     public class GameState
     {
+        // TODO: Refactor the public API classes to use proper directories in the project structure
+
         public BoardState Board { get; private set; }
 
         public List<Player> Players { get; private set; }
