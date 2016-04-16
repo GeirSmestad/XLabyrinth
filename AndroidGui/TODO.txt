@@ -1,0 +1,3 @@
+TODO: Undo & redo
+TODO: Refactor the public API classes to use proper directories in the project structure
+TODO: Implement board rotation. BoardLoader.cs.

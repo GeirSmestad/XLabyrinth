@@ -20,9 +20,9 @@ namespace FormsGui
     /// </summary>
     public partial class MainForm : Form
     {
-        BoardState board;
-        GameState game;
-        List<Player> players;
+        private BoardState board;
+        private GameState game;
+        private List<Player> players;
 
         const int fontSize = 9;
         const int startX = 75;
@@ -81,7 +81,6 @@ namespace FormsGui
             }
         }
 
-        // TODO: Undo & redo
         // TODO: Undo & redo properly implemented in the interface
 
         private void executeAction(MoveType move)
@@ -146,6 +145,14 @@ namespace FormsGui
         {
             if (board == null || game == null)
             {
+                return;
+            }
+
+            if (checkBoxHideBoard.Checked)
+            {
+                Brush backgroundColorBrush = new SolidBrush(canvas.BackColor);
+                e.Graphics.FillRectangle(backgroundColorBrush, 0, 0, canvas.Width, canvas.Height);
+                backgroundColorBrush.Dispose();
                 return;
             }
 
@@ -496,6 +503,11 @@ namespace FormsGui
             {
                 return new Player() { Name = "The Unsung" };
             }
+        }
+
+        private void checkBoxHideBoard_CheckedChanged(object sender, EventArgs e)
+        {
+            canvas.Invalidate();
         }
     }
 }

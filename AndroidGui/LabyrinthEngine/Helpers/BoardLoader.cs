@@ -32,7 +32,6 @@ namespace LabyrinthEngine.Helpers
         /// <param name="multipleOf90Degrees">Should be 0, 1, 2 or 3.</param>
         public void RotateRight(int howMany90DegreesToRotate)
         {
-            // TODO: Implement board rotation. 
             // Simplest solution involves methods that map each (x,y), (x, w_y), (y, w_x) coordinate
             // to the rotated form, and then run through the board to rotate it. Should also
             // have an option for scrambling teleporter ordering and treasure locations.
