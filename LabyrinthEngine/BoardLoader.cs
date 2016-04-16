@@ -7,8 +7,9 @@ using LabyrinthEngine.Playfield;
 using System.Xml;
 using System.Xml.XPath;
 using LabyrinthEngine.Entities;
+using LabyrinthEngine.Helpers;
 
-namespace LabyrinthEngine.Helpers
+namespace LabyrinthEngine
 {
     public class BoardLoader
     {

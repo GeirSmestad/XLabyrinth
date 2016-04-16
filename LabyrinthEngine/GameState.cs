@@ -7,6 +7,7 @@ using LabyrinthEngine.Entities;
 using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Moves;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.GameLogic;
 
 namespace LabyrinthEngine
 {

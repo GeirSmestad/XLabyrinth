@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabyrinthEngine
+namespace LabyrinthEngine.GameLogic
 {
     /// <summary>
     /// Performs internal actions to update the game state during the course of the game.

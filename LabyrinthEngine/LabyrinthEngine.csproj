@@ -45,21 +45,21 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Teleporter.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="Helpers\BoardLoader.cs" />
+    <Compile Include="BoardLoader.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\HelperMethods.cs" />
     <Compile Include="Helpers\LabyrinthExceptions.cs" />
     <Compile Include="Helpers\Position.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
-    <Compile Include="OutsideLabyrinthPhase.cs" />
+    <Compile Include="GameLogic\OutsideLabyrinthPhase.cs" />
     <Compile Include="Playfield\BoardState.cs" />
     <Compile Include="Playfield\PlayfieldSquare.cs" />
     <Compile Include="Playfield\SquareType.cs" />
     <Compile Include="Playfield\WallSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TurnController.cs" />
-    <Compile Include="TurnPhase.cs" />
+    <Compile Include="GameLogic\TurnController.cs" />
+    <Compile Include="GameLogic\TurnPhase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
