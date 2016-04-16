@@ -17,18 +17,22 @@ namespace AndroidGui.Tests
     [TestFixture]
     public class GameStateTests
     {
-        WallSection[,] horizontalWalls;
-        WallSection[,] verticalWalls;
-        PlayfieldSquare[,] playfield;
-        List<Teleporter> holes;
-        Centaur centaur;
-        List<Position> startingPositions;
+        WallSection[,] horizontalWalls_initial;
+        WallSection[,] verticalWalls_initial;
+        PlayfieldSquare[,] playfield_initial;
+        List<Teleporter> holes_initial;
+        Centaur centaur_initial;
+        List<Position> startingPositions_initial;
 
-        BoardState board;
+        BoardState board_initial;
         GameState game;
 
-        List<Player> players;
-        Player player1;
+        List<Player> players_initial;
+        Player player1_initial;
+        Player player2_initial;
+        Player player3_initial;
+        Player player4_initial;
+        Player player5_initial;
 
         // TODO: This test file is getting very long -- should split up in separate test files.
         // Need to think out a decent way to initialize the game state tests; they use the same functions.
@@ -37,22 +41,30 @@ namespace AndroidGui.Tests
         public void SetUp()
         {
             // Initialize an empty board. You can rebuild it with arbitrary content in each test.
-            playfield = TestHelpers.InitializeEmptyPlayfield(5, 5);
-            horizontalWalls = TestHelpers.InitializeEmptyHorizontalWalls(5, 5);
-            verticalWalls = TestHelpers.InitializeEmptyVerticalWalls(5, 5);
-            startingPositions = new List<Position> { new Position(0, 0) };
-            holes = new List<Teleporter>();
 
-            centaur = new Centaur(-1, -1, new List<CentaurStep>());
+            // _initial denotes that this is a reference to an object defined at the start of each test.
+            // GameState creates new instances of all its objects, making the *_initial references useless
+            // once the GameState object has been created.
+            playfield_initial = TestHelpers.InitializeEmptyPlayfield(5, 5);
+            horizontalWalls_initial = TestHelpers.InitializeEmptyHorizontalWalls(5, 5);
+            verticalWalls_initial = TestHelpers.InitializeEmptyVerticalWalls(5, 5);
+            startingPositions_initial = new List<Position> { new Position(0, 0) };
+            holes_initial = new List<Teleporter>();
 
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
+            centaur_initial = new Centaur(-1, -1, new List<CentaurStep>());
 
-            player1 = new Player() { Name = "Geir" };
-            players = new List<Player>();
-            players.Add(player1);
+            board_initial = new BoardState(playfield_initial, 
+                horizontalWalls_initial, 
+                verticalWalls_initial, 
+                holes_initial,
+                centaur_initial, 
+                startingPositions_initial);
 
-            game = new GameState(board, players);
+            player1_initial = new Player() { Name = "Geir" };
+            players_initial = new List<Player>();
+            players_initial.Add(player1_initial);
+
+            game = new GameState(board_initial, players_initial);
         }
 
         // TODO: When rewriting tests to support undo/redo, we can use properties, e.g. like
@@ -66,36 +78,36 @@ namespace AndroidGui.Tests
         [Test]
         public void When_starting_game_players_should_be_at_starting_positions()
         {
-            startingPositions = new List<Position>()
+            startingPositions_initial = new List<Position>()
             {
                 new Position(1,1),
                 new Position(2,2),
                 new Position(3,3)
             };
             var player2 = new Player();
-            players.Add(player2);
+            players_initial.Add(player2);
             initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions:true);
 
-            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player1_initial.X == 1 && player1_initial.Y == 1);
             Assert.That(player2.X == 2 && player2.Y == 2);
 
             var player3 = new Player();
-            players.Add(player3);
-            player1.X = player1.Y = player2.X = player2.Y = 0; // Reset positions for next test case
+            players_initial.Add(player3);
+            player1_initial.X = player1_initial.Y = player2.X = player2.Y = 0; // Reset positions for next test case
             initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions: true);
 
-            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player1_initial.X == 1 && player1_initial.Y == 1);
             Assert.That(player2.X == 2 && player2.Y == 2);
             Assert.That(player3.X == 3 && player3.Y == 3);
 
             int initialRngSeed = 1338;
             var player4 = new Player();
-            players.Add(player4);
-            player1.X = player1.Y = player2.X = player2.Y = player3.X = player3.Y = 0;
+            players_initial.Add(player4);
+            player1_initial.X = player1_initial.Y = player2.X = player2.Y = player3.X = player3.Y = 0;
             initializeNewGameStateFromSetupParameters(initialRngSeed, 
                 useBoardDefinedStartingPositions: true);
 
-            Assert.That(player1.X == 1 && player1.Y == 1);
+            Assert.That(player1_initial.X == 1 && player1_initial.Y == 1);
             Assert.That(player2.X == 2 && player2.Y == 2);
             Assert.That(player3.X == 3 && player3.Y == 3);
             Assert.IsFalse(player4.X == 0 && player4.Y == 0); // Player 4 gets random position
@@ -109,34 +121,34 @@ namespace AndroidGui.Tests
                 new CentaurStep(0,0,false),
                 new CentaurStep(1,0,false)
             };
-            centaur = new Centaur(-1, -1, centaurMoves);
+            centaur_initial = new Centaur(-1, -1, centaurMoves);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
         }
 
         [Test]
         public void Centaur_with_no_moves_should_remain_stationary()
         {
             var centaurMoves = new List<CentaurStep>();
-            centaur = new Centaur(1, 1, centaurMoves);
+            centaur_initial = new Centaur(1, 1, centaurMoves);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
         }
 
         [Test]
@@ -146,19 +158,19 @@ namespace AndroidGui.Tests
             {
                 new CentaurStep(1,1,false),
             };
-            centaur = new Centaur(0, 0, centaurMoves);
+            centaur_initial = new Centaur(0, 0, centaurMoves);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
 
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
         }
 
         [Test]
@@ -170,34 +182,34 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,0,false),
                 new CentaurStep(3,3,false)
             };
-            centaur = new Centaur(-1, -1, centaurMoves);
+            centaur_initial = new Centaur(-1, -1, centaurMoves);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
             // Forwards
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+            Assert.IsTrue(centaur_initial.X == 3 && centaur_initial.Y == 3);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
             // Backwards
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+            Assert.IsTrue(centaur_initial.X == 3 && centaur_initial.Y == 3);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 3 && centaur.Y == 3);
+            Assert.IsTrue(centaur_initial.X == 3 && centaur_initial.Y == 3);
 
             // Repeat, except with the shortest path possible
             centaurMoves = new List<CentaurStep>()
@@ -205,27 +217,27 @@ namespace AndroidGui.Tests
                 new CentaurStep(0,0,false),
                 new CentaurStep(1,0,false),
             };
-            centaur = new Centaur(-1, -1, centaurMoves);
+            centaur_initial = new Centaur(-1, -1, centaurMoves);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
 
             game.Board.centaur.ReverseDirection();
 
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 0);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0);
         }
 
         [Test]
@@ -246,31 +258,31 @@ namespace AndroidGui.Tests
                 new CentaurStep(2,2,true),
                 new CentaurStep(2,1,false),
             };
-            centaur = new Centaur(2, 2, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(2, 2, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 3 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 3 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 3);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 3);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 2);
             makeCurrentPlayerDoNothing();
 
-            Assert.IsFalse(centaur.X == 2 && centaur.Y == 1);
+            Assert.IsFalse(centaur_initial.X == 2 && centaur_initial.Y == 1);
         }
 
         [Test]
@@ -286,9 +298,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(3,1,false),
                 new CentaurStep(2,1,false)
             };
-            centaur = new Centaur(0, 1, centaurMoves);
-            player1.X = 0;
-            player1.Y = 0;
+            centaur_initial = new Centaur(0, 1, centaurMoves);
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -297,9 +309,9 @@ namespace AndroidGui.Tests
             game.Board.GetWallRightOf(2, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 1);
 
             // Second case: Up-and-down movement
             centaurMoves = new List<CentaurStep>()
@@ -311,9 +323,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,3,false),
                 new CentaurStep(1,2,false)
             };
-            centaur = new Centaur(1, 0, centaurMoves);
-            player1.X = 0;
-            player1.Y = 0;
+            centaur_initial = new Centaur(1, 0, centaurMoves);
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -323,9 +335,9 @@ namespace AndroidGui.Tests
 
             makeCurrentPlayerDoNothing();
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 2);
         }
 
         [Test]
@@ -339,9 +351,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(0,1,false)
             };
-            centaur = new Centaur(0, 1, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(0, 1, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -349,11 +361,11 @@ namespace AndroidGui.Tests
             game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallRightOf(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
 
             // Second case: Up-and-down movement
             centaurMoves = new List<CentaurStep>()
@@ -363,9 +375,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(1,0,false)
             };
-            centaur = new Centaur(1, 0, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(1, 0, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -373,11 +385,11 @@ namespace AndroidGui.Tests
             game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallBelow(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
         }
 
         [Test]
@@ -391,9 +403,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(0,1,false)
             };
-            centaur = new Centaur(0, 1, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(0, 1, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -401,12 +413,12 @@ namespace AndroidGui.Tests
             game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallRightOf(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             game.Board.GetWallRightOf(1, 1).IsPassable = true;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 2 && centaur.Y == 1); // Centaur resumes to the right
+            Assert.IsTrue(centaur_initial.X == 2 && centaur_initial.Y == 1); // Centaur resumes to the right
 
             // Second case: Centaur is walled in when moving, and released to the left
             centaurMoves = new List<CentaurStep>()
@@ -416,9 +428,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(0,1,false)
             };
-            centaur = new Centaur(0, 1, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(0, 1, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
             game.Board.GetWallLeftOf(1, 1).IsPassable = true; // Reset walls for this
             game.Board.GetWallRightOf(1, 1).IsPassable = true;
 
@@ -428,12 +440,12 @@ namespace AndroidGui.Tests
             game.Board.GetWallLeftOf(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallRightOf(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             game.Board.GetWallLeftOf(1, 1).IsPassable = true;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 0 && centaur.Y == 1); // Centaur resumes to the left
+            Assert.IsTrue(centaur_initial.X == 0 && centaur_initial.Y == 1); // Centaur resumes to the left
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
 
             // Third case: Centaur is walled in when moving, and released upwards
             centaurMoves = new List<CentaurStep>()
@@ -443,9 +455,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(1,0,false)
             };
-            centaur = new Centaur(1, 0, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(1, 0, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -453,10 +465,10 @@ namespace AndroidGui.Tests
             game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallBelow(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             game.Board.GetWallAbove(1, 1).IsPassable = true;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 0); // Centaur resumes up
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 0); // Centaur resumes up
 
             // Fourth case: Centaur is walled in when moving, and released downwards
             centaurMoves = new List<CentaurStep>()
@@ -466,9 +478,9 @@ namespace AndroidGui.Tests
                 new CentaurStep(1,1,false),
                 new CentaurStep(1,0,false)
             };
-            centaur = new Centaur(1, 0, centaurMoves);
-            player1.X = 4;
-            player1.Y = 4;
+            centaur_initial = new Centaur(1, 0, centaurMoves);
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
             game.Board.GetWallAbove(1, 1).IsPassable = true; // Reset walls for this
             game.Board.GetWallBelow(1, 1).IsPassable = true;
 
@@ -478,23 +490,23 @@ namespace AndroidGui.Tests
             game.Board.GetWallAbove(1, 1).IsPassable = false; // Centaur is at (1,1)
             game.Board.GetWallBelow(1, 1).IsPassable = false;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 1);
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 1);
             game.Board.GetWallBelow(1, 1).IsPassable = true;
             makeCurrentPlayerDoNothing();
-            Assert.IsTrue(centaur.X == 1 && centaur.Y == 2); // Centaur resumes down
+            Assert.IsTrue(centaur_initial.X == 1 && centaur_initial.Y == 2); // Centaur resumes down
         }
 
         [Test]
         public void When_moving_to_centaur_player_should_die()
         {
             var centaurMoves = new List<CentaurStep>();
-            centaur = new Centaur(1, 1, centaurMoves);
+            centaur_initial = new Centaur(1, 1, centaurMoves);
 
-            player1.X = 2;
-            player1.Y = 1;
-            player1.IsAlive = true;
+            player1_initial.X = 2;
+            player1_initial.Y = 1;
+            player1_initial.IsAlive = true;
 
             initializeNewGameStateFromSetupParameters();
 
@@ -511,14 +523,14 @@ namespace AndroidGui.Tests
                 new CentaurStep(2,2, false),
                 new CentaurStep(2,3, false)
             };
-            centaur = new Centaur(-1, -1, centaurMoves);
+            centaur_initial = new Centaur(-1, -1, centaurMoves);
 
-            player1.X = 2;
-            player1.Y = 2;
-            player1.IsAlive = true;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.IsAlive = true;
 
             var player2 = new Player() { Name = "Nemesis", IsAlive = true };
-            players.Add(player2);
+            players_initial.Add(player2);
             player2.X = 2;
             player2.Y = 3;
             initializeNewGameStateFromSetupParameters();
@@ -536,18 +548,18 @@ namespace AndroidGui.Tests
         public void When_player_moves_near_centaur_should_print_clopclop()
         {
             var centaurMoves = new List<CentaurStep>();
-            centaur = new Centaur(2, 2, centaurMoves);
+            centaur_initial = new Centaur(2, 2, centaurMoves);
 
-            player1.X = 0;
-            player1.Y = 2;
+            player1_initial.X = 0;
+            player1_initial.Y = 2;
 
             var player2 = new Player() { Name = "player2", X = 2, Y = 0 };
             var player3 = new Player() { Name = "player2", X = 2, Y = 4 };
             var player4 = new Player() { Name = "player2", X = 4, Y = 2 };
 
-            players.Add(player2);
-            players.Add(player3);
-            players.Add(player4);
+            players_initial.Add(player2);
+            players_initial.Add(player3);
+            players_initial.Add(player4);
 
             initializeNewGameStateFromSetupParameters();
 
@@ -579,18 +591,18 @@ namespace AndroidGui.Tests
                 new CentaurStep(3,2, false),
                 new CentaurStep(2,2, false),
             };
-            centaur = new Centaur(1, 1, centaurMoves);
+            centaur_initial = new Centaur(1, 1, centaurMoves);
 
-            player1.X = 2;
-            player1.Y = 0;
+            player1_initial.X = 2;
+            player1_initial.Y = 0;
 
             var player2 = new Player() { Name = "player2", X = 4, Y = 1 };
             var player3 = new Player() { Name = "player3", X = 3, Y = 3 };
             var player4 = new Player() { Name = "player4", X = 1, Y = 2 };
 
-            players.Add(player2);
-            players.Add(player3);
-            players.Add(player4);
+            players_initial.Add(player2);
+            players_initial.Add(player3);
+            players_initial.Add(player4);
 
             initializeNewGameStateFromSetupParameters();
 
@@ -634,76 +646,76 @@ namespace AndroidGui.Tests
         [Test]
         public void When_moving_to_hole_player_should_move_to_next_hole()
         {
-            player1.X = 3;
-            player1.Y = 2;
+            player1_initial.X = 3;
+            player1_initial.Y = 2;
 
             var teleporter3 = new Teleporter(2, null, 4, 3);
             var teleporter2 = new Teleporter(1, teleporter3, 4, 4);
             var teleporter1 = new Teleporter(0, teleporter2, 3, 3);
             teleporter3.NextHole = teleporter1;
-            holes.Add(teleporter1);
-            holes.Add(teleporter2);
-            holes.Add(teleporter3);
-            playfield[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
-            playfield[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
-            playfield[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
+            holes_initial.Add(teleporter1);
+            holes_initial.Add(teleporter2);
+            holes_initial.Add(teleporter3);
+            playfield_initial[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
+            playfield_initial[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
+            playfield_initial[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
             initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.MoveDown);
-            Assert.That(player1.X == 4 && player1.Y == 4);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 4);
             game.PerformMove(MoveType.DoNothing);
-            Assert.That(player1.X == 4 && player1.Y == 4);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 4);
 
             game.PerformMove(MoveType.MoveUp);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
             game.PerformMove(MoveType.DoNothing);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
         }
 
         [Test]
         public void When_jumping_into_hole_player_should_move_to_next_hole_but_not_when_waiting()
         {
-            player1.X = 3;
-            player1.Y = 3;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
 
             var teleporter3 = new Teleporter(2, null, 4, 3);
             var teleporter2 = new Teleporter(1, teleporter3, 4, 4);
             var teleporter1 = new Teleporter(0, teleporter2, 3, 3);
             teleporter3.NextHole = teleporter1;
-            holes.Add(teleporter1);
-            holes.Add(teleporter2);
-            holes.Add(teleporter3);
-            playfield[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
-            playfield[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
-            playfield[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
+            holes_initial.Add(teleporter1);
+            holes_initial.Add(teleporter2);
+            holes_initial.Add(teleporter3);
+            playfield_initial[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
+            playfield_initial[4, 4] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
+            playfield_initial[4, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter3);
             initializeNewGameStateFromSetupParameters();
 
             game.PerformMove(MoveType.DoNothing);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
             game.PerformMove(MoveType.DoNothing);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
 
             game.PerformMove(MoveType.FallThroughHole);
-            Assert.That(player1.X == 4 && player1.Y == 4);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 4);
             game.PerformMove(MoveType.FallThroughHole); // Invalid operation, should have no effect
-            Assert.That(player1.X == 4 && player1.Y == 4);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 4);
 
             game.PerformMove(MoveType.FallThroughHole);
-            Assert.That(player1.X == 4 && player1.Y == 3);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 3);
             game.PerformMove(MoveType.ThrowGrenadeDown);
-            Assert.That(player1.X == 4 && player1.Y == 3);
+            Assert.That(player1_initial.X == 4 && player1_initial.Y == 3);
 
             game.PerformMove(MoveType.FallThroughHole);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
             game.PerformMove(MoveType.DoNothing);
-            Assert.That(player1.X == 3 && player1.Y == 3);
+            Assert.That(player1_initial.X == 3 && player1_initial.Y == 3);
         }
 
         [Test]
         public void When_starting_game_players_are_alive()
         {
             var player2 = new Player() { Name = "Nemesis" };
-            players.Add(player2);
+            players_initial.Add(player2);
             initializeNewGameStateFromSetupParameters();
 
             Assert.IsTrue(game.Players[0].IsAlive);
@@ -713,12 +725,12 @@ namespace AndroidGui.Tests
         [Test]
         public void When_shot_player_should_die()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 5;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 5;
 
             var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
-            players.Add(nemesis);
+            players_initial.Add(nemesis);
             nemesis.X = 2;
             nemesis.Y = 0;
             initializeNewGameStateFromSetupParameters();
@@ -750,30 +762,30 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.FireLeft);
             Assert.IsFalse(nemesis.IsAlive);
 
-            nemesis.X = player1.X;
-            nemesis.Y = player1.Y;
+            nemesis.X = player1_initial.X;
+            nemesis.Y = player1_initial.Y;
             nemesis.IsAlive = true;
             initializeNewGameStateFromSetupParameters();
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.FireAtSameSquare);
             Assert.IsFalse(nemesis.IsAlive);
 
-            Assert.AreEqual(player1.NumArrows, 0, "Should spend arrows when shooting.");
+            Assert.AreEqual(player1_initial.NumArrows, 0, "Should spend arrows when shooting.");
         }
 
         [Test]
         public void When_shot_through_wall_player_should_survive()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 4;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 4;
             buildWallsAroundSquare(0, 2);
             buildWallsAroundSquare(4, 2);
             buildWallsAroundSquare(2, 4);
             buildWallsAroundSquare(2, 0);
 
             var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
-            players.Add(nemesis);
+            players_initial.Add(nemesis);
             nemesis.X = 2;
             nemesis.Y = 0;
             initializeNewGameStateFromSetupParameters();
@@ -806,14 +818,14 @@ namespace AndroidGui.Tests
         [Test]
         public void When_shooting_arrow_should_hit_the_first_player_it_encounters()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 4;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 4;
 
             var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
             var innocentBystander = new Player() { Name = "InnocentBystander", IsAlive = true };
-            players.Add(nemesis);
-            players.Add(innocentBystander);
+            players_initial.Add(nemesis);
+            players_initial.Add(innocentBystander);
 
             nemesis.X = 2;
             nemesis.Y = 1;
@@ -862,14 +874,14 @@ namespace AndroidGui.Tests
         [Test]
         public void Arrows_should_pass_through_dead_players()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 4;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 4;
 
             var deadPlayer = new Player() { Name = "DeadPlayer", IsAlive = false };
             var victim = new Player() { Name = "Victim", IsAlive = true };
-            players.Add(deadPlayer);
-            players.Add(victim);
+            players_initial.Add(deadPlayer);
+            players_initial.Add(victim);
 
             deadPlayer.X = 2;
             deadPlayer.Y = 1;
@@ -914,52 +926,52 @@ namespace AndroidGui.Tests
         [Test]
         public void When_shooting_at_exit_arrow_should_hit_nothing()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 4;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 4;
 
-            board.GetWallAbove(2, 0).IsExit = true;
-            board.GetWallAbove(2, 0).IsPassable = true;
-            board.GetWallAbove(2, 0).IsExterior = true;
+            board_initial.GetWallAbove(2, 0).IsExit = true;
+            board_initial.GetWallAbove(2, 0).IsPassable = true;
+            board_initial.GetWallAbove(2, 0).IsExterior = true;
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.FireUp);
             Assert.IsTrue(message.Contains("missed"));
 
-            board.GetWallRightOf(4, 2).IsExit = true;
-            board.GetWallRightOf(4, 2).IsPassable = true;
-            board.GetWallRightOf(4, 2).IsExterior = true;
+            board_initial.GetWallRightOf(4, 2).IsExit = true;
+            board_initial.GetWallRightOf(4, 2).IsPassable = true;
+            board_initial.GetWallRightOf(4, 2).IsExterior = true;
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireRight);
             Assert.IsTrue(message.Contains("missed"));
 
-            board.GetWallBelow(2, 4).IsExit = true;
-            board.GetWallBelow(2, 4).IsPassable = true;
-            board.GetWallBelow(2, 4).IsExterior = true;
+            board_initial.GetWallBelow(2, 4).IsExit = true;
+            board_initial.GetWallBelow(2, 4).IsPassable = true;
+            board_initial.GetWallBelow(2, 4).IsExterior = true;
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireDown);
             Assert.IsTrue(message.Contains("missed"));
 
-            board.GetWallLeftOf(0, 2).IsExit = true;
-            board.GetWallLeftOf(0, 2).IsPassable = true;
-            board.GetWallLeftOf(0, 2).IsExterior = true;
+            board_initial.GetWallLeftOf(0, 2).IsExit = true;
+            board_initial.GetWallLeftOf(0, 2).IsPassable = true;
+            board_initial.GetWallLeftOf(0, 2).IsExterior = true;
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.FireLeft);
             Assert.IsTrue(message.Contains("missed"));
 
-            Assert.AreEqual(player1.NumArrows, 0);
+            Assert.AreEqual(player1_initial.NumArrows, 0);
         }
 
         [Test]
         public void When_shooting_centaur_should_see_message_and_miss_player_behind_centaur()
         {
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 4;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 4;
 
             var innocentBystander = new Player() { Name = "InnocentBystander", IsAlive = true };
-            players.Add(innocentBystander);
+            players_initial.Add(innocentBystander);
 
-            centaur = new Centaur(2, 1, new List<CentaurStep>());
+            centaur_initial = new Centaur(2, 1, new List<CentaurStep>());
             innocentBystander.X = 2;
             innocentBystander.Y = 0;
             initializeNewGameStateFromSetupParameters();
@@ -968,7 +980,7 @@ namespace AndroidGui.Tests
             Assert.IsTrue(message.Contains("centaur"));
             Assert.IsTrue(innocentBystander.IsAlive);
 
-            centaur = new Centaur(3, 2, new List<CentaurStep>());
+            centaur_initial = new Centaur(3, 2, new List<CentaurStep>());
             innocentBystander.X = 4;
             innocentBystander.Y = 2;
             initializeNewGameStateFromSetupParameters();
@@ -977,7 +989,7 @@ namespace AndroidGui.Tests
             Assert.IsTrue(message.Contains("centaur"));
             Assert.IsTrue(innocentBystander.IsAlive);
 
-            centaur = new Centaur(2, 3, new List<CentaurStep>());
+            centaur_initial = new Centaur(2, 3, new List<CentaurStep>());
             innocentBystander.X = 2;
             innocentBystander.Y = 4;
             initializeNewGameStateFromSetupParameters();
@@ -986,7 +998,7 @@ namespace AndroidGui.Tests
             Assert.IsTrue(message.Contains("centaur"));
             Assert.IsTrue(innocentBystander.IsAlive);
 
-            centaur = new Centaur(1, 2, new List<CentaurStep>());
+            centaur_initial = new Centaur(1, 2, new List<CentaurStep>());
             innocentBystander.X = 0;
             innocentBystander.Y = 2;
             initializeNewGameStateFromSetupParameters();
@@ -1006,9 +1018,9 @@ namespace AndroidGui.Tests
         {
             int initialRngSeed = 1338;
 
-            player1.X = 2;
-            player1.Y = 2;
-            player1.NumArrows = 5;
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 5;
 
             var player2 = new Player() { Name = "Shrodinger1", IsAlive = true };
             var player3 = new Player() { Name = "Shrodinger2", IsAlive = true };
@@ -1018,10 +1030,10 @@ namespace AndroidGui.Tests
             // This turns out to be the unlucky victim for this particular RNG seed.
             var playerThatWillDieForThisRngSeed = player3;
 
-            players.Add(player2);
-            players.Add(player3);
-            players.Add(player4);
-            players.Add(player5);
+            players_initial.Add(player2);
+            players_initial.Add(player3);
+            players_initial.Add(player4);
+            players_initial.Add(player5);
 
             player2.X = player3.X = player4.X = player5.X = 2;
             player2.Y = player3.Y = player4.Y = player5.Y = 0;
@@ -1054,8 +1066,8 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.FireLeft);
             Assert.IsFalse(playerThatWillDieForThisRngSeed.IsAlive);
 
-            player2.X = player3.X = player4.X = player5.X = player1.X;
-            player2.Y = player3.Y = player4.Y = player5.Y = player1.Y;
+            player2.X = player3.X = player4.X = player5.X = player1_initial.X;
+            player2.Y = player3.Y = player4.Y = player5.Y = player1_initial.Y;
             player2.IsAlive = player3.IsAlive = player4.IsAlive = player5.IsAlive = true;
             initializeNewGameStateFromSetupParameters(initialRngSeed);
             game.PerformMove(MoveType.DoNothing);
@@ -1066,29 +1078,29 @@ namespace AndroidGui.Tests
         [Test]
         public void When_player_uses_nonexistent_gear_nothing_should_happen()
         {
-            player1.X = 3;
-            player1.Y = 3;
-            player1.NumArrows = 0;
-            player1.NumGrenades = 0;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.NumArrows = 0;
+            player1_initial.NumGrenades = 0;
 
             var player2 = new Player();
             player2.X = 0;
             player2.Y = 3;
-            players.Add(player2);
+            players_initial.Add(player2);
 
-            board.GetWallAbove(3, 3).IsPassable = false;
-            board.GetWallAbove(3, 3).HasHamster = true;
-            board.GetWallRightOf(3, 3).IsPassable = false;
+            board_initial.GetWallAbove(3, 3).IsPassable = false;
+            board_initial.GetWallAbove(3, 3).HasHamster = true;
+            board_initial.GetWallRightOf(3, 3).IsPassable = false;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.HamsterSprayUp);
-            Assert.True(board.GetWallAbove(3, 3).HasHamster);
+            Assert.True(board_initial.GetWallAbove(3, 3).HasHamster);
 
             makeCurrentPlayerDoNothing(); // Skip player 2
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterRight);
-            Assert.IsFalse(board.GetWallRightOf(3, 3).HasHamster);
+            Assert.IsFalse(board_initial.GetWallRightOf(3, 3).HasHamster);
 
             makeCurrentPlayerDoNothing(); // Skip player 2
 
@@ -1100,77 +1112,77 @@ namespace AndroidGui.Tests
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeRight);
-            Assert.IsFalse(board.GetWallRightOf(3, 3).IsPassable);
+            Assert.IsFalse(board_initial.GetWallRightOf(3, 3).IsPassable);
 
             makeCurrentPlayerDoNothing(); // Skip player 2
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallDown);
-            Assert.IsTrue(board.GetWallBelow(3, 3).IsPassable);
+            Assert.IsTrue(board_initial.GetWallBelow(3, 3).IsPassable);
         }
 
         [Test]
         public void When_visiting_ammo_storage_player_should_replenish_weapons()
         {
-            playfield[3, 4] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            playfield_initial[3, 4] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 3;
-            player1.Y = 3;
-            player1.IsAlive = true;
-            player1.NumArrows = 0;
-            player1.NumGrenades = 0;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.IsAlive = true;
+            player1_initial.NumArrows = 0;
+            player1_initial.NumGrenades = 0;
 
             game.PerformMove(MoveType.MoveDown);
 
-            Assert.AreEqual(player1.NumArrows, Player.ArrowCapacity);
-            Assert.AreEqual(player1.NumGrenades, Player.GrenadeCapacity);
+            Assert.AreEqual(player1_initial.NumArrows, Player.ArrowCapacity);
+            Assert.AreEqual(player1_initial.NumGrenades, Player.GrenadeCapacity);
 
         }
 
         [Test]
         public void When_visiting_hamster_storage_player_should_replenish_hamster_gear()
         {
-            playfield[3, 4] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
+            playfield_initial[3, 4] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 3;
-            player1.Y = 3;
-            player1.IsAlive = true;
-            player1.NumHamsters = 0;
-            player1.NumHamsterSprays = 0;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.IsAlive = true;
+            player1_initial.NumHamsters = 0;
+            player1_initial.NumHamsterSprays = 0;
 
             game.PerformMove(MoveType.MoveDown);
 
-            Assert.AreEqual(player1.NumHamsters, Player.HamsterCapacity);
-            Assert.AreEqual(player1.NumHamsterSprays, Player.HamsterSprayCapacity);
+            Assert.AreEqual(player1_initial.NumHamsters, Player.HamsterCapacity);
+            Assert.AreEqual(player1_initial.NumHamsterSprays, Player.HamsterSprayCapacity);
         }
 
         [Test]
         public void When_visiting_fitness_studio_dead_player_should_see_it_and_be_resurrected()
         {
-            playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            playfield_initial[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 3;
-            player1.Y = 3;
-            player1.IsAlive = false;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.IsAlive = false;
 
             var message = game.PerformMove(MoveType.MoveDown);
 
-            Assert.IsTrue(player1.IsAlive);
+            Assert.IsTrue(player1_initial.IsAlive);
             Assert.IsTrue(message.Contains("fitness studio"));
         }
 
         [Test]
         public void When_visiting_fitness_studio_live_player_should_see_empty_room()
         {
-            playfield[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            playfield_initial[3, 4] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 3;
-            player1.Y = 3;
-            player1.IsAlive = true;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.IsAlive = true;
 
             var message = game.PerformMove(MoveType.MoveDown);
 
@@ -1180,19 +1192,19 @@ namespace AndroidGui.Tests
         [Test]
         public void Dead_player_should_not_replenish_consumables_when_visiting_storage()
         {
-            playfield[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
-            playfield[3, 1] = new PlayfieldSquare(SquareType.CementStorage, 0);
-            playfield[4, 1] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
+            playfield_initial[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            playfield_initial[3, 1] = new PlayfieldSquare(SquareType.CementStorage, 0);
+            playfield_initial[4, 1] = new PlayfieldSquare(SquareType.HamsterStorage, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumArrows = 0;
-            player1.NumGrenades = 0;
-            player1.NumHamsters = 0;
-            player1.NumHamsterSprays = 0;
-            player1.NumCement = 0;
-            player1.IsAlive = false;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumArrows = 0;
+            player1_initial.NumGrenades = 0;
+            player1_initial.NumHamsters = 0;
+            player1_initial.NumHamsterSprays = 0;
+            player1_initial.NumCement = 0;
+            player1_initial.IsAlive = false;
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
@@ -1200,20 +1212,20 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.MoveRight);
 
-            Assert.AreEqual(player1.NumArrows, 0);
-            Assert.AreEqual(player1.NumGrenades, 0);
-            Assert.AreEqual(player1.NumHamsters, 0);
-            Assert.AreEqual(player1.NumHamsterSprays, 0);
-            Assert.AreEqual(player1.NumCement, 0);
+            Assert.AreEqual(player1_initial.NumArrows, 0);
+            Assert.AreEqual(player1_initial.NumGrenades, 0);
+            Assert.AreEqual(player1_initial.NumHamsters, 0);
+            Assert.AreEqual(player1_initial.NumHamsterSprays, 0);
+            Assert.AreEqual(player1_initial.NumCement, 0);
         }
 
         [Test]
         public void Player_should_drop_treasure_and_consumables_when_killed()
         {
-            player1.X = 0;
-            player1.Y = 0;
-            player1.NumArrows = 1;
-            board.GetPlayfieldSquareOf(1, 0).NumTreasures = 0;
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
+            player1_initial.NumArrows = 1;
+            board_initial.GetPlayfieldSquareOf(1, 0).NumTreasures = 0;
 
             var victim = new Player()
             {
@@ -1226,7 +1238,7 @@ namespace AndroidGui.Tests
                 NumHamsterSprays = 2,
                 NumCement = 2
             };
-            players.Add(victim);
+            players_initial.Add(victim);
             victim.X = 1;
             victim.Y = 0;
 
@@ -1239,330 +1251,330 @@ namespace AndroidGui.Tests
             Assert.AreEqual(victim.NumHamsters, 0);
             Assert.AreEqual(victim.NumHamsterSprays, 0);
             Assert.AreEqual(victim.NumCement, 0);
-            Assert.AreEqual(board.GetPlayfieldSquareOf(victim).NumTreasures, 1);
+            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(victim).NumTreasures, 1);
         }
 
         [Test]
         public void When_visiting_cement_storage_player_should_replenish_cement()
         {
-            playfield[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
+            playfield_initial[3, 4] = new PlayfieldSquare(SquareType.CementStorage, 0);
             initializeNewGameStateFromSetupParameters();
 
-            player1.X = 3;
-            player1.Y = 3;
-            player1.IsAlive = true;
-            player1.NumCement = 0;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.IsAlive = true;
+            player1_initial.NumCement = 0;
 
             game.PerformMove(MoveType.MoveDown);
 
-            Assert.AreEqual(player1.NumCement, Player.CementCapacity);
+            Assert.AreEqual(player1_initial.NumCement, Player.CementCapacity);
         }
 
         [Test]
         public void When_hitting_wall_player_should_not_move()
         {
             buildWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 1);
-            Assert.AreEqual(player1.Y, 1);
+            Assert.AreEqual(player1_initial.X, 1);
+            Assert.AreEqual(player1_initial.Y, 1);
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 1);
-            Assert.AreEqual(player1.Y, 1);
+            Assert.AreEqual(player1_initial.X, 1);
+            Assert.AreEqual(player1_initial.Y, 1);
 
             game.PerformMove(MoveType.MoveDown);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 1);
-            Assert.AreEqual(player1.Y, 1);
+            Assert.AreEqual(player1_initial.X, 1);
+            Assert.AreEqual(player1_initial.Y, 1);
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 1);
-            Assert.AreEqual(player1.Y, 1);
+            Assert.AreEqual(player1_initial.X, 1);
+            Assert.AreEqual(player1_initial.Y, 1);
         }
 
         [Test]
         public void When_moving_in_open_area_player_should_move()
         {
-            player1.X = 3;
-            player1.Y = 3;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 3);
-            Assert.AreEqual(player1.Y, 2);
+            Assert.AreEqual(player1_initial.X, 3);
+            Assert.AreEqual(player1_initial.Y, 2);
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 4);
-            Assert.AreEqual(player1.Y, 2);
+            Assert.AreEqual(player1_initial.X, 4);
+            Assert.AreEqual(player1_initial.Y, 2);
 
             game.PerformMove(MoveType.MoveDown);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 4);
-            Assert.AreEqual(player1.Y, 3);
+            Assert.AreEqual(player1_initial.X, 4);
+            Assert.AreEqual(player1_initial.Y, 3);
 
             game.PerformMove(MoveType.MoveLeft);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.AreEqual(player1.X, 3);
-            Assert.AreEqual(player1.Y, 3);
+            Assert.AreEqual(player1_initial.X, 3);
+            Assert.AreEqual(player1_initial.Y, 3);
         }
 
         [Test]
         public void When_placing_hamster_hamster_should_be_placed()
         {
             buildWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumHamsters = 4;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumHamsters = 4;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterUp);
 
-            Assert.IsTrue(board.GetWallAbove(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallAbove(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterRight);
 
-            Assert.IsTrue(board.GetWallRightOf(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallRightOf(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterDown);
 
-            Assert.IsTrue(board.GetWallBelow(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallBelow(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterLeft);
 
-            Assert.IsTrue(board.GetWallLeftOf(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallLeftOf(1, 1).HasHamster);
 
-            Assert.AreEqual(player1.NumHamsters, 0, "When placing hamster, hamster count should decrease");
+            Assert.AreEqual(player1_initial.NumHamsters, 0, "When placing hamster, hamster count should decrease");
         }
 
         [Test]
         public void When_placing_hamster_on_hamstered_wall_should_yield_no_result()
         {
             buildHamsteredWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumHamsters = 4;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumHamsters = 4;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterUp);
 
-            Assert.IsTrue(board.GetWallAbove(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallAbove(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterRight);
 
-            Assert.IsTrue(board.GetWallRightOf(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallRightOf(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterDown);
 
-            Assert.IsTrue(board.GetWallBelow(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallBelow(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.PlaceHamsterLeft);
 
-            Assert.IsTrue(board.GetWallLeftOf(1, 1).HasHamster);
+            Assert.IsTrue(board_initial.GetWallLeftOf(1, 1).HasHamster);
 
-            Assert.AreEqual(player1.NumHamsters, 4);
+            Assert.AreEqual(player1_initial.NumHamsters, 4);
         }
 
         [Test]
         public void When_spraying_hamsters_hamsters_should_die()
         {
             buildHamsteredWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumHamsterSprays = 4;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumHamsterSprays = 4;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.HamsterSprayUp);
 
-            Assert.IsFalse(board.GetWallAbove(1, 1).HasHamster);
+            Assert.IsFalse(board_initial.GetWallAbove(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.HamsterSprayRight);
 
-            Assert.IsFalse(board.GetWallRightOf(1, 1).HasHamster);
+            Assert.IsFalse(board_initial.GetWallRightOf(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.HamsterSprayDown);
 
-            Assert.IsFalse(board.GetWallBelow(1, 1).HasHamster);
+            Assert.IsFalse(board_initial.GetWallBelow(1, 1).HasHamster);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.HamsterSprayLeft);
 
-            Assert.IsFalse(board.GetWallLeftOf(1, 1).HasHamster);
+            Assert.IsFalse(board_initial.GetWallLeftOf(1, 1).HasHamster);
 
-            Assert.AreEqual(player1.NumHamsterSprays, 0, "When spraying hamsters, should spend hamster spray");
+            Assert.AreEqual(player1_initial.NumHamsterSprays, 0, "When spraying hamsters, should spend hamster spray");
         }
 
         [Test]
         public void When_constructing_wall_wall_should_be_created()
         {
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumCement = 4;
-            board.GetWallAbove(1, 1).IsExterior = true;
-            board.GetWallAbove(1, 1).IsExit = true;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumCement = 4;
+            board_initial.GetWallAbove(1, 1).IsExterior = true;
+            board_initial.GetWallAbove(1, 1).IsExit = true;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallUp);
 
-            Assert.IsFalse(board.GetWallAbove(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallAbove(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallRight);
 
-            Assert.IsFalse(board.GetWallRightOf(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallRightOf(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallDown);
 
-            Assert.IsFalse(board.GetWallBelow(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallBelow(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallLeft);
 
-            Assert.IsFalse(board.GetWallLeftOf(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallLeftOf(1, 1).IsPassable);
 
-            Assert.AreEqual(player1.NumCement, 0, "When using cement, cement count should decrease");
+            Assert.AreEqual(player1_initial.NumCement, 0, "When using cement, cement count should decrease");
         }
 
         [Test]
         public void When_attempting_to_construct_wall_on_wall_should_yield_no_result()
         {
             buildWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumCement = 4;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumCement = 4;
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallUp);
 
-            Assert.IsFalse(board.GetWallAbove(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallAbove(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallRight);
 
-            Assert.IsFalse(board.GetWallRightOf(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallRightOf(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallDown);
 
-            Assert.IsFalse(board.GetWallBelow(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallBelow(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.BuildWallLeft);
 
-            Assert.IsFalse(board.GetWallLeftOf(1, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallLeftOf(1, 1).IsPassable);
 
-            Assert.AreEqual(player1.NumCement, 4, "When building on existing walls, cement should not decrease");
+            Assert.AreEqual(player1_initial.NumCement, 4, "When building on existing walls, cement should not decrease");
         }
 
         [Test]
         public void When_blowing_up_wall_wall_should_disappear()
         {
             buildWallsAroundSquare(1, 1);
-            player1.X = 1;
-            player1.Y = 1;
-            player1.NumGrenades = 4;
+            player1_initial.X = 1;
+            player1_initial.Y = 1;
+            player1_initial.NumGrenades = 4;
             var expectedMessage = "You blow up the wall. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallAbove(1, 1).IsPassable);
+            Assert.IsTrue(board_initial.GetWallAbove(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallRightOf(1, 1).IsPassable);
+            Assert.IsTrue(board_initial.GetWallRightOf(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallBelow(1, 1).IsPassable);
+            Assert.IsTrue(board_initial.GetWallBelow(1, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(board.GetWallLeftOf(1, 1).IsPassable);
+            Assert.IsTrue(board_initial.GetWallLeftOf(1, 1).IsPassable);
 
-            Assert.AreEqual(player1.NumGrenades, 0, "When using grenades, grenade count should decrease");
+            Assert.AreEqual(player1_initial.NumGrenades, 0, "When using grenades, grenade count should decrease");
         }
 
         [Test]
         public void When_blowing_up_exterior_wall_should_see_message_and_no_result()
         {
-            player1.X = 0;
-            player1.Y = 0;
-            player1.NumGrenades = 4;
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
+            player1_initial.NumGrenades = 4;
             var expectedMessage = "The grenade explodes against an exterior wall. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallAbove(player1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallAbove(player1_initial).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallLeftOf(player1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallLeftOf(player1_initial).IsPassable);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallRightOf(player1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallRightOf(player1_initial).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallBelow(player1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallBelow(player1_initial).IsPassable);
 
-            Assert.AreEqual(player1.NumGrenades, 0);
+            Assert.AreEqual(player1_initial.NumGrenades, 0);
         }
 
         [Test]
         public void When_blowing_up_hidden_exit_should_remove_wall()
         {
-            player1.X = 0;
-            player1.Y = 0;
-            player1.NumGrenades = 4;
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
+            player1_initial.NumGrenades = 4;
             var expectedMessage = "You blow up the wall. ";
 
-            var firstHiddenExit = board.GetWallAbove(0, 0);
-            var secondHiddenExit = board.GetWallLeftOf(0, 0);
-            var thirdHiddenExit = board.GetWallRightOf(4, 4);
-            var fourthHiddenExit = board.GetWallBelow(4, 4);
+            var firstHiddenExit = board_initial.GetWallAbove(0, 0);
+            var secondHiddenExit = board_initial.GetWallLeftOf(0, 0);
+            var thirdHiddenExit = board_initial.GetWallRightOf(4, 4);
+            var fourthHiddenExit = board_initial.GetWallBelow(4, 4);
 
             firstHiddenExit.IsExit = secondHiddenExit.IsExit =
                 thirdHiddenExit.IsExit = fourthHiddenExit.IsExit = true;
@@ -1575,139 +1587,139 @@ namespace AndroidGui.Tests
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallAbove(player1).IsPassable);
+            Assert.IsTrue(game.Board.GetWallAbove(player1_initial).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallLeftOf(player1).IsPassable);
+            Assert.IsTrue(game.Board.GetWallLeftOf(player1_initial).IsPassable);
 
-            player1.X = 4;
-            player1.Y = 4;
+            player1_initial.X = 4;
+            player1_initial.Y = 4;
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallRightOf(player1).IsPassable);
+            Assert.IsTrue(game.Board.GetWallRightOf(player1_initial).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsTrue(game.Board.GetWallBelow(player1).IsPassable);
+            Assert.IsTrue(game.Board.GetWallBelow(player1_initial).IsPassable);
         }
 
         [Test]
         public void When_blowing_up_hamster_wall_should_see_message_and_no_result()
         {
             buildHamsteredWallsAroundSquare(3, 1);
-            player1.X = 3;
-            player1.Y = 1;
-            player1.NumGrenades = 4;
+            player1_initial.X = 3;
+            player1_initial.Y = 1;
+            player1_initial.NumGrenades = 4;
             var expectedMessage = "A hamster returns your grenade with the pin inserted. ";
 
             game.PerformMove(MoveType.DoNothing);
             var message = game.PerformMove(MoveType.ThrowGrenadeUp);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallAbove(3, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallAbove(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeRight);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallRightOf(3, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallRightOf(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeDown);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallBelow(3, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallBelow(3, 1).IsPassable);
 
             game.PerformMove(MoveType.DoNothing);
             message = game.PerformMove(MoveType.ThrowGrenadeLeft);
 
             Assert.AreEqual(message, expectedMessage);
-            Assert.IsFalse(board.GetWallLeftOf(3, 1).IsPassable);
+            Assert.IsFalse(board_initial.GetWallLeftOf(3, 1).IsPassable);
 
-            Assert.AreEqual(player1.NumGrenades, 4, "Hamster walls should not spend grenades");
+            Assert.AreEqual(player1_initial.NumGrenades, 4, "Hamster walls should not spend grenades");
         }
 
         [Test]
         public void When_visiting_treasure_player_should_take_it()
         {
-            player1.X = 3;
-            player1.Y = 3;
-            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
 
             game.PerformMove(MoveType.MoveUp);
             game.PerformMove(MoveType.DoNothing);
 
-            Assert.True(player1.CarriesTreasure);
-            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 1);
+            Assert.True(player1_initial.CarriesTreasure);
+            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 1);
         }
 
         [Test]
         public void When_visiting_treasure_when_already_carrying_player_should_see_and_leave_it()
         {
-            player1.X = 3;
-            player1.Y = 3;
-            player1.CarriesTreasure = true;
-            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.CarriesTreasure = true;
+            board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
             Assert.True(moveDescription.Contains("There is treasure here"));
-            Assert.True(player1.CarriesTreasure);
-            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
+            Assert.True(player1_initial.CarriesTreasure);
+            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
         [Test]
         public void When_visiting_treasure_dead_player_should_see_and_leave_it()
         {
-            player1.X = 3;
-            player1.Y = 3;
-            player1.CarriesTreasure = false;
-            player1.IsAlive = false;
-            board.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
+            player1_initial.X = 3;
+            player1_initial.Y = 3;
+            player1_initial.CarriesTreasure = false;
+            player1_initial.IsAlive = false;
+            board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures = 2;
 
             string moveDescription = game.PerformMove(MoveType.MoveUp);
 
             Assert.True(moveDescription.Contains("There is treasure here"));
-            Assert.False(player1.CarriesTreasure);
-            Assert.AreEqual(board.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
+            Assert.False(player1_initial.CarriesTreasure);
+            Assert.AreEqual(board_initial.GetPlayfieldSquareOf(3, 2).NumTreasures, 2);
         }
 
         [Test]
         public void When_exiting_labyrinth_in_single_player_should_stay_outside_for_one_move_sequence()
         {
-            player1.X = 0;
-            player1.Y = 3;
-            player1.NumHamsters = 1;
-            player1.NumArrows = 1;
-            player1.NumCement = 1;
-            var exit = board.GetWallLeftOf(0, 3);
+            player1_initial.X = 0;
+            player1_initial.Y = 3;
+            player1_initial.NumHamsters = 1;
+            player1_initial.NumArrows = 1;
+            player1_initial.NumCement = 1;
+            var exit = board_initial.GetWallLeftOf(0, 3);
 
             exit.IsExit = true;
             exit.IsPassable = true;
             exit.IsExterior = true;
 
             var message1 = game.PerformMove(MoveType.MoveLeft);
-            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
             var message2 = game.PerformMove(MoveType.PlaceHamsterRight); // No effect, outside
-            Assert.AreEqual(player1.NumHamsters, 1);
-            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            Assert.AreEqual(player1_initial.NumHamsters, 1);
+            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
             var message3 = game.PerformMove(MoveType.MoveRight);  // No effect, outside
-            Assert.IsTrue(player1.IsOutsideLabyrinth());
-            Assert.IsTrue(player1.X == -1 && player1.Y == 3);
+            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
+            Assert.IsTrue(player1_initial.X == -1 && player1_initial.Y == 3);
             var message4 = game.PerformMove(MoveType.BuildWallRight); // No effect, outside
-            Assert.AreEqual(player1.NumCement, 1);
+            Assert.AreEqual(player1_initial.NumCement, 1);
 
-            Assert.IsFalse(player1.IsOutsideLabyrinth());
+            Assert.IsFalse(player1_initial.IsOutsideLabyrinth());
             game.PerformMove(MoveType.MoveRight);
-            Assert.IsTrue(player1.X == 1 && player1.Y == 3);
+            Assert.IsTrue(player1_initial.X == 1 && player1_initial.Y == 3);
 
             // TODO: I don't know if the original rules specify that return to inside
             // happens on the end of the second or the beginning of the third turn.
@@ -1722,9 +1734,9 @@ namespace AndroidGui.Tests
         [Test]
         public void When_exiting_labyrinth_player_should_return_at_end_of_second_turn()
         {
-            player1.X = 0;
-            player1.Y = 1;
-            var exit = board.GetWallLeftOf(0, 1);
+            player1_initial.X = 0;
+            player1_initial.Y = 1;
+            var exit = board_initial.GetWallLeftOf(0, 1);
 
             exit.IsExit = true;
             exit.IsPassable = true;
@@ -1734,9 +1746,9 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.DoNothing);
 
             game.PerformMove(MoveType.DoNothing);
-            Assert.IsTrue(player1.IsOutsideLabyrinth());
+            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
             game.PerformMove(MoveType.DoNothing);
-            Assert.IsFalse(player1.IsOutsideLabyrinth());
+            Assert.IsFalse(player1_initial.IsOutsideLabyrinth());
 
             // TODO: I don't know if the original rules specify that return to inside
             // happens on the end of the second or the beginning of the third turn.
@@ -1747,9 +1759,9 @@ namespace AndroidGui.Tests
         public void When_exiting_labyrinth_player_should_skip_turn_and_reenter()
         {
             var player2 = new Player() { Name = "Spelunker", X = 0, Y = 0 };
-            players.Add(player2);
-            player1.X = 0;
-            player1.Y = 0;
+            players_initial.Add(player2);
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
             player2.NumArrows = 1;
 
             var exit = game.Board.GetWallAbove(0, 0);
@@ -1759,8 +1771,8 @@ namespace AndroidGui.Tests
             exit.IsExit = true;
 
             game.PerformMove(MoveType.MoveUp); // Player 1 exits
-            Assert.IsTrue(player1.IsOutsideLabyrinth());
-            Assert.IsTrue(player1.X == 0 && player1.Y == -1);
+            Assert.IsTrue(player1_initial.IsOutsideLabyrinth());
+            Assert.IsTrue(player1_initial.X == 0 && player1_initial.Y == -1);
             var player1Message = game.PerformMove(MoveType.PlaceHamsterLeft);
             Assert.IsTrue(player1Message.Contains("outside"));
 
@@ -1769,15 +1781,15 @@ namespace AndroidGui.Tests
             Assert.IsTrue(player2.X == 0 && player2.Y == -1);
             Assert.IsTrue(player2Message.Contains("outside"));
             game.PerformMove(MoveType.FireAtSameSquare);
-            Assert.IsTrue(player1.IsAlive);
+            Assert.IsTrue(player1_initial.IsAlive);
             Assert.AreEqual(player2.NumArrows, 1);
 
             player1Message = game.PerformMove(MoveType.MoveRight);
             Assert.IsTrue(player1Message.Contains("outside"));
-            Assert.IsTrue(player1.X == 0 && player1.Y == -1);
+            Assert.IsTrue(player1_initial.X == 0 && player1_initial.Y == -1);
             player1Message = game.PerformMove(MoveType.MoveRight);
             Assert.IsTrue(player1Message.Contains("enter"));
-            Assert.IsTrue(player1.X == 0 && player1.Y == 0);
+            Assert.IsTrue(player1_initial.X == 0 && player1_initial.Y == 0);
 
             player2Message = game.PerformMove(MoveType.FireDown);
             Assert.AreEqual(player2.NumArrows, 1);
@@ -1787,7 +1799,7 @@ namespace AndroidGui.Tests
 
             game.PerformMove(MoveType.MoveDown);
             game.PerformMove(MoveType.DoNothing);
-            Assert.IsTrue(player1.X == 0 && player1.Y == 1);
+            Assert.IsTrue(player1_initial.X == 0 && player1_initial.Y == 1);
 
             game.PerformMove(MoveType.MoveRight);
             game.PerformMove(MoveType.DoNothing);
@@ -1797,12 +1809,12 @@ namespace AndroidGui.Tests
         [Test]
         public void When_exiting_labyrinth_with_treasure_player_should_get_point()
         {
-            player1.X = 4;
-            player1.Y = 2;
-            player1.CarriesTreasure = true;
-            player1.Score = 0;
+            player1_initial.X = 4;
+            player1_initial.Y = 2;
+            player1_initial.CarriesTreasure = true;
+            player1_initial.Score = 0;
 
-            var exit = board.GetWallRightOf(4, 2);
+            var exit = board_initial.GetWallRightOf(4, 2);
 
             exit.IsExit = true;
             exit.IsPassable = true;
@@ -1810,19 +1822,19 @@ namespace AndroidGui.Tests
 
             game.PerformMove(MoveType.MoveRight);
 
-            Assert.IsFalse(player1.CarriesTreasure);
-            Assert.IsTrue(player1.Score == 1);
+            Assert.IsFalse(player1_initial.CarriesTreasure);
+            Assert.IsTrue(player1_initial.Score == 1);
         }
 
         [Test]
         public void When_exiting_labyrinth_without_treasure_player_should_get_message_but_no_points()
         {
-            player1.X = 2;
-            player1.Y = 4;
-            player1.CarriesTreasure = false;
-            player1.Score = 0;
+            player1_initial.X = 2;
+            player1_initial.Y = 4;
+            player1_initial.CarriesTreasure = false;
+            player1_initial.Score = 0;
 
-            var exit = board.GetWallBelow(2, 4);
+            var exit = board_initial.GetWallBelow(2, 4);
 
             exit.IsExterior = true;
             exit.IsExit = true;
@@ -1831,7 +1843,7 @@ namespace AndroidGui.Tests
 
             var message = game.PerformMove(MoveType.MoveDown);
 
-            Assert.IsTrue(player1.Score == 0);
+            Assert.IsTrue(player1_initial.Score == 0);
             Assert.IsTrue(message.Contains("outside"));
         }
 
@@ -1898,23 +1910,23 @@ namespace AndroidGui.Tests
             //verticalWalls[y, x] = new WallSection(false, false, false, false);
             //verticalWalls[y, x + 1] = new WallSection(false, false, false, false);
 
-            board.GetWallAbove(x, y).IsPassable = false;
-            board.GetWallRightOf(x, y).IsPassable = false;
-            board.GetWallBelow(x, y).IsPassable = false;
-            board.GetWallLeftOf(x, y).IsPassable = false;
+            board_initial.GetWallAbove(x, y).IsPassable = false;
+            board_initial.GetWallRightOf(x, y).IsPassable = false;
+            board_initial.GetWallBelow(x, y).IsPassable = false;
+            board_initial.GetWallLeftOf(x, y).IsPassable = false;
         }
 
         private void buildHamsteredWallsAroundSquare(int x, int y)
         {
-            board.GetWallAbove(x, y).IsPassable = false;
-            board.GetWallRightOf(x, y).IsPassable = false;
-            board.GetWallBelow(x, y).IsPassable = false;
-            board.GetWallLeftOf(x, y).IsPassable = false;
+            board_initial.GetWallAbove(x, y).IsPassable = false;
+            board_initial.GetWallRightOf(x, y).IsPassable = false;
+            board_initial.GetWallBelow(x, y).IsPassable = false;
+            board_initial.GetWallLeftOf(x, y).IsPassable = false;
 
-            board.GetWallAbove(x, y).HasHamster = true;
-            board.GetWallRightOf(x, y).HasHamster = true;
-            board.GetWallBelow(x, y).HasHamster = true;
-            board.GetWallLeftOf(x, y).HasHamster = true;
+            board_initial.GetWallAbove(x, y).HasHamster = true;
+            board_initial.GetWallRightOf(x, y).HasHamster = true;
+            board_initial.GetWallBelow(x, y).HasHamster = true;
+            board_initial.GetWallLeftOf(x, y).HasHamster = true;
         }
 
         private void makeCurrentPlayerDoNothing()
@@ -1925,11 +1937,11 @@ namespace AndroidGui.Tests
 
         private void initializeNewGameStateFromSetupParameters(bool useBoardDefinedStartingPositions = false)
         {
-            var playerStatePreInitialization = HelperMethods.DeepClone(players);
+            var playerStatePreInitialization = HelperMethods.DeepClone(players_initial);
 
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
-            game = new GameState(board, players);
+            board_initial = new BoardState(playfield_initial, horizontalWalls_initial, verticalWalls_initial, holes_initial,
+                centaur_initial, startingPositions_initial);
+            game = new GameState(board_initial, players_initial);
 
             if (!useBoardDefinedStartingPositions)
             {
@@ -1945,11 +1957,11 @@ namespace AndroidGui.Tests
         private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed,
             bool useBoardDefinedStartingPositions = false)
         {
-            var playerStatePreInitialization = HelperMethods.DeepClone(players);
+            var playerStatePreInitialization = HelperMethods.DeepClone(players_initial);
 
-            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
-                centaur, startingPositions);
-            game = new GameState(board, players, withInitialRngSeed);
+            board_initial = new BoardState(playfield_initial, horizontalWalls_initial, verticalWalls_initial, holes_initial,
+                centaur_initial, startingPositions_initial);
+            game = new GameState(board_initial, players_initial, withInitialRngSeed);
 
             if (!useBoardDefinedStartingPositions)
             {
