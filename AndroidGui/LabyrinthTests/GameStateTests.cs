@@ -1916,16 +1916,38 @@ namespace AndroidGui.Tests
 
         private void initializeNewGameStateFromSetupParameters()
         {
+            var playerStatePreInitialization = HelperMethods.DeepClone(players);
+
             board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
                 centaur, startingPositions);
             game = new GameState(board, players);
+
+            for (int i = 0; i < game.Players.Count; i++)
+            {
+                // Preserve the player positions that were defined in the test, rather than
+                // using the positions that the game chooses based on the board-defined
+                // initial starting positions
+                game.Players[i].X = playerStatePreInitialization[i].X;
+                game.Players[i].Y = playerStatePreInitialization[i].Y;
+            }
         }
 
         private void initializeNewGameStateFromSetupParameters(int withInitialRngSeed)
         {
+            var playerStatePreInitialization = HelperMethods.DeepClone(players);
+
             board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
                 centaur, startingPositions);
             game = new GameState(board, players, withInitialRngSeed);
+
+            for (int i = 0; i < game.Players.Count; i++)
+            {
+                // Preserve the player positions that were defined in the test, rather than
+                // using the positions that the game chooses based on the board-defined
+                // initial starting positions
+                game.Players[i].X = playerStatePreInitialization[i].X;
+                game.Players[i].Y = playerStatePreInitialization[i].Y;
+            }
         }
     }
 }
