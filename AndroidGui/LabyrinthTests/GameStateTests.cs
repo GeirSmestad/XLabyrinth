@@ -10,6 +10,7 @@ using LabyrinthEngine.Helpers;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Moves;
 using System.Collections.ObjectModel;
+using LabyrinthTests;
 
 namespace AndroidGui.Tests
 {
@@ -36,9 +37,9 @@ namespace AndroidGui.Tests
         public void SetUp()
         {
             // Initialize an empty board. You can rebuild it with arbitrary content in each test.
-            playfield = initializeEmptyPlayfield(5, 5);
-            horizontalWalls = initializeEmptyHorizontalWalls(5, 5);
-            verticalWalls = initializeEmptyVerticalWalls(5, 5);
+            playfield = TestHelpers.InitializeEmptyPlayfield(5, 5);
+            horizontalWalls = TestHelpers.InitializeEmptyHorizontalWalls(5, 5);
+            verticalWalls = TestHelpers.InitializeEmptyVerticalWalls(5, 5);
             startingPositions = new List<Position> { new Position(0, 0) };
             holes = new List<Teleporter>();
 
@@ -769,7 +770,7 @@ namespace AndroidGui.Tests
             buildWallsAroundSquare(0, 2);
             buildWallsAroundSquare(4, 2);
             buildWallsAroundSquare(2, 4);
-            buildWallsAroundSquare(0, 2);
+            buildWallsAroundSquare(2, 0);
 
             var nemesis = new Player() { Name = "Nemesis", IsAlive = true };
             players.Add(nemesis);
@@ -1065,11 +1066,47 @@ namespace AndroidGui.Tests
         [Test]
         public void When_player_uses_nonexistent_gear_nothing_should_happen()
         {
-            // Test using all five different gear types in legal situation but carrying zero of each.
-            // Then perform a legal move afterwards.
-            // Assert that no actions except the legal move were executed.
+            player1.X = 3;
+            player1.Y = 3;
+            player1.NumArrows = 0;
+            player1.NumGrenades = 0;
 
-            Assert.Fail("Not implemented");
+            var player2 = new Player();
+            player2.X = 0;
+            player2.Y = 3;
+            players.Add(player2);
+
+            board.GetWallAbove(3, 3).IsPassable = false;
+            board.GetWallAbove(3, 3).HasHamster = true;
+            board.GetWallRightOf(3, 3).IsPassable = false;
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.HamsterSprayUp);
+            Assert.True(board.GetWallAbove(3, 3).HasHamster);
+
+            makeCurrentPlayerDoNothing(); // Skip player 2
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.PlaceHamsterRight);
+            Assert.IsFalse(board.GetWallRightOf(3, 3).HasHamster);
+
+            makeCurrentPlayerDoNothing(); // Skip player 2
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.FireLeft);
+            Assert.True(player2.IsAlive);
+
+            makeCurrentPlayerDoNothing(); // Skip player 2
+
+            game.PerformMove(MoveType.DoNothing);
+            var message = game.PerformMove(MoveType.ThrowGrenadeRight);
+            Assert.IsFalse(board.GetWallRightOf(3, 3).IsPassable);
+
+            makeCurrentPlayerDoNothing(); // Skip player 2
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.BuildWallDown);
+            Assert.IsTrue(board.GetWallBelow(3, 3).IsPassable);
         }
 
         [Test]
@@ -1806,7 +1843,7 @@ namespace AndroidGui.Tests
         }
 
         [Test]
-        public void Movement_as_followup_action_should_be_ignored()
+        public void Movement_as_followup_action_should_cause_skipped_followup_action()
         {
             Assert.Fail("Not implemented");
         }
@@ -1884,62 +1921,6 @@ namespace AndroidGui.Tests
         {
             game.PerformMove(MoveType.DoNothing);
             game.PerformMove(MoveType.DoNothing);
-        }
-
-        private PlayfieldSquare[,] initializeEmptyPlayfield(int boardWidth, int boardHeight)
-        {
-            var result = new PlayfieldSquare[boardWidth, boardHeight];
-
-            for (int y = 0; y < boardHeight; y++)
-            {
-                for (int x = 0; x < boardWidth; x++)
-                {
-                    result[x, y] = new PlayfieldSquare(SquareType.Empty, 0);
-                }
-            }
-            return result;
-        }
-
-        private WallSection[,] initializeEmptyHorizontalWalls(int boardWidth, int boardHeight)
-        {
-            var result = new WallSection[boardWidth, boardHeight + 1];
-
-            for (int w_y = 0; w_y <= boardHeight; w_y++)
-            {
-                for (int x = 0; x < boardWidth; x++)
-                {
-                    if (w_y == 0 || w_y == boardHeight)
-                    {
-                        result[x, w_y] = new WallSection(false, false, false, isExterior: true);
-                    }
-                    else
-                    {
-                        result[x, w_y] = new WallSection(true, false, false, false); // No wall
-                    }
-                }
-            }
-            return result;
-        }
-
-        private WallSection[,] initializeEmptyVerticalWalls(int boardWidth, int boardHeight)
-        {
-            var result = new WallSection[boardWidth, boardHeight + 1];
-
-            for (int w_x = 0; w_x <= boardWidth; w_x++)
-            {
-                for (int y = 0; y < boardHeight; y++)
-                {
-                    if (w_x == 0 || w_x == boardWidth)
-                    {
-                        result[y, w_x] = new WallSection(false, false, false, isExterior: true);
-                    }
-                    else
-                    {
-                        result[y, w_x] = new WallSection(true, false, false, false); // No wall
-                    }
-                }
-            }
-            return result;
         }
 
         private void initializeNewGameStateFromSetupParameters(bool useBoardDefinedStartingPositions = false)

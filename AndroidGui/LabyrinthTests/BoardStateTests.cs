@@ -7,26 +7,45 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Entities;
 
 namespace LabyrinthTests
 {
     [TestFixture]
     public class BoardStateTests
     {
+        WallSection[,] horizontalWalls;
+        WallSection[,] verticalWalls;
+        PlayfieldSquare[,] playfield;
+        List<Teleporter> holes;
+        Centaur centaur;
+        List<Position> startingPositions;
+
         BoardState board;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
-            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\TestBoard.xml");
+            // Initialize an empty board. You can rebuild it with arbitrary content in each test.
+            playfield = TestHelpers.InitializeEmptyPlayfield(5, 5);
+            horizontalWalls = TestHelpers.InitializeEmptyHorizontalWalls(5, 5);
+            verticalWalls = TestHelpers.InitializeEmptyVerticalWalls(5, 5);
+            startingPositions = new List<Position> { new Position(0, 0) };
+            holes = new List<Teleporter>();
 
-            var boardLoader = new BoardLoader(boardXmlContent);
-            board = boardLoader.Board;
+            centaur = new Centaur(-1, -1, new List<CentaurStep>());
+            playfield[1, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, 
+                new Teleporter(0, null, 1, 3));
+
+            board = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
         }
 
         [Test]
         public void TestGetPlayfieldSquareAt()
         {
+            var square = board.GetPlayfieldSquareOf(1, 3);
+
             Assert.That(board.GetPlayfieldSquareOf(1, 3).Type == SquareType.Teleporter);
         }
 
