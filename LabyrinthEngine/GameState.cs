@@ -23,6 +23,7 @@ namespace LabyrinthEngine
         private Random randomNumberGenerator;
         private int initialRngSeed; // Must store this to facilitate rebuilding game state from completedMoves
         private BoardState initialBoardState;
+        private List<Player> initialPlayersState;
         private int currentUndoStep;
 
         private TurnController turnController;
@@ -34,6 +35,7 @@ namespace LabyrinthEngine
 
             initialRngSeed = DateTime.Now.GetHashCode();
             initialBoardState = HelperMethods.DeepClone(Board);
+            initialPlayersState = HelperMethods.DeepClone(Players);
             completedMoves = new List<Move>();
 
             setGameToInitialState();
@@ -46,6 +48,7 @@ namespace LabyrinthEngine
 
             this.initialRngSeed = initialRngSeed;
             initialBoardState = HelperMethods.DeepClone(Board);
+            initialPlayersState = HelperMethods.DeepClone(Players);
             completedMoves = new List<Move>();
 
             setGameToInitialState();
