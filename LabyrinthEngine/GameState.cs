@@ -50,13 +50,14 @@ namespace LabyrinthEngine
             initialBoardState = HelperMethods.DeepClone(Board);
             initialPlayersState = HelperMethods.DeepClone(Players);
             completedMoves = new List<Move>();
+            currentUndoStep = 0;
 
             setGameToInitialState();
         }
 
         /// <summary>
-        /// Sets the game to its initial state, but keep the list of completed moves, if any.
-        /// In effect, this performs an undo back to the very first move of the game.
+        /// Sets the game to its initial state, but keep the list of completed moves 
+        /// & undo state, if any.
         /// </summary>
         private void setGameToInitialState()
         {
@@ -69,7 +70,7 @@ namespace LabyrinthEngine
 
             setPlayersToInitialPositions();
             turnController = new TurnController(Board, Players, randomNumberGenerator);
-            currentUndoStep = completedMoves.Count;
+            //currentUndoStep = completedMoves.Count; // TODO: Unknown if skipping this has any negative consequences.
         }
 
         public Player CurrentPlayer()
@@ -215,7 +216,15 @@ namespace LabyrinthEngine
             for (int i = 0; i < n; i++)
             {
                 var nextMoveToExecute = completedMoves[i].ActionType;
-                performMainActionForCurrentPlayer(nextMoveToExecute); // Also performs followup actions
+
+                if (CurrentTurnPhase == TurnPhase.SelectMainAction)
+                { 
+                    performMainActionForCurrentPlayer(nextMoveToExecute); // Also performs followup actions
+                }
+                else
+                {
+                    performFollowupActionForCurrentPlayer(nextMoveToExecute);
+                }
             }
         }
 
