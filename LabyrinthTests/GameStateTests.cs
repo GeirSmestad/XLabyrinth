@@ -1927,7 +1927,7 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.MoveUp); // Receives cement
             game.PerformMove(MoveType.BuildWallRight);
             game.PerformMove(MoveType.MoveLeft); // Hit centaur and died
-            Assert.False(Board.GetWallRightOf(2, 2).IsPassable); // TODO: Remove when you see that it works
+            
 
             game.UndoPreviousMove();
             Assert.True(Player1.IsAlive);
@@ -1942,28 +1942,45 @@ namespace AndroidGui.Tests
             Assert.True(Player1.X == 2 && Player1.Y == 3);
             Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectMainAction);
             Assert.AreEqual(Player1.NumCement, 0);
-            game.UndoPreviousMove();
+            game.UndoPreviousMove(); // Try to undo past the initial game state
             Assert.True(Centaur.X == -1 && Centaur.Y == -1);
             Assert.True(Player1.X == 2 && Player1.Y == 3);
             Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectMainAction);
             Assert.AreEqual(Player1.NumCement, 0);
 
-
-            // movement, followup
+            game.RedoNextMove(); // Redid "move up"
+            Assert.True(Board.GetWallRightOf(2, 2).IsPassable);
+            Assert.AreEqual(Player1.NumCement, Player.CementCapacity);
+            Assert.True(Centaur.X == -1 && Centaur.Y == -1);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
+            game.RedoNextMove(); // Redid "build wall right"
+            Assert.False(Board.GetWallRightOf(2, 2).IsPassable);
+            Assert.AreEqual(Player1.NumCement, Player.CementCapacity - 1);
+            Assert.True(Centaur.X == 1 && Centaur.Y == 2);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectMainAction);
+            game.RedoNextMove(); // Redid "Walk left"
+            Assert.True(Player1.X == 1 && Player1.Y == 2);
+            Assert.False(Player1.IsAlive);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
+            game.RedoNextMove(); // Try to redo past the final redo state
+            Assert.True(Player1.X == 1 && Player1.Y == 2);
+            Assert.False(Player1.IsAlive);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
 
             //game.PerformMove(MoveType.FireLeft);
             // Movement was automatically executed as "stand still" before followup action
 
             // undo both after action and followup
-            // undo all the way back to start and beyond
             // do nothing as both main action and followup
-            
+            // Perform some blocked/illegal moves: Action as main, movement as followup.
+
             // redo all the way back to front and beyond
-            // move after this, with redo afterwards
+            // move after this, with *redo* afterwards (and assert that nothing further happened)
 
             // undo a few moves, then redo back to front
             // perform move, assert OK
 
+            // Insert a teleporter, which we can also fall through?
 
             // TODO: This test is not finished.
         }
@@ -1974,6 +1991,8 @@ namespace AndroidGui.Tests
             Assert.Fail("Not implemented");
 
             // Check that undo and the resuming play does not corrupt game state
+            // Undo all the way back and resume
+            // Undo 
         }
 
         // Helper methods for creating data to test.

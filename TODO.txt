@@ -1,3 +1,4 @@
 TODO: Undo & redo
+TODO: Currently not making text available in UI on undo/redo. This should be simple enough to solve.
 TODO: Implement board rotation. BoardLoader.cs.
 TODO: Split game state tests into smaller files
