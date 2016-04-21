@@ -63,6 +63,10 @@ namespace LabyrinthEngine
             throw new NotImplementedException();
         }
 
+        // TODO: Saves a lot of code if all operations are performed in a single method
+        // which just receives a description of the operation to be performed. Can implement this
+        // with "originalXCoordinate", "transformedXCoordinate" etc.
+
         private void rotateRight(int howMany90DegreesToRotate)
         {
             // Simplest solution involves methods that map each (x,y), (x, w_y), (y, w_x) coordinate
