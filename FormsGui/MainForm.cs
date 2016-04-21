@@ -62,6 +62,8 @@ namespace FormsGui
             printPlayerState();
             textBoxMessages.Text = "Game started." + Environment.NewLine;
             printGameState();
+            buttonUndo.Enabled = game.CanUndo();
+            buttonRedo.Enabled = game.CanRedo();
         }
 
         private BoardState loadBoard()
@@ -81,8 +83,6 @@ namespace FormsGui
             }
         }
 
-        // TODO: Undo & redo properly implemented in the interface
-
         private void executeAction(MoveType move)
         {
             var player = game.CurrentPlayer();
@@ -96,6 +96,9 @@ namespace FormsGui
             textBoxMessages.ScrollToCaret();
             printPlayerState();
             printGameState();
+
+            buttonUndo.Enabled = game.CanUndo();
+            buttonRedo.Enabled = game.CanRedo();
         }
 
         private void printGameState()
@@ -521,6 +524,26 @@ namespace FormsGui
         private void checkBoxHideBoard_CheckedChanged(object sender, EventArgs e)
         {
             canvas.Invalidate();
+        }
+
+        private void buttonUndo_Click(object sender, EventArgs e)
+        {
+            game.UndoPreviousMove();
+            printGameState();
+            printPlayerState();
+            canvas.Invalidate();
+            buttonUndo.Enabled = game.CanUndo();
+            buttonRedo.Enabled = game.CanRedo();
+        }
+
+        private void buttonRedo_Click(object sender, EventArgs e)
+        {
+            game.RedoNextMove();
+            printGameState();
+            printPlayerState();
+            canvas.Invalidate();
+            buttonUndo.Enabled = game.CanUndo();
+            buttonRedo.Enabled = game.CanRedo();
         }
     }
 }

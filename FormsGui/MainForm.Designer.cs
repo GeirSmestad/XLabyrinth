@@ -30,6 +30,7 @@
         {
             this.canvas = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBoxHideBoard = new System.Windows.Forms.CheckBox();
             this.bFallThrough = new System.Windows.Forms.Button();
             this.bShootHere = new System.Windows.Forms.Button();
             this.rbGrenade = new System.Windows.Forms.RadioButton();
@@ -59,7 +60,8 @@
             this.newGameWith4Players = new System.Windows.Forms.ToolStripMenuItem();
             this.newGameWith5Players = new System.Windows.Forms.ToolStripMenuItem();
             this.newGameWith6Players = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBoxHideBoard = new System.Windows.Forms.CheckBox();
+            this.buttonUndo = new System.Windows.Forms.Button();
+            this.buttonRedo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.panel1.SuspendLayout();
             this.statusPanel.SuspendLayout();
@@ -79,6 +81,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonRedo);
+            this.panel1.Controls.Add(this.buttonUndo);
             this.panel1.Controls.Add(this.checkBoxHideBoard);
             this.panel1.Controls.Add(this.bFallThrough);
             this.panel1.Controls.Add(this.bShootHere);
@@ -100,6 +104,17 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(275, 418);
             this.panel1.TabIndex = 1;
+            // 
+            // checkBoxHideBoard
+            // 
+            this.checkBoxHideBoard.AutoSize = true;
+            this.checkBoxHideBoard.Location = new System.Drawing.Point(186, 389);
+            this.checkBoxHideBoard.Name = "checkBoxHideBoard";
+            this.checkBoxHideBoard.Size = new System.Drawing.Size(78, 17);
+            this.checkBoxHideBoard.TabIndex = 19;
+            this.checkBoxHideBoard.Text = "Hide board";
+            this.checkBoxHideBoard.UseVisualStyleBackColor = true;
+            this.checkBoxHideBoard.CheckedChanged += new System.EventHandler(this.checkBoxHideBoard_CheckedChanged);
             // 
             // bFallThrough
             // 
@@ -389,16 +404,27 @@
             this.newGameWith6Players.Text = "6 players";
             this.newGameWith6Players.Click += new System.EventHandler(this.newGameWith6Players_Click);
             // 
-            // checkBoxHideBoard
+            // buttonUndo
             // 
-            this.checkBoxHideBoard.AutoSize = true;
-            this.checkBoxHideBoard.Location = new System.Drawing.Point(176, 386);
-            this.checkBoxHideBoard.Name = "checkBoxHideBoard";
-            this.checkBoxHideBoard.Size = new System.Drawing.Size(78, 17);
-            this.checkBoxHideBoard.TabIndex = 16;
-            this.checkBoxHideBoard.Text = "Hide board";
-            this.checkBoxHideBoard.UseVisualStyleBackColor = true;
-            this.checkBoxHideBoard.CheckedChanged += new System.EventHandler(this.checkBoxHideBoard_CheckedChanged);
+            this.buttonUndo.Enabled = false;
+            this.buttonUndo.Location = new System.Drawing.Point(8, 386);
+            this.buttonUndo.Name = "buttonUndo";
+            this.buttonUndo.Size = new System.Drawing.Size(75, 23);
+            this.buttonUndo.TabIndex = 17;
+            this.buttonUndo.Text = "Undo";
+            this.buttonUndo.UseVisualStyleBackColor = true;
+            this.buttonUndo.Click += new System.EventHandler(this.buttonUndo_Click);
+            // 
+            // buttonRedo
+            // 
+            this.buttonRedo.Enabled = false;
+            this.buttonRedo.Location = new System.Drawing.Point(90, 386);
+            this.buttonRedo.Name = "buttonRedo";
+            this.buttonRedo.Size = new System.Drawing.Size(75, 23);
+            this.buttonRedo.TabIndex = 18;
+            this.buttonRedo.Text = "Redo";
+            this.buttonRedo.UseVisualStyleBackColor = true;
+            this.buttonRedo.Click += new System.EventHandler(this.buttonRedo_Click);
             // 
             // MainForm
             // 
@@ -464,6 +490,8 @@
         private System.Windows.Forms.ToolStripMenuItem newGameWith5Players;
         private System.Windows.Forms.ToolStripMenuItem newGameWith6Players;
         private System.Windows.Forms.CheckBox checkBoxHideBoard;
+        private System.Windows.Forms.Button buttonRedo;
+        private System.Windows.Forms.Button buttonUndo;
     }
 }
 

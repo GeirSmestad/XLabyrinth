@@ -30,10 +30,6 @@ namespace AndroidGui.Tests
 
         List<Player> players_initial;
         Player player1_initial;
-        Player player2_initial;
-        Player player3_initial;
-        Player player4_initial;
-        Player player5_initial;
 
         // TODO: This test file is getting very long -- should split up in separate test files.
         // Need to think out a decent way to initialize the game state tests; they use the same functions.
@@ -72,19 +68,8 @@ namespace AndroidGui.Tests
         Player Player1 { get { return game.Players[0]; } }
         Player Player2 { get { return game.Players[1]; } }
         Player Player3 { get { return game.Players[2]; } }
-        //Player Player4 { get { return game.Players[3]; } }
-        //Player Player5 { get { return game.Players[4]; } }
-        //Player Player6 { get { return game.Players[5]; } }
         BoardState Board { get { return game.Board; } }
         Centaur Centaur { get { return game.Board.centaur; } }
-
-        // TODO: When rewriting tests to support undo/redo, we can use properties, e.g. like
-        //public Player player9
-        //{
-        //    get { return game.Players[9];  }
-        //}
-
-        // Game state tests
 
         [Test]
         public void When_starting_game_players_should_be_at_starting_positions()
@@ -1206,6 +1191,15 @@ namespace AndroidGui.Tests
         }
 
         [Test]
+        public void When_standing_in_storage_and_using_consumables_should_immediately_replenish_consumables()
+        {
+            // Test for each of "fire, then wait" and "fire as part of movement action".
+            // Test for each of the consumable locations.
+
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
         public void Dead_player_should_not_replenish_consumables_when_visiting_storage()
         {
             playfield_initial[2, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
@@ -1910,18 +1904,24 @@ namespace AndroidGui.Tests
         [Test]
         public void Undo_and_redo_moves_should_work()
         {
-            //player1_initial.X = 2;
-            //player1_initial.Y = 3;
             startingPositions_initial = new List<Position>() { new Position(2, 3) };
 
             var centaurMoves = new List<CentaurStep>()
             {
-                //new CentaurStep(1,3,false),
                 new CentaurStep(1,2,false),
-                new CentaurStep(2,2,false)
+                new CentaurStep(2,2,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false)
             };
             centaur_initial = new Centaur(-1, -1, centaurMoves);
             board_initial.PlayfieldGrid[2, 2] = new PlayfieldSquare(SquareType.CementStorage, numTreasures: 1);
+            board_initial.PlayfieldGrid[0, 2] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            board_initial.PlayfieldGrid[0, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            board_initial.GetWallAbove(1, 1).IsPassable = false;
             initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions:true);
 
             // Undo back to first move and beyond. Should return game state to before first move.
@@ -1929,7 +1929,6 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.BuildWallRight);
             game.PerformMove(MoveType.MoveLeft); // Hit centaur and died
             
-
             game.UndoPreviousMove();
             Assert.True(Player1.IsAlive);
             Assert.True(Player1.X == 2 && Player1.Y == 2);
@@ -1967,33 +1966,147 @@ namespace AndroidGui.Tests
             Assert.True(Player1.X == 1 && Player1.Y == 2);
             Assert.False(Player1.IsAlive);
             Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
+            game.RedoNextMove(); // Nothing should happen
+            Assert.False(game.CanRedo());
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
 
-            //game.PerformMove(MoveType.FireLeft);
+            game.PerformMove(MoveType.DoNothing);
+
+            game.PerformMove(MoveType.MoveLeft); // Alive again
+            game.PerformMove(MoveType.DoNothing);
+
+            game.PerformMove(MoveType.MoveUp); // Gets more ammo
+            game.PerformMove(MoveType.DoNothing);
+
+            game.PerformMove(MoveType.MoveRight);
+            game.PerformMove(MoveType.FireRight);
+
             // Movement was automatically executed as "stand still" before followup action
+            game.PerformMove(MoveType.ThrowGrenadeUp);
 
-            // undo both after action and followup
-            // do nothing as both main action and followup
-            // Perform some blocked/illegal moves: Action as main, movement as followup.
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.MoveRight); // Nothing happens
 
-            // redo all the way back to front and beyond
-            // move after this, with *redo* afterwards (and assert that nothing further happened)
+            game.UndoPreviousMove(); // Undid "attempt to move right on followup" (do nothing)
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            game.UndoPreviousMove(); // Undid "do nothing"
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumGrenades, Player.GrenadeCapacity-1);
+            Assert.True(Board.GetWallAbove(1, 1).IsPassable);
+            game.UndoPreviousMove(); // Undid "Grenade up"
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.False(Board.GetWallAbove(1, 1).IsPassable);
+            Assert.AreEqual(Player1.NumGrenades, Player.GrenadeCapacity);
+            game.UndoPreviousMove(); // Undid implicit "do nothing" move
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumArrows, Player.ArrowCapacity - 1);
+            game.UndoPreviousMove(); // Undid "Fire right"
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumArrows, Player.ArrowCapacity);
+            game.UndoPreviousMove(); // Undid "Move right"
+            Assert.True(Player1.X == 0 && Player1.Y == 1);
 
-            // undo a few moves, then redo back to front
-            // perform move, assert OK
+            game.UndoPreviousMove(); // Undid "Do nothing"
+            game.UndoPreviousMove(); // Undid "Move up"
 
-            // Insert a teleporter, which we can also fall through?
+            Assert.True(Player1.X == 0 && Player1.Y == 2);
 
-            // TODO: This test is not finished.
+            game.UndoPreviousMove();
+            Assert.True(Player1.IsAlive);
+            game.UndoPreviousMove();
+            Assert.False(Player1.IsAlive);
+            game.RedoNextMove();
+            game.RedoNextMove();
+            game.RedoNextMove();
+            game.RedoNextMove();
+            game.RedoNextMove();
+
+            game.RedoNextMove(); 
+            game.RedoNextMove(); // Redid to immediately before "Grenade up"
+
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumGrenades, Player.GrenadeCapacity);
+            Assert.False(Board.GetWallAbove(1, 1).IsPassable);
+            game.RedoNextMove(); // Redid "Grenade up"
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumGrenades, Player.GrenadeCapacity - 1);
+            Assert.True(Board.GetWallAbove(1, 1).IsPassable);
+            game.RedoNextMove();
+            game.RedoNextMove();
+            game.RedoNextMove(); // Attempted to redo past the head of the queue
+            Assert.True(Player1.X == 1 && Player1.Y == 1);
+            Assert.AreEqual(Player1.NumGrenades, Player.GrenadeCapacity - 1);
+            Assert.True(Board.GetWallAbove(1, 1).IsPassable);
         }
 
         [Test]
         public void Redo_state_is_removed_after_moving()
         {
-            Assert.Fail("Not implemented");
+            startingPositions_initial = new List<Position>() { new Position(2, 3) };
 
-            // Check that undo and the resuming play does not corrupt game state
-            // Undo all the way back and resume
-            // Undo 
+            var centaurMoves = new List<CentaurStep>()
+            {
+                new CentaurStep(1,2,false),
+                new CentaurStep(2,2,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false),
+                new CentaurStep(4,4,false)
+            };
+            centaur_initial = new Centaur(-1, -1, centaurMoves);
+            board_initial.PlayfieldGrid[2, 2] = new PlayfieldSquare(SquareType.CementStorage, numTreasures: 1);
+            board_initial.PlayfieldGrid[0, 2] = new PlayfieldSquare(SquareType.FitnessStudio, 0);
+            board_initial.PlayfieldGrid[0, 1] = new PlayfieldSquare(SquareType.AmmoStorage, 0);
+            board_initial.GetWallAbove(1, 1).IsPassable = false;
+            initializeNewGameStateFromSetupParameters(useBoardDefinedStartingPositions: true);
+
+            game.PerformMove(MoveType.MoveUp); // Receives cement
+            game.PerformMove(MoveType.BuildWallRight);
+            game.PerformMove(MoveType.MoveLeft); // Hit centaur and died
+
+            game.UndoPreviousMove(); // Alive again
+            Assert.True(Player1.IsAlive);
+            Assert.True(Player1.X == 2 && Player1.Y == 2);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectMainAction);
+
+            game.PerformMove(MoveType.MoveUp); // Performs move, should clear redo buffer.
+            Assert.False(game.CanRedo());
+            Assert.True(Player1.IsAlive);
+            Assert.True(Player1.X == 2 && Player1.Y == 1);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
+
+            game.RedoNextMove(); // Should have no effect
+            Assert.False(game.CanRedo());
+            Assert.True(Player1.IsAlive);
+            Assert.True(Player1.X == 2 && Player1.Y == 1);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectFollowupAction);
+
+            game.PerformMove(MoveType.DoNothing);
+
+            game.PerformMove(MoveType.BuildWallDown); // Implicitly performs a "do nothing" move first
+            Assert.False(Board.GetWallBelow(2, 1).IsPassable);
+
+            game.UndoPreviousMove();
+            game.UndoPreviousMove();
+            Assert.True(Board.GetWallBelow(2, 1).IsPassable);
+            game.UndoPreviousMove();
+            game.UndoPreviousMove(); // Undid "move up"
+            Assert.True(Player1.IsAlive);
+            Assert.True(Player1.X == 2 && Player1.Y == 2);
+            Assert.AreEqual(game.CurrentTurnPhase, TurnPhase.SelectMainAction);
+
+            game.RedoNextMove(); // Redid "move up"
+            Assert.True(Player1.X == 2 && Player1.Y == 1);
+            Assert.True(game.CanRedo());
+            game.PerformMove(MoveType.BuildWallRight);
+            Assert.False(game.CanRedo());
+            Assert.False(Board.GetWallRightOf(2, 1).IsPassable);
+            game.UndoPreviousMove();
+            game.RedoNextMove();
+            Assert.False(game.CanRedo());
+            game.RedoNextMove(); // Ensure no crash due to moving beyond end-of-buffer
         }
 
         // Helper methods for creating data to test.

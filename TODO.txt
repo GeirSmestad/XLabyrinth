@@ -1,8 +1,8 @@
-TODO: Undo & redo
 TODO: Currently not making text available in UI on undo/redo. This should be simple enough to solve.
 TODO: Implement board rotation. BoardLoader.cs.
 TODO: Move BoardScrambler.cs + related classes to a separate folder. Perhaps related to board loading.
 TODO: Split game state tests into smaller files
-TODO: Split game state tests into smaller files
 
-BUG: Game crashes when hamstering passable exit. Does this happen with other walls as well?
+BUG: Game crashes when hamstering passable exit. Does this happen with other walls as well? Implement test after fixing.
+BUG: Might have been a fluke, but have observed redo to perform BOTH movement action and shooting in one click.
+     Remove this particular bug if you never experience it again. Suspect UI glitch rather than logic problem.

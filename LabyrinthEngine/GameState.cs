@@ -184,9 +184,9 @@ namespace LabyrinthEngine
         {
             if (CanRedo())
             {
-                stepToBeforeMoveNumber(completedMoves.Count - currentUndoStep-1);
+                stepToBeforeMoveNumber(completedMoves.Count - currentUndoStep+1);
+                currentUndoStep--;
             }
-            currentUndoStep--;
         }
 
         public bool CanUndo()
