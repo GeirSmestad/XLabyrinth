@@ -1,4 +1,5 @@
-﻿using LabyrinthEngine.Entities;
+﻿using LabyrinthEngine.BoardTranspositionOperations;
+using LabyrinthEngine.Entities;
 using LabyrinthEngine.Helpers;
 using LabyrinthEngine.Playfield;
 using System;
@@ -26,6 +27,9 @@ namespace LabyrinthEngine
         private Centaur centaur;
         private List<Position> startingPositions;
 
+        private int height;
+        private int width;
+
         private PlayfieldAxis axisToRotateBoardAbout;
 
         public BoardScrambler(BoardState original,
@@ -44,8 +48,11 @@ namespace LabyrinthEngine
             holes = workingCopy.Holes;
             centaur = workingCopy.centaur;
             startingPositions = workingCopy.StartingPositions;
+
+            height = workingCopy.Height;
+            width = workingCopy.Width;
             
-            rotateRight(howMany90DegreesToRotateRight);
+            rotateBoardRight(howMany90DegreesToRotateRight);
             if (flipAlongHorizontalAxis) { flipBoardAlongHorizontalAxis(); }
             if (flipAlongVerticalAxis) { flipBoardAlongVerticalAxis(); }
             if (scrambleTeleporterOrder) { scrambleBoardTeleporterOrder(); }
@@ -58,30 +65,31 @@ namespace LabyrinthEngine
             throw new NotImplementedException();
         }
 
-        private void copyOriginalContentsToLocalWorkingCopy()
+        private void modifyLocalWorkingCopyAccordingTo(BoardTranspositionOperation operation)
         {
+            // TODO: Run through all parts of the board, changing them as instructed.
             throw new NotImplementedException();
         }
+ 
 
-        // TODO: Saves a lot of code if all operations are performed in a single method
-        // which just receives a description of the operation to be performed. Can implement this
-        // with "originalXCoordinate", "transformedXCoordinate" etc.
-
-        private void rotateRight(int howMany90DegreesToRotate)
+        private void rotateBoardRight(int howMany90DegreesToRotate)
         {
             // Simplest solution involves methods that map each (x,y), (x, w_y), (y, w_x) coordinate
             // to the rotated form, and then run through the board to rotate it. Should also
             // have an option for scrambling teleporter ordering and treasure locations.
-            throw new NotImplementedException();
+            modifyLocalWorkingCopyAccordingTo(new BoardRotation()
+            { HowMany90DegreesToRotateRight = howMany90DegreesToRotate });
         }
 
         private void flipBoardAlongHorizontalAxis()
         {
-            throw new NotImplementedException();
+            modifyLocalWorkingCopyAccordingTo(
+                new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Horizontal});
         }
         private void flipBoardAlongVerticalAxis()
         {
-            throw new NotImplementedException();
+            modifyLocalWorkingCopyAccordingTo(
+                new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Vertical });
         }
 
         private void scrambleBoardTreasureLocations()
@@ -99,34 +107,66 @@ namespace LabyrinthEngine
             throw new NotImplementedException();
         }
 
-        private Position rotateXYCoordinatesRight(int x, int y)
+        private Position transposeXYCoordinates(int x, int y, 
+            BoardTranspositionOperation transpositionToPerform)
         {
-            throw new NotImplementedException();
+            if (transpositionToPerform.GetType() == typeof(BoardFlip))
+            {
+                var operation = (BoardFlip)transpositionToPerform;
+                if (operation.AxisToFlipAbout == PlayfieldAxis.Horizontal)
+                {
+                    return new Position(x, height - y - 1);
+                }
+                else // if (operation.AxisToFlipAbout == PlayfieldAxis.Vertical)
+                {
+                    return new Position(width - x - 1, y);
+                }
+            }
+            else if (transpositionToPerform.GetType() == typeof(BoardRotation))
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new LabyrinthInvalidStateException(
+                    "Coordinate transposition must have a legal type");
+            }
         }
 
-        private HorizontalWallCoordinate rotateHorizontalWallCoordinatesRight(int x, int w_y)
+        private HorizontalWallCoordinate transposeHorizontalWallCoordinates(int x, int w_y, 
+            BoardTranspositionOperation transpositionToPerform)
         {
-            throw new NotImplementedException();
+            if (transpositionToPerform.GetType() == typeof(BoardFlip))
+            {
+                throw new NotImplementedException();
+            }
+            else if (transpositionToPerform.GetType() == typeof(BoardRotation))
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new LabyrinthInvalidStateException(
+                    "Coordinate transposition must have a legal type");
+            }
         }
 
-        private VerticalWallCoordinate rotateVerticalWallCoordinates(int y, int w_x)
+        private VerticalWallCoordinate transposeVerticalWallCoordinates(int y, int w_x,
+            BoardTranspositionOperation transpositionToPerform)
         {
-            throw new NotImplementedException();
-        }
-
-        private Position flipXYCoordinates(int x, int y)
-        {
-            throw new NotImplementedException();
-        }
-
-        private HorizontalWallCoordinate flipHorizontalWallCoordinates(int x, int w_y)
-        {
-            throw new NotImplementedException();
-        }
-
-        private VerticalWallCoordinate flipVerticalWallCoordinates(int y, int w_x)
-        {
-            throw new NotImplementedException();
+            if (transpositionToPerform.GetType() == typeof(BoardFlip))
+            {
+                throw new NotImplementedException();
+            }
+            else if (transpositionToPerform.GetType() == typeof(BoardRotation))
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new LabyrinthInvalidStateException(
+                    "Coordinate transposition must have a legal type");
+            }
         }
     }
 }
