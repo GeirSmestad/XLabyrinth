@@ -1851,6 +1851,7 @@ namespace AndroidGui.Tests
         [Test]
         public void Followup_action_as_movement_should_skip_movement_and_execute()
         {
+            // TODO: Add test for hamstering an exit
             Assert.Fail("Not implemented");
         }
 

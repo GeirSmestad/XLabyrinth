@@ -435,7 +435,7 @@ namespace LabyrinthEngine.GameLogic
 
             if (player.NumHamsterSprays <= 0)
             {
-                descriptionOfCurrentMove.Append("You are out of cement. ");
+                descriptionOfCurrentMove.Append("You are out of hamster spray. ");
             }
             else if (targetWall.HasHamster)
             {

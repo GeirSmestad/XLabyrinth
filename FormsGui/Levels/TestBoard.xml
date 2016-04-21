@@ -48,6 +48,7 @@
     <HorizontalWallSegment w_y="3" x="1" hasHamster="yes"/>
     <HorizontalWallSegment w_y="3" x="2" />
     <HorizontalWallSegment w_y="3" x="3" />
+    <HorizontalWallSegment w_y="5" x="1" isExit="yes" isPassable="no" hasHamster="yes"/>
   </HorizontalWalls>
 
   

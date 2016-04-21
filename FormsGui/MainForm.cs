@@ -162,16 +162,22 @@ namespace FormsGui
                 for (int w_y = 0; w_y < board.HorizontalWalls.GetLength(1); w_y++)
                 {
                     Pen pen;
-                    if (board.HorizontalWalls[x, w_y].IsExit &&
-                        !board.HorizontalWalls[x, w_y].IsPassable)
-                    {
-                        pen = new Pen(Color.Yellow, 4);
-                    }
-                    else if (board.HorizontalWalls[x, w_y].IsExit &&
+                    if (board.HorizontalWalls[x, w_y].IsExterior &&
                         board.HorizontalWalls[x, w_y].HasHamster)
                     {
                         pen = new Pen(Color.LightGreen, 4);
                     }
+                    else if (board.HorizontalWalls[x, w_y].IsExit &&
+                        !board.HorizontalWalls[x, w_y].IsPassable)
+                    {
+                        pen = new Pen(Color.Yellow, 4);
+                    }
+                    //else if (board.HorizontalWalls[x, w_y].IsExit &&
+                    //    board.HorizontalWalls[x, w_y].HasHamster)
+                    //{
+                    //    pen = new Pen(Color.LightGreen, 4);
+                    //}
+                    
                     else if (board.HorizontalWalls[x, w_y].IsExit)
                     {
                         // Standard exit, open
@@ -205,16 +211,23 @@ namespace FormsGui
                 for (int w_x = 0; w_x < board.HorizontalWalls.GetLength(1); w_x++)
                 {
                     Pen pen;
-                    if (board.VerticalWalls[y, w_x].IsExit &&
-                        !board.VerticalWalls[y, w_x].IsPassable)
-                    {
-                        pen = new Pen(Color.Yellow, 4);
-                    }
-                    else if (board.VerticalWalls[y, w_x].IsExit &&
+                    if (board.VerticalWalls[y, w_x].IsExterior &&
                         board.VerticalWalls[y, w_x].HasHamster)
                     {
                         pen = new Pen(Color.LightGreen, 4);
                     }
+                    else if (board.VerticalWalls[y, w_x].IsExit &&
+                        !board.VerticalWalls[y, w_x].IsPassable)
+                    {
+                        pen = new Pen(Color.Yellow, 4);
+                    }
+
+                    //else if (board.VerticalWalls[y, w_x].IsExit &&
+                    //    board.VerticalWalls[y, w_x].HasHamster)
+                    //{
+                    //    pen = new Pen(Color.LightGreen, 4);
+                    //}
+                    
                     else if (board.VerticalWalls[y, w_x].IsExit)
                     {
                         // Standard exit, open
