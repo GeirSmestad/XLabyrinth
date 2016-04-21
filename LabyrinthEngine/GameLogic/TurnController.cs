@@ -1,5 +1,6 @@
 ﻿using LabyrinthEngine.Entities;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Moves;
 using LabyrinthEngine.Playfield;
 using System;

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Playfield;
-using LabyrinthEngine;
+using LabyrinthEngine.LevelConstruction;
 
 namespace LabyrinthTests
 {

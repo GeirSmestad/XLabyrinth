@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 using LabyrinthEngine.Playfield;
-using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Entities;
 
 namespace LabyrinthTests

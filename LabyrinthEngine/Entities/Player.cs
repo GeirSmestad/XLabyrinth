@@ -1,5 +1,5 @@
 using LabyrinthEngine.GameLogic;
-using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;

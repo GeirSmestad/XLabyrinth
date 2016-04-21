@@ -7,6 +7,7 @@ using NUnit.Framework;
 using LabyrinthEngine;
 using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Moves;
 using System.Collections.ObjectModel;

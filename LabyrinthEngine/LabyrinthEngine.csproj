@@ -40,25 +40,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoardTranspositionOperations\BoardFlip.cs" />
-    <Compile Include="BoardTranspositionOperations\BoardRotation.cs" />
-    <Compile Include="BoardScrambler.cs" />
-    <Compile Include="BoardTranspositionOperations\BoardTranspositionOperation.cs" />
+    <Compile Include="LevelConstruction\BoardTransposition\BoardFlip.cs" />
+    <Compile Include="LevelConstruction\BoardTransposition\BoardRotation.cs" />
+    <Compile Include="LevelConstruction\BoardScrambler.cs" />
+    <Compile Include="LevelConstruction\BoardTransposition\BoardTranspositionOperation.cs" />
     <Compile Include="Entities\Centaur.cs" />
     <Compile Include="Entities\CentaurStep.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Teleporter.cs" />
     <Compile Include="GameState.cs" />
-    <Compile Include="BoardLoader.cs" />
+    <Compile Include="LevelConstruction\BoardLoader.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\HelperMethods.cs" />
     <Compile Include="Helpers\LabyrinthExceptions.cs" />
-    <Compile Include="Helpers\Position.cs" />
-    <Compile Include="HorizontalWallCoordinate.cs" />
+    <Compile Include="Geometry\Position.cs" />
+    <Compile Include="Geometry\HorizontalWallCoordinate.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
     <Compile Include="GameLogic\OutsideLabyrinthPhase.cs" />
-    <Compile Include="PlayfieldAxis.cs" />
+    <Compile Include="Geometry\PlayfieldAxis.cs" />
     <Compile Include="Playfield\BoardState.cs" />
     <Compile Include="Playfield\PlayfieldSquare.cs" />
     <Compile Include="Playfield\SquareType.cs" />
@@ -66,7 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameLogic\TurnController.cs" />
     <Compile Include="GameLogic\TurnPhase.cs" />
-    <Compile Include="VerticalWallCoordinate.cs" />
+    <Compile Include="Geometry\VerticalWallCoordinate.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

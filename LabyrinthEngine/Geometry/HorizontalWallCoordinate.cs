@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabyrinthEngine.BoardTranspositionOperations
+namespace LabyrinthEngine.Geometry
 {
-    public abstract class BoardTranspositionOperation
+    public class HorizontalWallCoordinate
     {
     }
 }

@@ -1,6 +1,7 @@
-﻿using LabyrinthEngine.BoardTranspositionOperations;
+﻿using LabyrinthEngine.LevelConstruction.BoardTransposition;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Playfield;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabyrinthEngine
+namespace LabyrinthEngine.LevelConstruction
 {
     /// <summary>
     /// Since humans are good at remembering spatial information, this class allows you to rotate

@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabyrinthEngine
+namespace LabyrinthEngine.Geometry
 {
-    public enum PlayfieldAxis
+    class VerticalWallCoordinate
     {
-        Horizontal,
-        Vertical
     }
 }

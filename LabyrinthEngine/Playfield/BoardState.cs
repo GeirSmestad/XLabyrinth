@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using LabyrinthEngine.Entities;
-using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 
 namespace LabyrinthEngine.Playfield
 {

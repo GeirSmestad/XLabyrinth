@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabyrinthEngine.BoardTranspositionOperations
+namespace LabyrinthEngine.LevelConstruction.BoardTransposition
 {
     public class BoardRotation : BoardTranspositionOperation
     {

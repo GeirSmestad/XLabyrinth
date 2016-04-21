@@ -8,8 +8,9 @@ using System.Xml;
 using System.Xml.XPath;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.Geometry;
 
-namespace LabyrinthEngine
+namespace LabyrinthEngine.LevelConstruction
 {
     public class BoardLoader
     {

@@ -3,6 +3,7 @@ using LabyrinthEngine.Entities;
 using LabyrinthEngine.GameLogic;
 using LabyrinthEngine.Moves;
 using LabyrinthEngine.Playfield;
+using LabyrinthEngine.LevelConstruction;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
