@@ -25,20 +25,6 @@ namespace LabyrinthEngine
             Board = initializeBoardFromXml(xmlToInitializeBoardFrom);
         }
 
-        /// <summary>
-        /// Since humans are good at remembering spatial information, this method allows you to rotate
-        /// a particular board in order to make it less likely that the operator remembers which board
-        /// has been selected. The internal geometry of the board remains unmodified.
-        /// </summary>
-        /// <param name="multipleOf90Degrees">Should be 0, 1, 2 or 3.</param>
-        public void RotateRight(int howMany90DegreesToRotate)
-        {
-            // Simplest solution involves methods that map each (x,y), (x, w_y), (y, w_x) coordinate
-            // to the rotated form, and then run through the board to rotate it. Should also
-            // have an option for scrambling teleporter ordering and treasure locations.
-            throw new NotImplementedException();
-        }
-
         private BoardState initializeBoardFromXml(string xml)
         {
             var xmlDocument = new XmlDocument();

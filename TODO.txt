@@ -1,5 +1,6 @@
 TODO: Undo & redo
 TODO: Implement board rotation. BoardLoader.cs.
+TODO: Move BoardScrambler.cs + related classes to a separate folder. Perhaps related to board loading.
 TODO: Split game state tests into smaller files
 
 BUG: Game crashes when hamstering passable exit. Does this happen with other walls as well?
