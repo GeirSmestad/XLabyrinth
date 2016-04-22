@@ -53,7 +53,7 @@ namespace LabyrinthEngine.Playfield
             if (centaur == null)
             {
                 throw new InvalidOperationException("The centaur cannot be null. If you want " +
-                    "to play without the centaur, set its starting position to (-1,-1).");
+                    "to play without the centaur, set its starting position to e.g. (-2,-2).");
             }
         }
 

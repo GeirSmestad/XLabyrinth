@@ -8,5 +8,7 @@ namespace LabyrinthEngine.Geometry
 {
     public class HorizontalWallCoordinate
     {
+        public int X;
+        public int W_y;
     }
 }

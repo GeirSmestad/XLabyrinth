@@ -20,7 +20,6 @@ namespace LabyrinthEngine.LevelConstruction
     public class BoardScrambler
     {
         // TODO: Add parameters for each element of the original.
-        // Can maybe delete the "original" parameter after doing this.
         private WallSection[,] horizontalWalls;
         private WallSection[,] verticalWalls;
         private PlayfieldSquare[,] playfieldGrid;
@@ -63,21 +62,81 @@ namespace LabyrinthEngine.LevelConstruction
 
         public BoardState ReturnScrambledBoard()
         {
-            throw new NotImplementedException();
+            return new BoardState(playfieldGrid, horizontalWalls, verticalWalls, holes,
+                centaur, startingPositions);
         }
 
         private void modifyLocalWorkingCopyAccordingTo(BoardTranspositionOperation operation)
         {
-            // TODO: Run through all parts of the board, changing them as instructed.
-            throw new NotImplementedException();
+            // TODO: Can extract each method out to its own helper, for readability.
+            // TODO: Rotation of 90 or 270 degrees will fail for non-quadratic boards.
+            // Perhaps all that is required in this case is to re-initialize the target data structure
+            // with the correct dimensions; the iteration should work nicely with no changes.
+            var playfieldOriginal = HelperMethods.DeepClone(playfieldGrid);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var transposedCoords = transposeXYCoordinates(x, y, operation);
+                    var squareToTranspose = playfieldOriginal[transposedCoords.X, transposedCoords.Y];
+                    playfieldGrid[x, y] = new PlayfieldSquare(squareToTranspose.Type,
+                        squareToTranspose.NumTreasures, squareToTranspose.Hole);
+                }
+            }
+
+            var horizontalWallsOriginal = HelperMethods.DeepClone(horizontalWalls);
+            for (int x = 0; x < width; x++)
+            {
+                for (int w_y = 0; w_y < height + 1; w_y++)
+                {
+                    var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
+                    var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
+                    horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
+                        wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                }
+            }
+
+            var verticalWallsOriginal = HelperMethods.DeepClone(verticalWalls);
+            for (int y = 0; y < height; y++)
+            {
+                for (int w_x = 0; w_x < height + 1; w_x++)
+                {
+                    var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
+                    var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
+                    horizontalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
+                        wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                }
+            }
+
+            for (int i = 0; i < holes.Count; i++)
+            {
+                var transposedCoords = transposeXYCoordinates(holes[i].X, holes[i].Y, operation);
+                holes[i] = new Teleporter(holes[i].TeleporterIndex, holes[i].NextHole,
+                    transposedCoords.X, transposedCoords.Y);
+            }
+
+            var centaurOriginal = HelperMethods.DeepClone(centaur);
+            var transposedStartCoords = transposeXYCoordinates(centaur.X, centaur.Y, operation);
+            var transposedCentaurPath = new List<CentaurStep>();
+            for (int i = 0; i < centaur.Path.Count; i++)
+            {
+                var transposedCoords = transposeXYCoordinates(
+                    centaur.Path[i].X, centaur.Path[i].Y, operation);
+                transposedCentaurPath.Add(new CentaurStep(transposedCoords.X, transposedCoords.Y, 
+                    centaur.Path[i].IgnoreWallsWhenSteppingHere));
+            }
+            centaur = new Centaur(transposedStartCoords.X, transposedStartCoords.Y, transposedCentaurPath);
+
+            for (int i = 0; i < startingPositions.Count; i++)
+            {
+                var transposedCoords = transposeXYCoordinates(startingPositions[i].X,
+                    startingPositions[i].Y, operation);
+                startingPositions[i] = new Position(transposedCoords.X, transposedCoords.Y);
+            }
         }
- 
 
         private void rotateBoardRight(int howMany90DegreesToRotate)
         {
-            // Simplest solution involves methods that map each (x,y), (x, w_y), (y, w_x) coordinate
-            // to the rotated form, and then run through the board to rotate it. Should also
-            // have an option for scrambling teleporter ordering and treasure locations.
             modifyLocalWorkingCopyAccordingTo(new BoardRotation()
             { HowMany90DegreesToRotateRight = howMany90DegreesToRotate });
         }

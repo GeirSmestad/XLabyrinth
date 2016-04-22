@@ -1,7 +1,10 @@
 TODO: Currently not making text available in UI on undo/redo. This should be simple enough to solve.
 TODO: Implement board rotation. BoardLoader.cs.
 TODO: Split game state tests into smaller files
+TODO: Add some levels from Helge's game.
 
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 BUG: Might have been a fluke, but have observed redo to perform BOTH movement action and shooting in one click.
      Remove this particular bug if you never experience it again. Suspect UI glitch rather than logic problem.
+
+TODO WISHLIST: Create level editor. Think a bit about how. New front-end is one option.
