@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Levels\BeginnersLament.xml" />
     <Content Include="Levels\TestBoard.xml" />
   </ItemGroup>
   <ItemGroup>

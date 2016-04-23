@@ -21,9 +21,14 @@ namespace FormsGui
     /// </summary>
     public partial class MainForm : Form
     {
-        private BoardState board;
+        //private string boardFilename = @"..\..\Levels\TestBoard.xml";
+        private string boardFilename = @"..\..\Levels\BeginnersLament.xml";
+
+        private List<Player> InitialPlayerList;
+        private BoardState InitialBoardState;
         private GameState game;
-        private List<Player> players;
+
+        private BoardState Board { get { return game.Board; } }
 
         const int fontSize = 9;
         const int startX = 75;
@@ -34,30 +39,31 @@ namespace FormsGui
         public MainForm()
         {
             InitializeComponent();
+            openFileDialog.InitialDirectory = Application.StartupPath;
 
             // Load default game state, we can change it in the UI later
             var player1 = new Player() { Name = "Geir", X = 3, Y = 3 };
             var player2 = new Player() { Name = "Nemesis", X = 1, Y = 0 };
-            players = new List<Player>();
-            players.Add(player1);
-            players.Add(player2);
+            InitialPlayerList = new List<Player>();
+            InitialPlayerList.Add(player1);
+            InitialPlayerList.Add(player2);
 
             startNewGameWithSelectedPlayers();
         }
 
         private void askForPlayersWithNames(int howManyPlayers)
         {
-            players = new List<Player>();
+            InitialPlayerList = new List<Player>();
             for (int i = 0; i < howManyPlayers; i++)
             {
-                players.Add(getPlayerFromUserInput(playerNumber:i+1));
+                InitialPlayerList.Add(getPlayerFromUserInput(playerNumber:i+1));
             }
         }
 
         private void startNewGameWithSelectedPlayers()
         {
-            board = loadBoard();
-            game = new GameState(board, players);
+            InitialBoardState = loadBoardFromSpecifiedFilename();
+            game = new GameState(InitialBoardState, InitialPlayerList);
 
             canvas.Invalidate();
             printPlayerState();
@@ -67,12 +73,12 @@ namespace FormsGui
             buttonRedo.Enabled = game.CanRedo();
         }
 
-        private BoardState loadBoard()
+        private BoardState loadBoardFromSpecifiedFilename()
         {
             string boardXmlContent;
             try
             {
-                boardXmlContent = System.IO.File.ReadAllText(@"..\..\Levels\TestBoard.xml");
+                boardXmlContent = System.IO.File.ReadAllText(boardFilename);
                 var loader = new BoardLoader(boardXmlContent);
                 return loader.Board;
             }
@@ -147,7 +153,7 @@ namespace FormsGui
 
         private void canvas_Paint(object sender, PaintEventArgs e)
         {
-            if (board == null || game == null)
+            if (InitialBoardState == null || game == null || Board == null)
             {
                 return;
             }
@@ -161,37 +167,32 @@ namespace FormsGui
             }
 
             // Horizontal walls
-            for (int x = 0; x < board.HorizontalWalls.GetLength(0); x++)
+            for (int x = 0; x < Board.HorizontalWalls.GetLength(0); x++)
             {
-                for (int w_y = 0; w_y < board.HorizontalWalls.GetLength(1); w_y++)
+                for (int w_y = 0; w_y < Board.HorizontalWalls.GetLength(1); w_y++)
                 {
                     Pen pen;
-                    if (board.HorizontalWalls[x, w_y].IsExterior &&
-                        board.HorizontalWalls[x, w_y].HasHamster)
+                    if (Board.HorizontalWalls[x, w_y].IsExterior &&
+                        Board.HorizontalWalls[x, w_y].HasHamster)
                     {
                         pen = new Pen(Color.LightGreen, 4);
                     }
-                    else if (board.HorizontalWalls[x, w_y].IsExit &&
-                        !board.HorizontalWalls[x, w_y].IsPassable)
+                    else if (Board.HorizontalWalls[x, w_y].IsExit &&
+                        !Board.HorizontalWalls[x, w_y].IsPassable)
                     {
                         pen = new Pen(Color.Yellow, 4);
                     }
-                    //else if (board.HorizontalWalls[x, w_y].IsExit &&
-                    //    board.HorizontalWalls[x, w_y].HasHamster)
-                    //{
-                    //    pen = new Pen(Color.LightGreen, 4);
-                    //}
                     
-                    else if (board.HorizontalWalls[x, w_y].IsExit)
+                    else if (Board.HorizontalWalls[x, w_y].IsExit)
                     {
                         // Standard exit, open
                         continue;
                     }
-                    else if (board.HorizontalWalls[x, w_y].IsPassable)
+                    else if (Board.HorizontalWalls[x, w_y].IsPassable)
                     {
                         pen = new Pen(Color.Black, 1);
                     }
-                    else if (board.HorizontalWalls[x, w_y].HasHamster)
+                    else if (Board.HorizontalWalls[x, w_y].HasHamster)
                     {
                         pen = new Pen(Color.Green, 4);
                     }
@@ -210,38 +211,32 @@ namespace FormsGui
             }
 
             // Vertical walls
-            for (int y = 0; y < board.VerticalWalls.GetLength(0); y++)
+            for (int y = 0; y < Board.VerticalWalls.GetLength(0); y++)
             {
-                for (int w_x = 0; w_x < board.HorizontalWalls.GetLength(1); w_x++)
+                for (int w_x = 0; w_x < Board.HorizontalWalls.GetLength(1); w_x++)
                 {
                     Pen pen;
-                    if (board.VerticalWalls[y, w_x].IsExterior &&
-                        board.VerticalWalls[y, w_x].HasHamster)
+                    if (Board.VerticalWalls[y, w_x].IsExterior &&
+                        Board.VerticalWalls[y, w_x].HasHamster)
                     {
                         pen = new Pen(Color.LightGreen, 4);
                     }
-                    else if (board.VerticalWalls[y, w_x].IsExit &&
-                        !board.VerticalWalls[y, w_x].IsPassable)
+                    else if (Board.VerticalWalls[y, w_x].IsExit &&
+                        !Board.VerticalWalls[y, w_x].IsPassable)
                     {
                         pen = new Pen(Color.Yellow, 4);
                     }
-
-                    //else if (board.VerticalWalls[y, w_x].IsExit &&
-                    //    board.VerticalWalls[y, w_x].HasHamster)
-                    //{
-                    //    pen = new Pen(Color.LightGreen, 4);
-                    //}
                     
-                    else if (board.VerticalWalls[y, w_x].IsExit)
+                    else if (Board.VerticalWalls[y, w_x].IsExit)
                     {
                         // Standard exit, open
                         continue;
                     }
-                    else if (board.VerticalWalls[y, w_x].IsPassable)
+                    else if (Board.VerticalWalls[y, w_x].IsPassable)
                     {
                         pen = new Pen(Color.Black, 1);
                     }
-                    else if (board.VerticalWalls[y, w_x].HasHamster)
+                    else if (Board.VerticalWalls[y, w_x].HasHamster)
                     {
                         pen = new Pen(Color.LightGreen, 4);
                     }
@@ -260,11 +255,11 @@ namespace FormsGui
             }
 
             // Playfield grid
-            for (int x = 0; x < board.PlayfieldGrid.GetLength(0); x++)
+            for (int x = 0; x < Board.PlayfieldGrid.GetLength(0); x++)
             {
-                for (int y = 0; y < board.PlayfieldGrid.GetLength(1); y++)
+                for (int y = 0; y < Board.PlayfieldGrid.GetLength(1); y++)
                 {
-                    if (board.PlayfieldGrid[x, y].NumTreasures > 0) // Treasure
+                    if (Board.PlayfieldGrid[x, y].NumTreasures > 0) // Treasure
                     {
                         e.Graphics.FillRectangle(Brushes.Gold,
                             startX + squareWidth * x + squareWidth / 4,
@@ -272,7 +267,7 @@ namespace FormsGui
                             squareHeight / 3, squareHeight / 3);
                     }
 
-                    var square = board.PlayfieldGrid[x, y];
+                    var square = Board.PlayfieldGrid[x, y];
                     var drawX = startX + x * squareWidth + squareWidth / 2 - fontSize*6 / 2;
                     var drawY = startY + y * squareHeight + squareHeight / 2 - fontSize*6 / 2;
 
@@ -545,6 +540,18 @@ namespace FormsGui
             canvas.Invalidate();
             buttonUndo.Enabled = game.CanUndo();
             buttonRedo.Enabled = game.CanRedo();
+        }
+
+        private void loadLevelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK)
+            {
+                boardFilename = openFileDialog.FileName;
+                loadBoardFromSpecifiedFilename();
+                startNewGameWithSelectedPlayers();
+            }
+            
         }
     }
 }

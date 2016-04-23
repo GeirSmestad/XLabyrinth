@@ -2,6 +2,7 @@ TODO: Currently not making text available in UI on undo/redo. This should be sim
 TODO: Implement board rotation. BoardLoader.cs.
 TODO: Split game state tests into smaller files
 TODO: Add some levels from Helge's game.
+TODO: Visualize the centaur's path.
 
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 BUG: Might have been a fluke, but have observed redo to perform BOTH movement action and shooting in one click.

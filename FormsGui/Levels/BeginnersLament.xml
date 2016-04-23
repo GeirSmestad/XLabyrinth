@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LabyrinthLevel name="Beginner's Lament" description="A nice level with some corridors and centaur.">
+  <!-- Number of rows and elements must match board dimensions for parsing to work. -->
+  <Playfield width="5" height="5">
+    <Row>
+      <Empty treasures="1" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <FitnessStudio />
+    </Row>
+    <Row>
+      <Empty />
+      <Teleporter teleporterIndex="3"/>
+      <HamsterStorage />
+      <Empty />
+      <Teleporter teleporterIndex="1"/>
+    </Row>
+    <Row>
+      <Teleporter teleporterIndex="2"/>
+      <Empty treasures="1"/>
+      <Empty />
+      <Empty treasures="1" />
+      <AmmoStorage />
+    </Row>
+    <Row>
+      <Empty />
+      <CementStorage />
+      <Empty />
+      <Empty />
+      <Empty treasures="1"/>
+    </Row>
+    <Row>
+      <Empty />
+      <Teleporter teleporterIndex="4"/>
+      <Empty treasures="1"/>
+      <Teleporter teleporterIndex="5"/>
+      <Empty />
+    </Row>
+  </Playfield>
+
+  <!-- w_y: Y position of wall, counting from the top outer wall.
+       x: (unambiguous) X coordinate of the playfield square the wall is adjacent to.
+       Outer walls are impassable by default. Contradictory wall flags trigger crash
+       on load. You may define exterior walls and exits that are not on the playfield edge. -->
+  <HorizontalWalls>
+    <HorizontalWallSegment w_y="0" x="3" isExit="yes" isPassable="yes" isExterior="yes"/>
+    <HorizontalWallSegment w_y="1" x="1" />
+    <HorizontalWallSegment w_y="2" x="1" />
+    <HorizontalWallSegment w_y="4" x="1" />
+    <HorizontalWallSegment w_y="2" x="3" />
+    <HorizontalWallSegment w_y="4" x="3" />
+    <HorizontalWallSegment w_y="1" x="4" />
+    <HorizontalWallSegment w_y="3" x="4" />
+  </HorizontalWalls>
+
+  
+  <!-- w_x: X position of wall, counting from the left outer wall.
+       y: (unambiguous) Y coordinate of the playfield square the wall is adjacent to.
+       Outer walls are impassable by default. Contradictory wall flags trigger crash
+       on load. You may define exterior walls and exits that are not on the playfield edge. -->
+  <VerticalWalls>
+    <VerticalWallSegment w_x="0" y="3" isExit="yes" isExterior="yes" isPassable="no"/>
+    <VerticalWallSegment w_x="1" y="1" />
+    <VerticalWallSegment w_x="3" y="1" />
+    <VerticalWallSegment w_x="1" y="2" />
+    <VerticalWallSegment w_x="2" y="2" />
+    <VerticalWallSegment w_x="2" y="3" />
+    <VerticalWallSegment w_x="3" y="3" />
+    <VerticalWallSegment w_x="2" y="4" />
+  </VerticalWalls>
+
+  <!-- Starting coordinates of players. If more players than coordinates, start positions
+       are chosen randomly within the outermost dimensions of the board.-->
+  <StartingPositions>
+
+  </StartingPositions>
+  
+  <!-- Centaur moves from start to end of list, and then resumes from start. Wall flag is
+       ignored unless square before and square with flag are adjacent on the board.
+       Centaur reverses when encountering an impassable wall, stops when walled in and
+       resumes if released by players. Centaur jumps between non-adjacent squares in its path. -->
+  <Centaur startX="4" startY="4">
+    <CentaurStep x="4" y="3"/>
+    <CentaurStep x="3" y="3"/>
+    <CentaurStep x="3" y="2"/>
+    <CentaurStep x="4" y="2"/>
+    <CentaurStep x="3" y="2"/>
+    <CentaurStep x="3" y="3"/>
+    <CentaurStep x="4" y="3"/>
+    <CentaurStep x="4" y="4"/>
+  </Centaur>
+  
+</LabyrinthLevel>

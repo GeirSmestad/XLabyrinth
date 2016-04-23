@@ -34,6 +34,18 @@ namespace LabyrinthTests
         /* Tests of playfield parsing */ 
 
         [Test]
+        public void Name_is_parsed()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
+        public void Description_is_parsed()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
         public void Empty_rooms_are_parsed()
         {
             Assert.That(board.GetPlayfieldSquareOf(0,0).Type == SquareType.Empty);
