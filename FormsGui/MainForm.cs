@@ -301,6 +301,7 @@ namespace FormsGui
                 }
             }
 
+            // Centaur
             var centaur = game.Board.centaur;
 
             e.Graphics.FillRectangle(Brushes.Firebrick,
@@ -308,6 +309,31 @@ namespace FormsGui
                  startY + squareHeight * centaur.Y + squareHeight / 4,
                  squareHeight / 4, squareHeight / 4);
 
+            var centaurPathBrush = new SolidBrush(Color.FromArgb(210, 51, 102, 255));
+            var centaurPathPen = new Pen(centaurPathBrush, 3);
+            for (int i = 0; i < centaur.Path.Count-1; i++)
+            {
+                var from = centaur.Path[i];
+                var to = centaur.Path[i + 1];
+                // TODO: Fix coordinates so they are correct relative to board size.
+                // Should create a method to abstract away this arithmetic.
+                e.Graphics.DrawLine(centaurPathPen, from.X, from.Y, to.X, to.Y);
+                // TODO: Draw arrow markers to show direction
+            }
+            // TODO: Draw line from last to first, if applicable
+            if (centaur.Path.Count >= 2)
+            {
+                var from = centaur.Path[centaur.Path.Count-1];
+                var to = centaur.Path[0];
+                e.Graphics.DrawLine(centaurPathPen, from.X, from.Y, to.X, to.Y);
+            }
+
+            centaurPathBrush.Dispose();
+            centaurPathPen.Dispose();
+
+            
+
+            // Players
             Brush[] playerBrushes = { Brushes.Blue, Brushes.Green, Brushes.Yellow, Brushes.DarkViolet, Brushes.HotPink, Brushes.DarkCyan };
             Brush[] deadPlayerBrushes = { Brushes.LightBlue, Brushes.LightGreen, Brushes.LightYellow, Brushes.MediumOrchid, Brushes.Pink, Brushes.Cyan};
 
