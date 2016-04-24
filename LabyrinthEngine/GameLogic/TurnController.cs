@@ -586,6 +586,8 @@ namespace LabyrinthEngine.GameLogic
 
                         if (!removedShooterFromCandidates)
                         {
+                            // TODO: Encountered crash bug here. Try reproducing with dead shooter and live victim.
+                            // I think I need stricter logic on what actions a dead player can perform.
                             throw new LabyrinthInvalidStateException("Could not find shooter among players " +
                                 "on shooter's square. Likely logic error in equality operator of Player.");
                         }
