@@ -64,11 +64,16 @@
             this.newGameWith6Players = new System.Windows.Forms.ToolStripMenuItem();
             this.loadLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.numericUpDownRotationDegree = new System.Windows.Forms.NumericUpDown();
+            this.buttonRotate = new System.Windows.Forms.Button();
+            this.buttonFlipVertical = new System.Windows.Forms.Button();
+            this.buttonFlipHorizontal = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.canvas)).BeginInit();
             this.panel1.SuspendLayout();
             this.statusPanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotationDegree)).BeginInit();
             this.SuspendLayout();
             // 
             // canvas
@@ -83,6 +88,10 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.buttonFlipHorizontal);
+            this.panel1.Controls.Add(this.buttonFlipVertical);
+            this.panel1.Controls.Add(this.buttonRotate);
+            this.panel1.Controls.Add(this.numericUpDownRotationDegree);
             this.panel1.Controls.Add(this.buttonRedo);
             this.panel1.Controls.Add(this.buttonUndo);
             this.panel1.Controls.Add(this.checkBoxHideBoard);
@@ -110,7 +119,7 @@
             // buttonRedo
             // 
             this.buttonRedo.Enabled = false;
-            this.buttonRedo.Location = new System.Drawing.Point(90, 386);
+            this.buttonRedo.Location = new System.Drawing.Point(90, 329);
             this.buttonRedo.Name = "buttonRedo";
             this.buttonRedo.Size = new System.Drawing.Size(75, 23);
             this.buttonRedo.TabIndex = 18;
@@ -121,7 +130,7 @@
             // buttonUndo
             // 
             this.buttonUndo.Enabled = false;
-            this.buttonUndo.Location = new System.Drawing.Point(8, 386);
+            this.buttonUndo.Location = new System.Drawing.Point(8, 329);
             this.buttonUndo.Name = "buttonUndo";
             this.buttonUndo.Size = new System.Drawing.Size(75, 23);
             this.buttonUndo.TabIndex = 17;
@@ -132,7 +141,7 @@
             // checkBoxHideBoard
             // 
             this.checkBoxHideBoard.AutoSize = true;
-            this.checkBoxHideBoard.Location = new System.Drawing.Point(186, 389);
+            this.checkBoxHideBoard.Location = new System.Drawing.Point(186, 332);
             this.checkBoxHideBoard.Name = "checkBoxHideBoard";
             this.checkBoxHideBoard.Size = new System.Drawing.Size(78, 17);
             this.checkBoxHideBoard.TabIndex = 19;
@@ -152,7 +161,7 @@
             // 
             // bShootHere
             // 
-            this.bShootHere.Location = new System.Drawing.Point(65, 249);
+            this.bShootHere.Location = new System.Drawing.Point(65, 232);
             this.bShootHere.Name = "bShootHere";
             this.bShootHere.Size = new System.Drawing.Size(30, 23);
             this.bShootHere.TabIndex = 14;
@@ -163,7 +172,7 @@
             // rbGrenade
             // 
             this.rbGrenade.AutoSize = true;
-            this.rbGrenade.Location = new System.Drawing.Point(176, 222);
+            this.rbGrenade.Location = new System.Drawing.Point(176, 205);
             this.rbGrenade.Name = "rbGrenade";
             this.rbGrenade.Size = new System.Drawing.Size(66, 17);
             this.rbGrenade.TabIndex = 13;
@@ -174,7 +183,7 @@
             // bActionRight
             // 
             this.bActionRight.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bActionRight.Location = new System.Drawing.Point(102, 236);
+            this.bActionRight.Location = new System.Drawing.Point(102, 219);
             this.bActionRight.Name = "bActionRight";
             this.bActionRight.Size = new System.Drawing.Size(50, 45);
             this.bActionRight.TabIndex = 12;
@@ -185,7 +194,7 @@
             // bActionLeft
             // 
             this.bActionLeft.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bActionLeft.Location = new System.Drawing.Point(8, 236);
+            this.bActionLeft.Location = new System.Drawing.Point(8, 219);
             this.bActionLeft.Name = "bActionLeft";
             this.bActionLeft.Size = new System.Drawing.Size(50, 45);
             this.bActionLeft.TabIndex = 11;
@@ -196,7 +205,7 @@
             // bActionDown
             // 
             this.bActionDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bActionDown.Location = new System.Drawing.Point(57, 281);
+            this.bActionDown.Location = new System.Drawing.Point(57, 264);
             this.bActionDown.Name = "bActionDown";
             this.bActionDown.Size = new System.Drawing.Size(45, 50);
             this.bActionDown.TabIndex = 10;
@@ -207,7 +216,7 @@
             // bActionUp
             // 
             this.bActionUp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bActionUp.Location = new System.Drawing.Point(57, 189);
+            this.bActionUp.Location = new System.Drawing.Point(57, 172);
             this.bActionUp.Name = "bActionUp";
             this.bActionUp.Size = new System.Drawing.Size(45, 50);
             this.bActionUp.TabIndex = 9;
@@ -228,7 +237,7 @@
             // rbCement
             // 
             this.rbCement.AutoSize = true;
-            this.rbCement.Location = new System.Drawing.Point(176, 291);
+            this.rbCement.Location = new System.Drawing.Point(176, 274);
             this.rbCement.Name = "rbCement";
             this.rbCement.Size = new System.Drawing.Size(61, 17);
             this.rbCement.TabIndex = 7;
@@ -239,7 +248,7 @@
             // rbHamsterSpray
             // 
             this.rbHamsterSpray.AutoSize = true;
-            this.rbHamsterSpray.Location = new System.Drawing.Point(176, 268);
+            this.rbHamsterSpray.Location = new System.Drawing.Point(176, 251);
             this.rbHamsterSpray.Name = "rbHamsterSpray";
             this.rbHamsterSpray.Size = new System.Drawing.Size(92, 17);
             this.rbHamsterSpray.TabIndex = 6;
@@ -250,7 +259,7 @@
             // rbHamster
             // 
             this.rbHamster.AutoSize = true;
-            this.rbHamster.Location = new System.Drawing.Point(176, 245);
+            this.rbHamster.Location = new System.Drawing.Point(176, 228);
             this.rbHamster.Name = "rbHamster";
             this.rbHamster.Size = new System.Drawing.Size(64, 17);
             this.rbHamster.TabIndex = 5;
@@ -261,7 +270,7 @@
             // rbShoot
             // 
             this.rbShoot.AutoSize = true;
-            this.rbShoot.Location = new System.Drawing.Point(176, 199);
+            this.rbShoot.Location = new System.Drawing.Point(176, 182);
             this.rbShoot.Name = "rbShoot";
             this.rbShoot.Size = new System.Drawing.Size(53, 17);
             this.rbShoot.TabIndex = 4;
@@ -442,6 +451,48 @@
             this.openFileDialog.Filter = "Labyrinth levels|*.xml";
             this.openFileDialog.Title = "Open level";
             // 
+            // numericUpDownRotationDegree
+            // 
+            this.numericUpDownRotationDegree.Location = new System.Drawing.Point(8, 388);
+            this.numericUpDownRotationDegree.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.numericUpDownRotationDegree.Name = "numericUpDownRotationDegree";
+            this.numericUpDownRotationDegree.Size = new System.Drawing.Size(50, 20);
+            this.numericUpDownRotationDegree.TabIndex = 20;
+            // 
+            // buttonRotate
+            // 
+            this.buttonRotate.Location = new System.Drawing.Point(65, 388);
+            this.buttonRotate.Name = "buttonRotate";
+            this.buttonRotate.Size = new System.Drawing.Size(50, 23);
+            this.buttonRotate.TabIndex = 21;
+            this.buttonRotate.Text = "Rotate";
+            this.buttonRotate.UseVisualStyleBackColor = true;
+            this.buttonRotate.Click += new System.EventHandler(this.buttonRotate_Click);
+            // 
+            // buttonFlipVertical
+            // 
+            this.buttonFlipVertical.Location = new System.Drawing.Point(116, 388);
+            this.buttonFlipVertical.Name = "buttonFlipVertical";
+            this.buttonFlipVertical.Size = new System.Drawing.Size(72, 23);
+            this.buttonFlipVertical.TabIndex = 22;
+            this.buttonFlipVertical.Text = "Flip vertical";
+            this.buttonFlipVertical.UseVisualStyleBackColor = true;
+            this.buttonFlipVertical.Click += new System.EventHandler(this.buttonFlipVertical_Click);
+            // 
+            // buttonFlipHorizontal
+            // 
+            this.buttonFlipHorizontal.Location = new System.Drawing.Point(189, 388);
+            this.buttonFlipHorizontal.Name = "buttonFlipHorizontal";
+            this.buttonFlipHorizontal.Size = new System.Drawing.Size(79, 23);
+            this.buttonFlipHorizontal.TabIndex = 23;
+            this.buttonFlipHorizontal.Text = "Flip horizontal";
+            this.buttonFlipHorizontal.UseVisualStyleBackColor = true;
+            this.buttonFlipHorizontal.Click += new System.EventHandler(this.buttonFlipHorizontal_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -467,6 +518,7 @@
             this.panel2.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownRotationDegree)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -510,6 +562,10 @@
         private System.Windows.Forms.Button buttonUndo;
         private System.Windows.Forms.ToolStripMenuItem loadLevelToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.Button buttonFlipHorizontal;
+        private System.Windows.Forms.Button buttonFlipVertical;
+        private System.Windows.Forms.Button buttonRotate;
+        private System.Windows.Forms.NumericUpDown numericUpDownRotationDegree;
     }
 }
 

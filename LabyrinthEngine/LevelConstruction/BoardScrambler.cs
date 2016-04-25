@@ -42,12 +42,12 @@ namespace LabyrinthEngine.LevelConstruction
             )
         {
             var workingCopy = HelperMethods.DeepClone(original);
-            horizontalWalls = workingCopy.HorizontalWalls;
-            verticalWalls = workingCopy.VerticalWalls;
             playfieldGrid = workingCopy.PlayfieldGrid;
             holes = workingCopy.Holes;
             centaur = workingCopy.centaur;
             startingPositions = workingCopy.StartingPositions;
+            horizontalWalls = workingCopy.HorizontalWalls;
+            verticalWalls = workingCopy.VerticalWalls;
 
             height = workingCopy.Height;
             width = workingCopy.Width;
@@ -78,21 +78,23 @@ namespace LabyrinthEngine.LevelConstruction
                 for (int y = 0; y < height; y++)
                 {
                     var transposedCoords = transposeXYCoordinates(x, y, operation);
-                    var squareToTranspose = playfieldOriginal[transposedCoords.X, transposedCoords.Y];
-                    playfieldGrid[x, y] = new PlayfieldSquare(squareToTranspose.Type,
+                    var squareToTranspose = playfieldOriginal[x, y];
+                    playfieldGrid[transposedCoords.X, transposedCoords.Y] = 
+                        new PlayfieldSquare(squareToTranspose.Type,
                         squareToTranspose.NumTreasures, squareToTranspose.Hole);
                 }
             }
 
+            // TODO: Walls should be scrambled differently, by cheating somehow.
             var horizontalWallsOriginal = HelperMethods.DeepClone(horizontalWalls);
             for (int x = 0; x < width; x++)
             {
                 for (int w_y = 0; w_y < height + 1; w_y++)
                 {
-                    var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
-                    var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
-                    horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
-                        wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    //var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
+                    //var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
+                    //horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
+                    //    wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
                 }
             }
 
@@ -101,10 +103,10 @@ namespace LabyrinthEngine.LevelConstruction
             {
                 for (int w_x = 0; w_x < height + 1; w_x++)
                 {
-                    var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
-                    var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
-                    horizontalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
-                        wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    //var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
+                    //var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
+                    //verticalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
+                    //    wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
                 }
             }
 
@@ -184,7 +186,35 @@ namespace LabyrinthEngine.LevelConstruction
             }
             else if (transpositionToPerform.GetType() == typeof(BoardRotation))
             {
-                throw new NotImplementedException();
+                int resultX, resultY;
+                var rotation = (BoardRotation)transpositionToPerform;
+
+                switch (rotation.HowMany90DegreesToRotateRight)
+                {
+                    case 0:
+                        resultX = x;
+                        resultY = y;
+                        break;
+                    case 1:
+                        resultX = height-y-1;
+                        resultY = x;
+                        break;
+                    case 2:
+                        resultX = width-x-1;
+                        resultY = height-y-1;
+                        break;
+                    case 3:
+                        resultX = y;
+                        resultY = width-x-1;
+                        break;
+                    default:
+                        throw new LabyrinthInvalidStateException(
+                            "Rotation degree must be in [0,3], was " + 
+                            rotation.HowMany90DegreesToRotateRight);
+                }
+
+                return new Position(resultX, resultY);
+                
             }
             else
             {

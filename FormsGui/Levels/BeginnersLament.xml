@@ -73,7 +73,8 @@
   <!-- Starting coordinates of players. If more players than coordinates, start positions
        are chosen randomly within the outermost dimensions of the board.-->
   <StartingPositions>
-
+    <PlayerPosition x="2" y="3" />
+    <PlayerPosition x="1" y="0" />
   </StartingPositions>
   
   <!-- Centaur moves from start to end of list, and then resumes from start. Wall flag is

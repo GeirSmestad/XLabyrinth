@@ -73,6 +73,18 @@ namespace FormsGui
             buttonRedo.Enabled = game.CanRedo();
         }
 
+        private void startNewGameWithInitialBoardStateAndSelectedPlayers()
+        {
+            game = new GameState(InitialBoardState, InitialPlayerList);
+
+            canvas.Invalidate();
+            printPlayerState();
+            textBoxMessages.Text = "Game started." + Environment.NewLine;
+            printGameState();
+            buttonUndo.Enabled = game.CanUndo();
+            buttonRedo.Enabled = game.CanRedo();
+        }
+
         private BoardState loadBoardFromSpecifiedFilename()
         {
             string boardXmlContent;
@@ -578,6 +590,27 @@ namespace FormsGui
                 startNewGameWithSelectedPlayers();
             }
             
+        }
+
+        private void buttonRotate_Click(object sender, EventArgs e)
+        {
+            var scrambler = new BoardScrambler(game.Board, (int)numericUpDownRotationDegree.Value);
+            InitialBoardState = scrambler.ReturnScrambledBoard();
+            startNewGameWithInitialBoardStateAndSelectedPlayers();
+        }
+
+        private void buttonFlipVertical_Click(object sender, EventArgs e)
+        {
+            var scrambler = new BoardScrambler(game.Board, 0, flipAlongVerticalAxis: true);
+            InitialBoardState = scrambler.ReturnScrambledBoard();
+            startNewGameWithInitialBoardStateAndSelectedPlayers();
+        }
+
+        private void buttonFlipHorizontal_Click(object sender, EventArgs e)
+        {
+            var scrambler = new BoardScrambler(game.Board, 0, flipAlongHorizontalAxis: true);
+            InitialBoardState = scrambler.ReturnScrambledBoard();
+            startNewGameWithInitialBoardStateAndSelectedPlayers();
         }
     }
 }
