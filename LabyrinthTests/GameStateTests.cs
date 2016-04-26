@@ -1881,6 +1881,12 @@ namespace AndroidGui.Tests
         }
 
         [Test]
+        public void When_exiting_labyrinth_player_could_be_temporarily_blocked_out()
+        {
+            Assert.Fail("Not implemented");
+        }
+
+        [Test]
         public void Movement_as_followup_action_should_cause_skipped_followup_action()
         {
             Assert.Fail("Not implemented");

@@ -51,7 +51,7 @@ namespace LabyrinthEngine.LevelConstruction
 
             height = workingCopy.Height;
             width = workingCopy.Width;
-            
+
             rotateBoardRight(howMany90DegreesToRotateRight);
             if (flipAlongHorizontalAxis) { flipBoardAlongHorizontalAxis(); }
             if (flipAlongVerticalAxis) { flipBoardAlongVerticalAxis(); }
@@ -68,6 +68,12 @@ namespace LabyrinthEngine.LevelConstruction
 
         private void modifyLocalWorkingCopyAccordingTo(BoardTranspositionOperation operation)
         {
+            // Unsure if this is the right way to swap width/height.
+            //if (IsRotationOf90Or270Degrees(operation))
+            //{
+            //    FlipDimensionsOfWorkingCopy();
+            //}
+
             // TODO: Can extract each method out to its own helper, for readability.
             // TODO: Rotation of 90 or 270 degrees will fail for non-quadratic boards.
             // Perhaps all that is required in this case is to re-initialize the target data structure
@@ -79,22 +85,30 @@ namespace LabyrinthEngine.LevelConstruction
                 {
                     var transposedCoords = transposeXYCoordinates(x, y, operation);
                     var squareToTranspose = playfieldOriginal[x, y];
-                    playfieldGrid[transposedCoords.X, transposedCoords.Y] = 
+                    playfieldGrid[transposedCoords.X, transposedCoords.Y] =
                         new PlayfieldSquare(squareToTranspose.Type,
                         squareToTranspose.NumTreasures, squareToTranspose.Hole);
                 }
             }
 
-            // TODO: Walls should be scrambled differently, by cheating somehow.
             var horizontalWallsOriginal = HelperMethods.DeepClone(horizontalWalls);
             for (int x = 0; x < width; x++)
             {
                 for (int w_y = 0; w_y < height + 1; w_y++)
                 {
-                    //var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
-                    //var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
-                    //horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
-                    //    wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    if (operation.GetType() == typeof(BoardFlip))
+                    {
+                        var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
+                        var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
+                        horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
+                            wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    }
+                    else
+                    {
+                        // XXX: Implement wall rotation
+                        
+                    }
+
                 }
             }
 
@@ -103,10 +117,19 @@ namespace LabyrinthEngine.LevelConstruction
             {
                 for (int w_x = 0; w_x < height + 1; w_x++)
                 {
-                    //var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
-                    //var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
-                    //verticalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
-                    //    wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    if (operation.GetType() == typeof(BoardFlip))
+                    {
+                        var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
+                        var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
+                        verticalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
+                            wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
+                    }
+                    else
+                    {
+                        // XXX: Implement wall rotation
+
+                    }
+
                 }
             }
 
@@ -124,7 +147,7 @@ namespace LabyrinthEngine.LevelConstruction
             {
                 var transposedCoords = transposeXYCoordinates(
                     centaur.Path[i].X, centaur.Path[i].Y, operation);
-                transposedCentaurPath.Add(new CentaurStep(transposedCoords.X, transposedCoords.Y, 
+                transposedCentaurPath.Add(new CentaurStep(transposedCoords.X, transposedCoords.Y,
                     centaur.Path[i].IgnoreWallsWhenSteppingHere));
             }
             centaur = new Centaur(transposedStartCoords.X, transposedStartCoords.Y, transposedCentaurPath);
@@ -146,7 +169,7 @@ namespace LabyrinthEngine.LevelConstruction
         private void flipBoardAlongHorizontalAxis()
         {
             modifyLocalWorkingCopyAccordingTo(
-                new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Horizontal});
+                new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Horizontal });
         }
         private void flipBoardAlongVerticalAxis()
         {
@@ -169,7 +192,7 @@ namespace LabyrinthEngine.LevelConstruction
             throw new NotImplementedException();
         }
 
-        private Position transposeXYCoordinates(int x, int y, 
+        private Position transposeXYCoordinates(int x, int y,
             BoardTranspositionOperation transpositionToPerform)
         {
             if (transpositionToPerform.GetType() == typeof(BoardFlip))
@@ -196,25 +219,25 @@ namespace LabyrinthEngine.LevelConstruction
                         resultY = y;
                         break;
                     case 1:
-                        resultX = height-y-1;
+                        resultX = height - y - 1;
                         resultY = x;
                         break;
                     case 2:
-                        resultX = width-x-1;
-                        resultY = height-y-1;
+                        resultX = width - x - 1;
+                        resultY = height - y - 1;
                         break;
                     case 3:
                         resultX = y;
-                        resultY = width-x-1;
+                        resultY = width - x - 1;
                         break;
                     default:
                         throw new LabyrinthInvalidStateException(
-                            "Rotation degree must be in [0,3], was " + 
+                            "Rotation degree must be in [0,3], was " +
                             rotation.HowMany90DegreesToRotateRight);
                 }
 
                 return new Position(resultX, resultY);
-                
+
             }
             else
             {
@@ -223,21 +246,30 @@ namespace LabyrinthEngine.LevelConstruction
             }
         }
 
-        private HorizontalWallCoordinate transposeHorizontalWallCoordinates(int x, int w_y, 
+        private HorizontalWallCoordinate transposeHorizontalWallCoordinates(int x, int w_y,
             BoardTranspositionOperation transpositionToPerform)
         {
             if (transpositionToPerform.GetType() == typeof(BoardFlip))
             {
-                throw new NotImplementedException();
-            }
-            else if (transpositionToPerform.GetType() == typeof(BoardRotation))
-            {
-                throw new NotImplementedException();
+                int resultX, resultW_y;
+
+                var operation = (BoardFlip)transpositionToPerform;
+                if (operation.AxisToFlipAbout == PlayfieldAxis.Horizontal)
+                {
+                    resultX = x;
+                    resultW_y = height - w_y;
+                }
+                else // if (operation.AxisToFlipAbout == PlayfieldAxis.Vertical)
+                {
+                    resultX = width - x - 1;
+                    resultW_y = w_y;
+                }
+                return new HorizontalWallCoordinate(resultX, resultW_y);
             }
             else
             {
                 throw new LabyrinthInvalidStateException(
-                    "Coordinate transposition must have a legal type");
+                    "Transposing wall coordinates is only supported for flipping, not rotation.");
             }
         }
 
@@ -246,17 +278,47 @@ namespace LabyrinthEngine.LevelConstruction
         {
             if (transpositionToPerform.GetType() == typeof(BoardFlip))
             {
-                throw new NotImplementedException();
-            }
-            else if (transpositionToPerform.GetType() == typeof(BoardRotation))
-            {
-                throw new NotImplementedException();
+                int resultY, resultW_x;
+
+                var operation = (BoardFlip)transpositionToPerform;
+                if (operation.AxisToFlipAbout == PlayfieldAxis.Horizontal)
+                {
+                    resultY = height - y - 1;
+                    resultW_x = w_x;
+                }
+                else // if (operation.AxisToFlipAbout == PlayfieldAxis.Vertical)
+                {
+                    resultY = y;
+                    resultW_x = width - w_x;
+                }
+                return new VerticalWallCoordinate(resultY, resultW_x);
             }
             else
             {
                 throw new LabyrinthInvalidStateException(
-                    "Coordinate transposition must have a legal type");
+                    "Transposing wall coordinates is only supported for flipping, not rotation.");
             }
+        }
+
+        private void FlipDimensionsOfWorkingCopy()
+        {
+            throw new NotImplementedException();
+
+            // TODO: Re-initialize array-based data structures and those that are dependent
+            // on width and height
+        }
+
+        private bool IsRotationOf90Or270Degrees(BoardTranspositionOperation operation)
+        {
+            var operationIsRotation = operation.GetType() == typeof(BoardRotation);
+
+            if (operationIsRotation)
+            {
+                return ((BoardRotation)operation).HowMany90DegreesToRotateRight == 1 ||
+                    ((BoardRotation)operation).HowMany90DegreesToRotateRight == 3;
+            }
+
+            return false;
         }
     }
 }

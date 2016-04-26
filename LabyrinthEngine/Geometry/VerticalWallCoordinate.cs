@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace LabyrinthEngine.Geometry
 {
-    class VerticalWallCoordinate
+    public class VerticalWallCoordinate
     {
-        public int Y;
-        public int W_x;
+        public VerticalWallCoordinate(int y, int w_x)
+        {
+            Y = y;
+            W_x = w_x;
+        }
+
+        public int Y { get; private set; }
+        public int W_x { get; private set; }
     }
 }
