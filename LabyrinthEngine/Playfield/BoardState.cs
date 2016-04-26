@@ -5,6 +5,7 @@ using System.Text;
 
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Geometry;
+using LabyrinthEngine.Helpers;
 
 namespace LabyrinthEngine.Playfield
 {
@@ -79,7 +80,8 @@ namespace LabyrinthEngine.Playfield
 
         public WallSection GetWallAbove(int playfieldX, int playfieldY)
         {
-            return HorizontalWalls[playfieldX, playfieldY];
+            var coordinate = HelperMethods.GetCoordinateOfWallAbove(playfieldX, playfieldY);
+            return HorizontalWalls[coordinate.X, coordinate.W_y];
         }
 
         public WallSection GetWallAbove(Player player)
@@ -89,7 +91,8 @@ namespace LabyrinthEngine.Playfield
 
         public WallSection GetWallBelow(int playfieldX, int playfieldY)
         {
-            return HorizontalWalls[playfieldX, playfieldY + 1];
+            var coordinate = HelperMethods.GetCoordinateOfWallBelow(playfieldX, playfieldY);
+            return HorizontalWalls[coordinate.X, coordinate.W_y];
         }
 
         public WallSection GetWallBelow(Player player)
@@ -99,7 +102,8 @@ namespace LabyrinthEngine.Playfield
 
         public WallSection GetWallLeftOf(int playfieldX, int playfieldY)
         {
-            return VerticalWalls[playfieldY, playfieldX];
+            var coordinate = HelperMethods.GetCoordinateOfWallLeftOf(playfieldX, playfieldY);
+            return VerticalWalls[coordinate.Y, coordinate.W_x];
         }
 
         public WallSection GetWallLeftOf(Player player)
@@ -109,7 +113,8 @@ namespace LabyrinthEngine.Playfield
 
         public WallSection GetWallRightOf(int playfieldX, int playfieldY)
         {
-            return VerticalWalls[playfieldY, playfieldX + 1];
+            var coordinate = HelperMethods.GetCoordinateOfWallRightOf(playfieldX, playfieldY);
+            return VerticalWalls[coordinate.Y, coordinate.W_x];
         }
 
         public WallSection GetWallRightOf(Player player)

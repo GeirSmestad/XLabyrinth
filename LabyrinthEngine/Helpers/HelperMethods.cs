@@ -1,4 +1,5 @@
 ﻿using LabyrinthEngine.Entities;
+using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Playfield;
 using System;
 using System.Collections.Generic;
@@ -77,6 +78,26 @@ namespace LabyrinthEngine.Helpers
         public static int PositiveModulo(int x, int m)
         {
             return (x % m + m) % m;
+        }
+
+        public static VerticalWallCoordinate GetCoordinateOfWallLeftOf(int x, int y)
+        {
+            return new VerticalWallCoordinate(y, x);
+        }
+
+        public static VerticalWallCoordinate GetCoordinateOfWallRightOf(int x, int y)
+        {
+            return new VerticalWallCoordinate(y, x + 1);
+        }
+
+        public static HorizontalWallCoordinate GetCoordinateOfWallAbove(int x, int y)
+        {
+            return new HorizontalWallCoordinate(x, y);
+        }
+
+        public static HorizontalWallCoordinate GetCoordinateOfWallBelow(int x, int y)
+        {
+            return new HorizontalWallCoordinate(x, y + 1);
         }
     }
 }
