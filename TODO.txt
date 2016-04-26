@@ -1,10 +1,11 @@
 TODO: Currently not making text available in UI on undo/redo. This should be simple enough to solve.
-TODO: Implement board rotation. BoardLoader.cs. Almost finished, just need to fix walls & non-quadratic boards.
 TODO: Split game state tests into smaller files
 TODO: Add some levels from Helge's game.
 TODO: Visualize the centaur's path.
 TODO: Make it impossible to re-enter the labyrinth if the exit has been walled up
 
+BUG: Board scrambler crashes on non-quadratic boards
+BUG: Board scrambler doesn't preserve parameters of exterior walls when rotating
 BUG: Game crashes when a dead player shoots at the same square and there is a victim there.
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 

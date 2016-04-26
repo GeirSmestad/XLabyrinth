@@ -92,44 +92,100 @@ namespace LabyrinthEngine.LevelConstruction
             }
 
             var horizontalWallsOriginal = HelperMethods.DeepClone(horizontalWalls);
-            for (int x = 0; x < width; x++)
+            var verticalWallsOriginal = HelperMethods.DeepClone(verticalWalls);
+            if (operation.GetType() == typeof(BoardFlip))
             {
-                for (int w_y = 0; w_y < height + 1; w_y++)
+                for (int x = 0; x < width; x++)
                 {
-                    if (operation.GetType() == typeof(BoardFlip))
+                    for (int w_y = 0; w_y < height + 1; w_y++)
                     {
                         var transposedCoords = transposeHorizontalWallCoordinates(x, w_y, operation);
                         var wallToTranspose = horizontalWallsOriginal[transposedCoords.X, transposedCoords.W_y];
                         horizontalWalls[x, w_y] = new WallSection(wallToTranspose.IsPassable,
                             wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
                     }
-                    else
-                    {
-                        // XXX: Implement wall rotation
-                        
-                    }
-
                 }
-            }
-
-            var verticalWallsOriginal = HelperMethods.DeepClone(verticalWalls);
-            for (int y = 0; y < height; y++)
-            {
-                for (int w_x = 0; w_x < height + 1; w_x++)
+            
+                for (int y = 0; y < height; y++)
                 {
-                    if (operation.GetType() == typeof(BoardFlip))
+                    for (int w_x = 0; w_x < height + 1; w_x++)
                     {
                         var transposedCoords = transposeVerticalWallCoordinates(y, w_x, operation);
                         var wallToTranspose = verticalWallsOriginal[transposedCoords.Y, transposedCoords.W_x];
                         verticalWalls[y, w_x] = new WallSection(wallToTranspose.IsPassable,
                             wallToTranspose.HasHamster, wallToTranspose.IsExit, wallToTranspose.IsExterior);
                     }
-                    else
+                }
+            }
+            else // Wall rotation
+            {
+                if (operation.GetType() == typeof(BoardRotation))
+                {
+                    var rotation = (BoardRotation)operation;
+                    for (int x = 0; x < width; x++)
                     {
-                        // XXX: Implement wall rotation
+                        for (int y = 0; y < height; y++)
+                        {
+                            var transposedCoords = transposeXYCoordinates(x, y, operation);
 
+                            var coordsOfOriginalLeftWall = HelperMethods.GetCoordinateOfWallLeftOf(x, y);
+                            var coordsOfOriginalRightWall = HelperMethods.GetCoordinateOfWallRightOf(x, y);
+                            var coordsOfOriginalWallAbove = HelperMethods.GetCoordinateOfWallAbove(x, y);
+                            var coordsOfOriginalWallBelow = HelperMethods.GetCoordinateOfWallBelow(x, y);
+
+                            var originalLeftWall = verticalWallsOriginal[coordsOfOriginalLeftWall.Y, 
+                                coordsOfOriginalLeftWall.W_x];
+                            var originalRightWall = horizontalWallsOriginal[coordsOfOriginalRightWall.Y,
+                                coordsOfOriginalRightWall.W_x];
+                            var originalWallBelow = horizontalWallsOriginal[coordsOfOriginalWallBelow.X,
+                                coordsOfOriginalWallBelow.W_y];
+                            var originalWallAbove = horizontalWallsOriginal[coordsOfOriginalWallAbove.X,
+                                coordsOfOriginalWallAbove.W_y];
+
+                            var coordsOfRotatedLeftWall = 
+                                HelperMethods.GetCoordinateOfWallLeftOf(transposedCoords.X, transposedCoords.Y);
+                            var coordsOfRotatedRightWall = 
+                                HelperMethods.GetCoordinateOfWallRightOf(transposedCoords.X, transposedCoords.Y);
+                            var coordsOfRotatedWallAbove =
+                                HelperMethods.GetCoordinateOfWallAbove(transposedCoords.X, transposedCoords.Y);
+                            var coordsOfRotatedWallBelow = 
+                                HelperMethods.GetCoordinateOfWallBelow(transposedCoords.X, transposedCoords.Y);
+
+                            if (rotation.HowMany90DegreesToRotateRight == 1)
+                            {
+                                verticalWalls[coordsOfRotatedLeftWall.Y, coordsOfRotatedLeftWall.W_x] =
+                                    originalWallBelow;
+                                verticalWalls[coordsOfRotatedRightWall.Y, coordsOfRotatedRightWall.W_x] =
+                                    originalWallAbove;
+                                horizontalWalls[coordsOfRotatedWallBelow.X, coordsOfRotatedWallBelow.W_y] =
+                                    originalRightWall;
+                                horizontalWalls[coordsOfRotatedWallAbove.X, coordsOfRotatedWallAbove.W_y] =
+                                    originalLeftWall;
+                            }
+                            else if (rotation.HowMany90DegreesToRotateRight == 2)
+                            {
+                                verticalWalls[coordsOfRotatedLeftWall.Y, coordsOfRotatedLeftWall.W_x] =
+                                    originalRightWall;
+                                verticalWalls[coordsOfRotatedRightWall.Y, coordsOfRotatedRightWall.W_x] =
+                                    originalLeftWall;
+                                horizontalWalls[coordsOfRotatedWallBelow.X, coordsOfRotatedWallBelow.W_y] =
+                                    originalWallAbove;
+                                horizontalWalls[coordsOfRotatedWallAbove.X, coordsOfRotatedWallAbove.W_y] =
+                                    originalWallBelow;
+                            }
+                            else if (rotation.HowMany90DegreesToRotateRight == 3)
+                            {
+                                verticalWalls[coordsOfRotatedLeftWall.Y, coordsOfRotatedLeftWall.W_x] =
+                                    originalWallAbove;
+                                verticalWalls[coordsOfRotatedRightWall.Y, coordsOfRotatedRightWall.W_x] =
+                                    originalWallBelow;
+                                horizontalWalls[coordsOfRotatedWallBelow.X, coordsOfRotatedWallBelow.W_y] =
+                                    originalLeftWall;
+                                horizontalWalls[coordsOfRotatedWallAbove.X, coordsOfRotatedWallAbove.W_y] =
+                                    originalRightWall;
+                            }
+                        }
                     }
-
                 }
             }
 
