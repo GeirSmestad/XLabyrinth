@@ -124,14 +124,6 @@ namespace LabyrinthEngine.LevelConstruction
                     {
                         wallElement.SetAttribute("isPassable", "yes");
                     }
-                    //if (!wallSegment.IsPassable)
-                    //{
-                    //    wallElement.SetAttribute("isPassable", "no");
-                    //}
-                    //else
-                    //{
-                    //    wallElement.SetAttribute("isPassable", "yes");
-                    //}
                 }
             }
         }
@@ -175,14 +167,6 @@ namespace LabyrinthEngine.LevelConstruction
                     {
                         wallElement.SetAttribute("isPassable", "yes");
                     }
-                    //if (!wallSegment.IsPassable)
-                    //{
-                    //    wallElement.SetAttribute("isPassable", "no");
-                    //}
-                    //else
-                    //{
-                    //    wallElement.SetAttribute("isPassable", "yes");
-                    //}
                 }
             }
         }
