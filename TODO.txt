@@ -9,4 +9,6 @@ BUG: Game crashes when a dead player shoots at the same square and there is a vi
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 
 TODO WISHLIST: Equality operator for boards, so I can easily implement tests for the board scrambler.
+    -Must implement equality operators for PlayfieldSquare, WallSection, Centaur & Teleporter. Else done.
+
 TODO WISHLIST: Create level editor. Think a bit about how. New front-end is one option.

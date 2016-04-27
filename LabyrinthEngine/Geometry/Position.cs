@@ -18,12 +18,15 @@ namespace LabyrinthEngine.Geometry
             Y = y;
         }
 
-        public bool Equals(Position other)
+        public override bool Equals(object item)
         {
+            var other = item as Position;
+
             if (other == null)
             {
                 return false;
             }
+
             if (ReferenceEquals(this, other))
             {
                 return true;

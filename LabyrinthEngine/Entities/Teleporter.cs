@@ -26,5 +26,22 @@ namespace LabyrinthEngine.Entities
             X = x;
             Y = y;
         }
+
+        public override bool Equals(object item)
+        {
+            var other = item as PlayfieldSquare;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return false; // TODO: Implement proper equality test. A little hairy to compare linked list.
+        }
     }
 }

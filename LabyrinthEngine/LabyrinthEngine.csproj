@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\BoardComparer.cs" />
     <Compile Include="LevelConstruction\BoardSaver.cs" />
     <Compile Include="LevelConstruction\BoardTransposition\BoardFlip.cs" />
     <Compile Include="LevelConstruction\BoardTransposition\BoardRotation.cs" />

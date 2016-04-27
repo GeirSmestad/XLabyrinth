@@ -40,5 +40,22 @@ namespace LabyrinthEngine.Playfield
                     "A non-teleporter square cannot have a teleporter attached");
             }
         }
+
+        public override bool Equals(object item)
+        {
+            var other = item as PlayfieldSquare;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return false; // TODO: Implement proper equality test
+        }
     }
 }

@@ -121,5 +121,22 @@ namespace LabyrinthEngine.Playfield
         {
             return GetWallRightOf(player.X, player.Y);
         }
+
+        public override bool Equals(object item)
+        {
+            var other = item as BoardState;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return (BoardComparer.Equals(this, other));
+        }
     }
 }

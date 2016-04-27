@@ -8,6 +8,7 @@ using NUnit.Framework;
 using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Entities;
+using LabyrinthEngine.Helpers;
 
 namespace LabyrinthTests
 {
@@ -71,6 +72,33 @@ namespace LabyrinthTests
         public void TestGetWallRightOfPlayfieldCoordinate()
         {
             Assert.That(board.GetWallRightOf(4, 3).IsExterior);
+        }
+
+        [Test]
+        public void Deep_cloned_boards_are_equal()
+        {
+            var copy = HelperMethods.DeepClone(board);
+
+            Assert.That(board.Equals(copy));
+        }
+
+        [Test]
+        public void Boards_with_minor_changes_are_not_equal()
+        {
+            var copy1 = HelperMethods.DeepClone(board);
+            var copy2 = HelperMethods.DeepClone(board);
+            var copy3 = HelperMethods.DeepClone(board);
+            var copy4 = HelperMethods.DeepClone(board);
+
+            copy1.GetPlayfieldSquareOf(2, 2).NumTreasures++;
+            copy2.GetWallLeftOf(0, 0).HasHamster = true;
+            copy3.GetWallAbove(4, 3).IsExterior = true;
+            copy4.centaur.MoveToNextPositionInPath();
+
+            Assert.False(board.Equals(copy1));
+            Assert.False(board.Equals(copy2));
+            Assert.False(board.Equals(copy3));
+            Assert.False(board.Equals(copy4));
         }
     }
 }

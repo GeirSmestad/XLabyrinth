@@ -19,5 +19,22 @@ namespace LabyrinthEngine.Entities
             Y = y;
             this.IgnoreWallsWhenSteppingHere = ignoreWallsWhenSteppingHere;
         }
-}
+
+        public override bool Equals(object item)
+        {
+            var other = item as PlayfieldSquare;
+
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return false; // TODO: Implement proper equality test
+        }
+    }
 }
