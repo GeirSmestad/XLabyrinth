@@ -135,7 +135,7 @@ namespace LabyrinthEngine.LevelConstruction
 
                             var originalLeftWall = verticalWallsOriginal[coordsOfOriginalLeftWall.Y, 
                                 coordsOfOriginalLeftWall.W_x];
-                            var originalRightWall = horizontalWallsOriginal[coordsOfOriginalRightWall.Y,
+                            var originalRightWall = verticalWallsOriginal[coordsOfOriginalRightWall.Y,
                                 coordsOfOriginalRightWall.W_x];
                             var originalWallBelow = horizontalWallsOriginal[coordsOfOriginalWallBelow.X,
                                 coordsOfOriginalWallBelow.W_y];
