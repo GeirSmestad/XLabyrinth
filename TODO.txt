@@ -5,7 +5,6 @@ TODO: Visualize the centaur's path.
 TODO: Make it impossible to re-enter the labyrinth if the exit has been walled up
 
 BUG: Board scrambler crashes on non-quadratic boards
-BUG: Board scrambler doesn't preserve parameters of exterior walls when rotating
 BUG: Game crashes when a dead player shoots at the same square and there is a victim there.
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 
