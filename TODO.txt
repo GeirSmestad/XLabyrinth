@@ -8,5 +8,4 @@ BUG: Board scrambler crashes on non-quadratic boards
 BUG: Game crashes when a dead player shoots at the same square and there is a victim there.
 BUG: Game crashes when hamstering passable exit. Added dummy test, implement it and fix.
 
-
 TODO WISHLIST: Create level editor. Think a bit about how. New front-end is one option.

@@ -34,8 +34,8 @@ namespace LabyrinthEngine.LevelConstruction
 
         public BoardScrambler(BoardState original,
             int howMany90DegreesToRotateRight,
-            bool flipAlongHorizontalAxis = false,
-            bool flipAlongVerticalAxis = false,
+            bool flipAboutHorizontalAxis = false,
+            bool flipAboutVerticalAxis = false,
             bool scrambleTeleporterOrder = false,
             bool scrambleTreasureLocations = false,
             bool scrambleStartingPositions = false
@@ -53,8 +53,8 @@ namespace LabyrinthEngine.LevelConstruction
             width = workingCopy.Width;
 
             rotateBoardRight(howMany90DegreesToRotateRight);
-            if (flipAlongHorizontalAxis) { flipBoardAlongHorizontalAxis(); }
-            if (flipAlongVerticalAxis) { flipBoardAlongVerticalAxis(); }
+            if (flipAboutHorizontalAxis) { flipBoardAboutHorizontalAxis(); }
+            if (flipAboutVerticalAxis) { flipBoardAboutVerticalAxis(); }
             if (scrambleTeleporterOrder) { scrambleBoardTeleporterOrder(); }
             if (scrambleTreasureLocations) { scrambleBoardTreasureLocations(); }
             if (scrambleStartingPositions) { scrambleBoardStartingPositions(); }
@@ -222,12 +222,12 @@ namespace LabyrinthEngine.LevelConstruction
             { HowMany90DegreesToRotateRight = howMany90DegreesToRotate });
         }
 
-        private void flipBoardAlongHorizontalAxis()
+        private void flipBoardAboutHorizontalAxis()
         {
             modifyLocalWorkingCopyAccordingTo(
                 new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Horizontal });
         }
-        private void flipBoardAlongVerticalAxis()
+        private void flipBoardAboutVerticalAxis()
         {
             modifyLocalWorkingCopyAccordingTo(
                 new BoardFlip() { AxisToFlipAbout = PlayfieldAxis.Vertical });

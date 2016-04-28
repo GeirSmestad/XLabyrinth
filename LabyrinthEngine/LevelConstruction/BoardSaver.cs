@@ -155,7 +155,7 @@ namespace LabyrinthEngine.LevelConstruction
                     if (attributes.Count == 0 && wallSegment.IsPassable) { continue; }
 
                     var wallElement = (XmlElement)verticalWallsElement
-                            .AppendChild(document.CreateElement("VerticalWallsSegment"));
+                            .AppendChild(document.CreateElement("VerticalWallSegment"));
                     wallElement.SetAttribute("w_x", w_x.ToString());
                     wallElement.SetAttribute("y", y.ToString());
                     foreach (var attribute in attributes)
@@ -196,7 +196,7 @@ namespace LabyrinthEngine.LevelConstruction
             foreach (var step in source.centaur.Path)
             {
                 var stepElement = (XmlElement)centaurElement
-                    .AppendChild(document.CreateElement("Centaur"));
+                    .AppendChild(document.CreateElement("CentaurStep"));
                 stepElement.SetAttribute("x", step.X.ToString());
                 stepElement.SetAttribute("y", step.Y.ToString());
 
