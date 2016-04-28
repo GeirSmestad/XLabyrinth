@@ -9,6 +9,7 @@ using LabyrinthEngine.Playfield;
 using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Helpers;
+using LabyrinthEngine.LevelConstruction;
 
 namespace LabyrinthTests
 {
@@ -29,12 +30,27 @@ namespace LabyrinthTests
         {
             // Initialize an empty board. You can rebuild it with arbitrary content in each test.
             playfield = TestHelpers.InitializeEmptyPlayfield(5, 5);
+            
             horizontalWalls = TestHelpers.InitializeEmptyHorizontalWalls(5, 5);
             verticalWalls = TestHelpers.InitializeEmptyVerticalWalls(5, 5);
             startingPositions = new List<Position> { new Position(0, 0) };
-            holes = new List<Teleporter>();
 
-            centaur = new Centaur(-1, -1, new List<CentaurStep>());
+            var teleporter1 = new Teleporter(0, null, 3, 2);
+            var teleporter2 = new Teleporter(1, null, 3, 3);
+            teleporter1.NextHole = teleporter2;
+            teleporter2.NextHole = teleporter1;
+            holes = new List<Teleporter>()
+            {
+                teleporter1,
+                teleporter2
+            };
+
+            playfield[3, 2] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter1);
+            playfield[3, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, teleporter2);
+
+            centaur = new Centaur(-1, -1, new List<CentaurStep>()
+                { new CentaurStep(1,0,false),
+                  new CentaurStep(2,0,false) });
             playfield[1, 3] = new PlayfieldSquare(SquareType.Teleporter, 0, 
                 new Teleporter(0, null, 1, 3));
 
@@ -77,6 +93,11 @@ namespace LabyrinthTests
         [Test]
         public void Deep_cloned_boards_are_equal()
         {
+            string boardXmlContent = System.IO.File.ReadAllText(@"..\..\Data\BoardLoaderTestBoard.xml");
+
+            var boardLoader = new BoardLoader(boardXmlContent);
+            board = boardLoader.Board;
+
             var copy = HelperMethods.DeepClone(board);
 
             Assert.That(board.Equals(copy));
@@ -88,7 +109,21 @@ namespace LabyrinthTests
             var copy1 = HelperMethods.DeepClone(board);
             var copy2 = HelperMethods.DeepClone(board);
             var copy3 = HelperMethods.DeepClone(board);
-            var copy4 = HelperMethods.DeepClone(board);
+
+            var centaurCopy = new Centaur(-1, -1, new List<CentaurStep>()
+                { new CentaurStep(1,0,false),
+                  new CentaurStep(0,0,false) });
+            var copy4 = new BoardState(playfield, horizontalWalls, verticalWalls, holes, centaurCopy, startingPositions);
+
+            var startingPositionsCopy = new List<Position> { new Position(0, 1) };
+            var copy5 = new BoardState(playfield, horizontalWalls, verticalWalls, holes, centaur, startingPositionsCopy);
+
+            var teleporter1copy = new Teleporter(0, null, 3, 2);
+            var teleporter2copy = new Teleporter(2, null, 3, 3);
+            teleporter1copy.NextHole = teleporter2copy;
+            teleporter2copy.NextHole = teleporter1copy;
+            var holesCopy = new List<Teleporter>() { teleporter1copy, teleporter2copy };
+            var copy6 = new BoardState(playfield, horizontalWalls, verticalWalls, holesCopy, centaur, startingPositions);
 
             copy1.GetPlayfieldSquareOf(2, 2).NumTreasures++;
             copy2.GetWallLeftOf(0, 0).HasHamster = true;
@@ -99,6 +134,8 @@ namespace LabyrinthTests
             Assert.False(board.Equals(copy2));
             Assert.False(board.Equals(copy3));
             Assert.False(board.Equals(copy4));
+            Assert.False(board.Equals(copy5));
+            Assert.False(board.Equals(copy6));
         }
     }
 }

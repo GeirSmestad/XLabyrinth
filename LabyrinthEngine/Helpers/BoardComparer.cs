@@ -51,15 +51,9 @@ namespace LabyrinthEngine.Helpers
                     }
                 }
 
-                if (a.Holes != null)
+                if (!a.Holes.SequenceEqual(b.Holes))
                 {
-                    for (int i = 0; i < a.Holes.Count; i++)
-                    {
-                        if (!a.Holes[i].Equals(b.Holes[i]))
-                        {
-                            return false;
-                        }
-                    }
+                    return false;
                 }
 
                 if (!a.centaur.Equals(b.centaur))
@@ -67,15 +61,9 @@ namespace LabyrinthEngine.Helpers
                     return false;
                 }
 
-                if (a.StartingPositions != null)
+                if (!a.StartingPositions.SequenceEqual(b.StartingPositions))
                 {
-                    for (int i = 0; i < a.StartingPositions.Count; i++)
-                    {
-                        if (!a.StartingPositions[i].Equals(b.StartingPositions[i]))
-                        {
-                            return false;
-                        }
-                    }
+                    return false;
                 }
             }
             catch (IndexOutOfRangeException)

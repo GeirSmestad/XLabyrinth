@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LabyrinthEngine.Geometry
 {
     [Serializable]
-    public class Position
+    public class Position : IEquatable<object>
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -35,7 +35,6 @@ namespace LabyrinthEngine.Geometry
             return ((X.Equals(other.X)) && (Y.Equals(other.Y)));
         }
         
-
         public override int GetHashCode()
         {
             return X.GetHashCode() * Y.GetHashCode();

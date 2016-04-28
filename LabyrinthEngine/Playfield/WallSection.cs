@@ -7,7 +7,7 @@ using System.Text;
 namespace LabyrinthEngine.Playfield
 {
     [Serializable]
-    public class WallSection
+    public class WallSection : IEquatable<object>
     {
         public WallSection(bool isPassable, bool hasHamster, 
             bool isExit, bool isExterior)
@@ -92,7 +92,7 @@ namespace LabyrinthEngine.Playfield
 
         public override bool Equals(object item)
         {
-            var other = item as PlayfieldSquare;
+            var other = item as WallSection;
 
             if (other == null)
             {
@@ -104,7 +104,11 @@ namespace LabyrinthEngine.Playfield
                 return true;
             }
 
-            return false; // TODO: Implement proper equality test
+            var result = true;
+            result &= isPassable == other.isPassable && hasHamster == other.hasHamster;
+            result &= isExit == other.IsExit && isExterior == other.isExterior;
+
+            return result;
         }
     }
 }

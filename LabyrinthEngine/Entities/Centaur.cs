@@ -9,7 +9,7 @@ using System.Text;
 namespace LabyrinthEngine.Entities
 {
     [Serializable]
-    public class Centaur
+    public class Centaur : IEquatable<object>
     {
         private int startX { get; set; }
         private int startY { get; set; }
@@ -124,7 +124,7 @@ namespace LabyrinthEngine.Entities
 
         public override bool Equals(object item)
         {
-            var other = item as PlayfieldSquare;
+            var other = item as Centaur;
 
             if (other == null)
             {
@@ -136,7 +136,14 @@ namespace LabyrinthEngine.Entities
                 return true;
             }
 
-            return false; // TODO: Implement proper equality test
+            var result = true;
+            result &= startX == other.startX && startY == other.startY;
+            result &= X == other.X && Y == other.Y && NextStep == other.NextStep;
+            result &= CurrentlyBacktracking == other.CurrentlyBacktracking;
+            result &= HasStartedMoving == other.HasStartedMoving;
+            result &= Path.SequenceEqual(other.Path);
+            
+            return result;
         }
     }
 }

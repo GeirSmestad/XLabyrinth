@@ -8,7 +8,7 @@ using System.Text;
 namespace LabyrinthEngine.Playfield
 {
     [Serializable]
-    public class PlayfieldSquare
+    public class PlayfieldSquare : IEquatable<object>
     {
         public int NumTreasures { get; set; }
         public SquareType Type { get; private set; }
@@ -55,7 +55,23 @@ namespace LabyrinthEngine.Playfield
                 return true;
             }
 
-            return false; // TODO: Implement proper equality test
+            var result = true;
+
+            result &= NumTreasures == other.NumTreasures;
+            result &= Type == other.Type && X == other.X && Y == other.Y;
+            
+            if (Hole == null)
+            {
+               return result && other.Hole == null;
+            }
+            if (other.Hole == null)
+            {
+                return false;
+            }
+            result &= Hole.Equals(other.Hole);
+
+            return result;
+            
         }
     }
 }

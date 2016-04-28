@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LabyrinthEngine.Entities
 {
     [Serializable]
-    public class CentaurStep
+    public class CentaurStep : IEquatable<object>
     {
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -22,7 +22,7 @@ namespace LabyrinthEngine.Entities
 
         public override bool Equals(object item)
         {
-            var other = item as PlayfieldSquare;
+            var other = item as CentaurStep;
 
             if (other == null)
             {
@@ -34,7 +34,11 @@ namespace LabyrinthEngine.Entities
                 return true;
             }
 
-            return false; // TODO: Implement proper equality test
+            var result = true;
+            result &= X == other.X && Y == other.Y;
+            result &= IgnoreWallsWhenSteppingHere == other.IgnoreWallsWhenSteppingHere;
+
+            return result;
         }
     }
 }

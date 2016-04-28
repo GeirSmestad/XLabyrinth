@@ -12,7 +12,7 @@ namespace LabyrinthEngine.Entities
     /// in a loop.
     /// </summary>
     [Serializable]
-    public class Teleporter
+    public class Teleporter : IEquatable<object>
     {
         public int TeleporterIndex { get; private set; }
         public Teleporter NextHole { get; set; }
@@ -29,7 +29,7 @@ namespace LabyrinthEngine.Entities
 
         public override bool Equals(object item)
         {
-            var other = item as PlayfieldSquare;
+            var other = item as Teleporter;
 
             if (other == null)
             {
@@ -41,7 +41,11 @@ namespace LabyrinthEngine.Entities
                 return true;
             }
 
-            return false; // TODO: Implement proper equality test. A little hairy to compare linked list.
+            var result = true;
+            result &= X == other.X && Y == other.Y;
+            result &= TeleporterIndex == other.TeleporterIndex;
+
+            return result;
         }
     }
 }
