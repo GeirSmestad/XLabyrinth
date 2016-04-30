@@ -313,37 +313,42 @@ namespace FormsGui
                 }
             }
 
-            // Centaur
             var centaur = game.Board.centaur;
 
-            e.Graphics.FillRectangle(Brushes.Firebrick,
-                 startX + squareWidth * centaur.X + squareWidth / 2,
-                 startY + squareHeight * centaur.Y + squareHeight / 4,
-                 squareHeight / 4, squareHeight / 4);
-
+            // Centaur path
             var centaurPathBrush = new SolidBrush(Color.FromArgb(210, 51, 102, 255));
             var centaurPathPen = new Pen(centaurPathBrush, 3);
-            for (int i = 0; i < centaur.Path.Count-1; i++)
+            for (int i = 0; i < centaur.Path.Count - 1; i++)
             {
                 var from = centaur.Path[i];
                 var to = centaur.Path[i + 1];
-                // TODO: Fix coordinates so they are correct relative to board size.
-                // Should create a method to abstract away this arithmetic.
-                e.Graphics.DrawLine(centaurPathPen, from.X, from.Y, to.X, to.Y);
-                // TODO: Draw arrow markers to show direction
+                e.Graphics.DrawLine(centaurPathPen,
+                    startX + squareWidth * from.X + squareWidth / 2,
+                    startY + squareHeight * from.Y + squareHeight / 2,
+                    startX + squareWidth * to.X + squareWidth / 2,
+                    startY + squareHeight * to.Y + squareHeight / 2);
             }
-            // TODO: Draw line from last to first, if applicable
+
+            // Draw line from last to first centaur position, if applicable
             if (centaur.Path.Count >= 2)
             {
-                var from = centaur.Path[centaur.Path.Count-1];
+                var from = centaur.Path[centaur.Path.Count - 1];
                 var to = centaur.Path[0];
-                e.Graphics.DrawLine(centaurPathPen, from.X, from.Y, to.X, to.Y);
+                e.Graphics.DrawLine(centaurPathPen,
+                    startX + squareWidth * from.X + squareWidth / 2,
+                    startY + squareHeight * from.Y + squareHeight / 2,
+                    startX + squareWidth * to.X + squareWidth / 2,
+                    startY + squareHeight * to.Y + squareHeight / 2);
             }
 
             centaurPathBrush.Dispose();
             centaurPathPen.Dispose();
 
-            
+            // Centaur
+            e.Graphics.FillRectangle(Brushes.Firebrick,
+                 startX + squareWidth * centaur.X + squareWidth / 2,
+                 startY + squareHeight * centaur.Y + squareHeight / 4,
+                 squareHeight / 4, squareHeight / 4);
 
             // Players
             Brush[] playerBrushes = { Brushes.Blue, Brushes.Green, Brushes.Yellow, Brushes.DarkViolet, Brushes.HotPink, Brushes.DarkCyan };
@@ -601,14 +606,14 @@ namespace FormsGui
 
         private void buttonFlipVertical_Click(object sender, EventArgs e)
         {
-            var scrambler = new BoardScrambler(game.Board, 0, flipAlongVerticalAxis: true);
+            var scrambler = new BoardScrambler(game.Board, 0, flipAboutVerticalAxis: true);
             InitialBoardState = scrambler.ReturnScrambledBoard();
             startNewGameWithInitialBoardStateAndSelectedPlayers();
         }
 
         private void buttonFlipHorizontal_Click(object sender, EventArgs e)
         {
-            var scrambler = new BoardScrambler(game.Board, 0, flipAlongHorizontalAxis: true);
+            var scrambler = new BoardScrambler(game.Board, 0, flipAboutVerticalAxis: true);
             InitialBoardState = scrambler.ReturnScrambledBoard();
             startNewGameWithInitialBoardStateAndSelectedPlayers();
         }

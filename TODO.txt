@@ -1,6 +1,5 @@
 TODO: Split game state tests into smaller files
 TODO: Add some levels from Helge's game.
-TODO: Visualize the centaur's path.
 TODO: Make it impossible to re-enter the labyrinth if the exit has been walled up
 
 BUG: Board scrambler crashes on non-quadratic boards
