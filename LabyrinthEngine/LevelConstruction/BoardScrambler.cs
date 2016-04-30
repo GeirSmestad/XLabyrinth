@@ -19,7 +19,6 @@ namespace LabyrinthEngine.LevelConstruction
     /// <param name="howMany90DegreesToRotateRight">Should be 0, 1, 2 or 3.</param>
     public class BoardScrambler
     {
-        // TODO: Add parameters for each element of the original.
         private WallSection[,] horizontalWalls;
         private WallSection[,] verticalWalls;
         private PlayfieldSquare[,] playfieldGrid;
@@ -85,9 +84,25 @@ namespace LabyrinthEngine.LevelConstruction
                 {
                     var transposedCoords = transposeXYCoordinates(x, y, operation);
                     var squareToTranspose = playfieldOriginal[x, y];
-                    playfieldGrid[transposedCoords.X, transposedCoords.Y] =
-                        new PlayfieldSquare(squareToTranspose.Type,
-                        squareToTranspose.NumTreasures, squareToTranspose.Hole);
+
+                    Teleporter transposedTeleporter = null;
+                    if (squareToTranspose.Hole != null)
+                    {
+                        transposedTeleporter = new Teleporter(
+                            squareToTranspose.Hole.TeleporterIndex,
+                            null,
+                            transposedCoords.X,
+                            transposedCoords.Y
+                            );
+                    }
+
+                    var transposedPlayfieldSquare = new PlayfieldSquare(squareToTranspose.Type,
+                        squareToTranspose.NumTreasures, transposedTeleporter);
+                    // If square has teleporter, is is not correctly populated yet. This is fixed
+                    // during teleporter population, below.
+                    transposedPlayfieldSquare.X = transposedCoords.X;
+                    transposedPlayfieldSquare.Y = transposedCoords.Y;
+                    playfieldGrid[transposedCoords.X, transposedCoords.Y] = transposedPlayfieldSquare;
                 }
             }
 
@@ -189,12 +204,7 @@ namespace LabyrinthEngine.LevelConstruction
                 }
             }
 
-            for (int i = 0; i < holes.Count; i++)
-            {
-                var transposedCoords = transposeXYCoordinates(holes[i].X, holes[i].Y, operation);
-                holes[i] = new Teleporter(holes[i].TeleporterIndex, holes[i].NextHole,
-                    transposedCoords.X, transposedCoords.Y);
-            }
+            holes = HelperMethods.PopulateTeleportersFrom(playfieldGrid);
 
             var centaurOriginal = HelperMethods.DeepClone(centaur);
             var transposedStartCoords = transposeXYCoordinates(centaur.X, centaur.Y, operation);

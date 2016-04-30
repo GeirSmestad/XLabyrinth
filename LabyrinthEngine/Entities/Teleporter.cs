@@ -44,6 +44,17 @@ namespace LabyrinthEngine.Entities
             var result = true;
             result &= X == other.X && Y == other.Y;
             result &= TeleporterIndex == other.TeleporterIndex;
+            if (NextHole != null)
+            {
+                result &= other.NextHole != null;
+                result &= NextHole.X == other.NextHole.X;
+                result &= NextHole.Y == other.NextHole.Y;
+                result &= NextHole.TeleporterIndex == other.NextHole.TeleporterIndex;
+            }
+            else
+            {
+                result &= other.NextHole == null;
+            }
 
             return result;
         }
