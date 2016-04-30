@@ -450,6 +450,11 @@ namespace LabyrinthEngine.GameLogic
             {
                 descriptionOfCurrentMove.Append("You are out of hamster spray. ");
             }
+            else if (targetWall.IsPassable)
+            {
+                player.NumHamsterSprays--;
+                descriptionOfCurrentMove.Append("You apply hamster spray into the open corridor. ");
+            }
             else if (targetWall.HasHamster)
             {
                 player.NumHamsterSprays--;
@@ -497,6 +502,12 @@ namespace LabyrinthEngine.GameLogic
             if (player.NumHamsters <= 0)
             {
                 descriptionOfCurrentMove.Append("You are out of hamsters. ");
+            }
+            else if (targetWall.IsPassable)
+            {
+                player.NumHamsters--;
+                descriptionOfCurrentMove.Append("Your hamster happily runs down the open corridor, to " + 
+                    "no obvious effect. ");
             }
             else if (!targetWall.HasHamster)
             {
@@ -617,8 +628,6 @@ namespace LabyrinthEngine.GameLogic
 
                         if (!removedShooterFromCandidates)
                         {
-                            // TODO: Encountered crash bug here. Try reproducing with dead shooter and live victim.
-                            // I think I need stricter logic on what actions a dead player can perform.
                             throw new LabyrinthInvalidStateException("Could not find shooter among players " +
                                 "on shooter's square. Likely logic error in equality operator of Player.");
                         }

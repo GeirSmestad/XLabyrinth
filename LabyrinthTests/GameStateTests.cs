@@ -1438,14 +1438,76 @@ namespace AndroidGui.Tests
             Assert.AreEqual(Player1.NumHamsters, 4);
         }
 
+        /// <summary>
+        /// If as a followup action e.g. constructing a wall where there is a wall, the
+        /// turn should pass to the next player to avoid exploiting this for quick exploration.
+        /// </summary>
         [Test]
-        public void Followup_actions_on_exit_should_behave_as_expected()
+        public void Blocked_followup_actions_should_execute()
         {
-            // TODO: Hamster open exit, blocked exit and hamstered exit
-            // TODO: Cement blocked and unblocked exit
-            // TODO: Hamster spray open, blocked unhamstered and hamstered exit
-            // TODO: Grenade open, blocked and hamstered exit
-            Assert.Fail("Not implemented");
+            player1_initial.X = 0;
+            player1_initial.Y = 0;
+            player1_initial.NumHamsters = 3;
+            player1_initial.NumHamsterSprays = 3;
+            player1_initial.NumGrenades = 3;
+            player1_initial.NumCement = 3;
+            // Performing all tests against an exit, to also cover the potential case of invalid wall status
+            horizontalWalls_initial[0, 0].IsExit = true;
+            horizontalWalls_initial[0, 0].IsPassable = true;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.PlaceHamsterUp);
+            Assert.AreEqual(Player1.NumHamsters, 2);
+            Board.GetWallAbove(0, 0).IsPassable = false;
+            game.PerformMove(MoveType.PlaceHamsterUp);
+            Assert.AreEqual(Player1.NumHamsters, 1);
+            Assert.That(Board.GetWallAbove(0, 0).HasHamster);
+            game.PerformMove(MoveType.PlaceHamsterUp);
+            Assert.AreEqual(Player1.NumHamsters, 1);
+            Assert.That(Board.GetWallAbove(0, 0).IsExit);
+
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.BuildWallUp);
+            Assert.AreEqual(Player1.NumCement, 2);
+            Assert.False(Board.GetWallAbove(0, 0).IsPassable);
+            game.PerformMove(MoveType.BuildWallUp);
+            Assert.AreEqual(Player1.NumCement, 2);
+            Assert.False(Board.GetWallAbove(0, 0).IsPassable);
+            Board.GetWallAbove(0, 0).HasHamster = true;
+            game.PerformMove(MoveType.BuildWallUp);
+            Assert.AreEqual(Player1.NumCement, 2);
+            Assert.False(Board.GetWallAbove(0, 0).IsPassable);
+            Assert.That(Board.GetWallAbove(0, 0).IsExit);
+
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.HamsterSprayUp);
+            Assert.AreEqual(Player1.NumHamsterSprays, 2);
+            Assert.False(Board.GetWallAbove(0, 0).HasHamster);
+            Board.GetWallAbove(0, 0).IsPassable = false;
+            Board.GetWallAbove(0, 0).HasHamster = true;
+            game.PerformMove(MoveType.HamsterSprayUp);
+            Assert.AreEqual(Player1.NumHamsterSprays, 1);
+            Assert.False(Board.GetWallAbove(0, 0).HasHamster);
+            game.PerformMove(MoveType.HamsterSprayUp);
+            Assert.AreEqual(Player1.NumHamsterSprays, 0);
+            Assert.That(Board.GetWallAbove(0, 0).IsExit);
+
+            initializeNewGameStateFromSetupParameters();
+            game.PerformMove(MoveType.ThrowGrenadeUp);
+            Assert.AreEqual(Player1.NumGrenades, 2);
+            Assert.True(Board.GetWallAbove(0, 0).IsPassable);
+            Board.GetWallAbove(0, 0).IsPassable = false;
+            Board.GetWallAbove(0, 0).HasHamster = true;
+            game.PerformMove(MoveType.ThrowGrenadeUp);
+            Assert.AreEqual(Player1.NumGrenades, 2);
+            Assert.That(Board.GetWallAbove(0, 0).HasHamster);
+            Assert.False(Board.GetWallAbove(0, 0).IsPassable);
+            Board.GetWallAbove(0, 0).HasHamster = false;
+            game.PerformMove(MoveType.ThrowGrenadeUp);
+            Assert.AreEqual(Player1.NumGrenades, 1);
+            Assert.That(Board.GetWallAbove(0, 0).IsPassable);
+            Assert.That(Board.GetWallAbove(0, 0).IsExit);
         }
 
         [Test]
@@ -1787,10 +1849,6 @@ namespace AndroidGui.Tests
             game.PerformMove(MoveType.MoveRight);
             Assert.IsTrue(Player1.X == 1 && Player1.Y == 3);
 
-            // TODO: I don't know if the original rules specify that return to inside
-            // happens on the end of the second or the beginning of the third turn.
-            // May have to rewrite this functionality.
-
             Assert.IsTrue(message1.Contains("outside"));
             Assert.IsTrue(message2.Contains("outside"));
             Assert.IsTrue(message3.Contains("outside"));
@@ -1816,10 +1874,6 @@ namespace AndroidGui.Tests
             Assert.IsTrue(Player1.IsOutsideLabyrinth());
             game.PerformMove(MoveType.DoNothing);
             Assert.IsFalse(Player1.IsOutsideLabyrinth());
-
-            // TODO: I don't know if the original rules specify that return to inside
-            // happens on the end of the second or the beginning of the third turn.
-            // May have to rewrite this functionality.
         }
 
         [Test]
@@ -1924,18 +1978,6 @@ namespace AndroidGui.Tests
         [Test]
         public void Followup_action_as_movement_should_skip_movement_and_execute()
         {
-            Assert.Fail("Not implemented");
-        }
-
-        [Test]
-        /// <summary>
-        /// If as a followup action e.g. constructing a wall where there is a wall, the
-        /// turn should pass to the next player to avoid exploiting this for quick exploration.
-        /// </summary>
-        public void Blocked_followup_actions_should_execute()
-        {
-            // TODO: Perform all sorts of illegal/meaningless actions.
-            // Hamstering non-wall, cementing wall, hamster spraying non-wall, grenading air
             Assert.Fail("Not implemented");
         }
 
