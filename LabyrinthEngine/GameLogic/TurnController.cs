@@ -376,6 +376,12 @@ namespace LabyrinthEngine.GameLogic
             var action = move.ActionType;
             WallSection targetWall;
 
+            if (!player.IsAlive)
+            {
+                descriptionOfCurrentMove.Append("Dead people cannot handle construction equipment, unfortunately. ");
+                return;
+            }
+
             switch (action)
             {
                 case MoveType.BuildWallUp:
@@ -415,6 +421,12 @@ namespace LabyrinthEngine.GameLogic
             var player = move.PerformedBy;
             var action = move.ActionType;
             WallSection targetWall;
+
+            if (!player.IsAlive)
+            {
+                descriptionOfCurrentMove.Append("You are dead, and ghosts can't use hamster spray. ");
+                return;
+            }
 
             switch (action)
             {
@@ -457,6 +469,13 @@ namespace LabyrinthEngine.GameLogic
             var action = move.ActionType;
             WallSection targetWall;
 
+            if (!player.IsAlive)
+            {
+                descriptionOfCurrentMove.Append("You are dead, and therefore cannot pick up or otherwise " +
+                    "interact with hamsters. ");
+                return;
+            }
+
             switch (action)
             {
                 case MoveType.PlaceHamsterUp:
@@ -496,6 +515,12 @@ namespace LabyrinthEngine.GameLogic
             var player = move.PerformedBy;
             var action = move.ActionType;
             WallSection targetWall;
+
+            if (!player.IsAlive)
+            {
+                descriptionOfCurrentMove.Append("You are dead, and hence unable to operate heavy weaponry. ");
+                return;
+            }
 
             switch (action)
             {
@@ -551,6 +576,12 @@ namespace LabyrinthEngine.GameLogic
             bool arrowWasBlockedByWall = false;
             int arrowX = player.X;
             int arrowY = player.Y;
+
+            if (!player.IsAlive)
+            {
+                descriptionOfCurrentMove.Append("You are dead, and are hence currently unable to operate weaponry. ");
+                return;
+            }
 
             while (victim == null && centaurWasHit == false)
             {

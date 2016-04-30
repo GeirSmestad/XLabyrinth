@@ -773,6 +773,35 @@ namespace AndroidGui.Tests
         }
 
         [Test]
+        public void When_shooting_at_same_square_dead_players_should_not_interfere()
+        {
+            player1_initial.X = 2;
+            player1_initial.Y = 2;
+            player1_initial.NumArrows = 1;
+
+            var player2_initial = new Player() { Name = "Nemesis", IsAlive = true };
+            players_initial.Add(player2_initial);
+            player2_initial.X = 2;
+            player2_initial.Y = 2;
+
+            var player3_initial = new Player() { Name = "Ghost", IsAlive = false };
+            players_initial.Add(player3_initial);
+            player3_initial.X = 2;
+            player3_initial.Y = 2;
+
+            initializeNewGameStateFromSetupParameters();
+
+            game.PerformMove(MoveType.FireAtSameSquare);
+            Assert.False(Player2.IsAlive);
+
+            game.PerformMove(MoveType.DoNothing);
+            game.PerformMove(MoveType.DoNothing);
+
+            // Ghost attempts illegal move: Shooting at the same square
+            game.PerformMove(MoveType.FireAtSameSquare);
+        }
+
+        [Test]
         public void When_shot_through_wall_player_should_survive()
         {
             player1_initial.X = 2;
