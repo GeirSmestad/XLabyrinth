@@ -11,6 +11,14 @@ using LabyrinthEngine.GameLogic;
 
 namespace LabyrinthEngine
 {
+    /// <summary>
+    /// This is the main game logic controller for HamsterLabyrinth. An instance of this class can
+    /// control all behavior of a game instance through its public accessors, and the board state
+    /// can be read out through its public accessors for use in a GUI.
+    /// 
+    /// To create an instance of this class that is ready to play, use its public constructor. An
+    /// instance of the BoardState class can be loaded from an XML level using the BoardLoader class.
+    /// </summary>
     public class GameState
     {
         public BoardState Board { get; private set; }
@@ -70,7 +78,6 @@ namespace LabyrinthEngine
 
             setPlayersToInitialPositions();
             turnController = new TurnController(Board, Players, randomNumberGenerator);
-            //currentUndoStep = completedMoves.Count; // TODO: Unknown if skipping this has any negative consequences.
         }
 
         public Player CurrentPlayer()
@@ -110,12 +117,11 @@ namespace LabyrinthEngine
         }
 
         /// <summary>
-        /// Performs the first action for the current player. For convenience, if this method
+        /// Performs the main action for the current player. For convenience, if this method
         /// is called with a non-movement action, it will execute a "DoNothing" action and then
         /// execute the action as a followup action. This is equivalent to the player skipping
         /// his movement and then executing the action as a followup.
         /// </summary>
-        /// <returns>A description of the result of the move.</returns>
         private void performMainActionForCurrentPlayer(MoveType action)
         {
             // TODO: This could also move into TurnController to better encapsulate functionality
@@ -135,7 +141,10 @@ namespace LabyrinthEngine
             }
         }
 
-        /// <returns>A description of the result of the move.</returns>
+        /// <summary>
+        /// Performs the followup action for the current player. Executes the "DoNothing" event
+        /// if called with a movement action.
+        /// </summary>
         private void performFollowupActionForCurrentPlayer(MoveType action)
         {
             // TODO: This could also move into TurnController to better encapsulate functionality
@@ -171,6 +180,9 @@ namespace LabyrinthEngine
             }
         }
 
+        /// <summary>
+        /// Undoes the previous move, e.g. if the incorrect action was entered.
+        /// </summary>
         public void UndoPreviousMove()
         {
             if (CanUndo())
@@ -180,6 +192,9 @@ namespace LabyrinthEngine
             }
         }
 
+        /// <summary>
+        /// Redoes the previously undone move, e.g. if an undo was performed in error.
+        /// </summary>
         public void RedoNextMove()
         {
             if (CanRedo())
@@ -189,11 +204,17 @@ namespace LabyrinthEngine
             }
         }
 
+        /// <summary>
+        /// Whether calling undo will currently have an effect
+        /// </summary>
         public bool CanUndo()
         {
             return currentUndoStep < completedMoves.Count;
         }
 
+        /// <summary>
+        /// Whether calling redo will currently have an effect
+        /// </summary>
         public bool CanRedo()
         {
             return currentUndoStep > 0;

@@ -12,8 +12,15 @@ using LabyrinthEngine.Geometry;
 
 namespace LabyrinthEngine.LevelConstruction
 {
+    /// <summary>
+    /// Loads a HamsterLabyrinth level from an XML string. See the test project for an annotated example
+    /// file. (E.g. BoardLoaderTestBoard.xml).
+    /// </summary>
     public class BoardLoader
     {
+        /// <summary>
+        /// The board state representing the XML string given to the constructor
+        /// </summary>
         public BoardState Board { get; private set; }
 
         private int boardWidth;
@@ -21,6 +28,11 @@ namespace LabyrinthEngine.LevelConstruction
 
         private PlayfieldSquare[,] playfield;
 
+        /// <summary>
+        /// To load a level, pass a legel XML description of a HamsterLabyrinth level to this constructor,
+        /// then read the result out from the Board property.
+        /// </summary>
+        /// <param name="xmlToInitializeBoardFrom">A level XML string representing the level to load</param>
         public BoardLoader(string xmlToInitializeBoardFrom)
         {
             Board = initializeBoardFromXml(xmlToInitializeBoardFrom);

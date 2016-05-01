@@ -9,6 +9,13 @@ using System.Xml;
 
 namespace LabyrinthEngine.LevelConstruction
 {
+    /// <summary>
+    /// Saves a HamsterLabyrinth level from its in-game representation to a legal XML
+    /// representation. Result is human-readable, but may not be the most efficient
+    /// representation possible. (E.g. *all* exterior walls are included in the saved
+    /// file, even though walls on the border of the playfield will be marked as exterior
+    /// and unpassable in the game regardless of whether included in the XML file or not).
+    /// </summary>
     public class BoardSaver
     {
         private BoardState source;
@@ -16,11 +23,18 @@ namespace LabyrinthEngine.LevelConstruction
         private XmlDocument document;
         private XmlElement levelElement;
 
+        /// <summary>
+        /// To save a level, pass a legal instance of the BoardState class to this constructor,
+        /// then access the result through this class's public interface.
+        /// </summary>
         public BoardSaver(BoardState boardToSave)
         {
             source = boardToSave;
         }
 
+        /// <summary>
+        /// Generates a legal XML representation of the BoardState given to the constructor.
+        /// </summary>
         public string GenerateXmlRepresentationOfBoard()
         {
             document = new XmlDocument();
@@ -44,6 +58,9 @@ namespace LabyrinthEngine.LevelConstruction
             }
         }
 
+        /// <summary>
+        /// Saves to file an XML representation of the BoardState given to the constructor.
+        /// </summary>
         public void SaveXmlToFile(string filename)
         {
             if (document == null)

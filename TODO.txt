@@ -4,6 +4,7 @@ TODO: Make it impossible to re-enter the labyrinth if the exit has been walled u
 TODO: Implement remaining GameStateTests
 TODO: Implement remaining BoardScramblerTests
 TODO: Implement remaining BoardLoaderTests
+TODO: Implement XML beautify on the BoardSaver class.
 
 BUG: Board scrambler crashes on non-quadratic boards
 
