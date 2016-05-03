@@ -57,6 +57,7 @@
     <Compile Include="Helpers\LabyrinthExceptions.cs" />
     <Compile Include="Geometry\Position.cs" />
     <Compile Include="Geometry\HorizontalWallCoordinate.cs" />
+    <Compile Include="LevelEditor.cs" />
     <Compile Include="Moves\Move.cs" />
     <Compile Include="Moves\MoveType.cs" />
     <Compile Include="GameLogic\OutsideLabyrinthPhase.cs" />
