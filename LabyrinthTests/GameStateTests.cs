@@ -10,11 +10,9 @@ using LabyrinthEngine.Helpers;
 using LabyrinthEngine.Geometry;
 using LabyrinthEngine.Entities;
 using LabyrinthEngine.Moves;
-using System.Collections.ObjectModel;
-using LabyrinthTests;
 using LabyrinthEngine.GameLogic;
 
-namespace AndroidGui.Tests
+namespace LabyrinthTests.Tests
 {
     [TestFixture]
     public class GameStateTests
