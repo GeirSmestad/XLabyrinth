@@ -102,13 +102,36 @@ namespace LabyrinthTests
         [Test]
         public void Scrambling_teleporters_works()
         {
-            Assert.Fail("Not implemented");
+            var scrambler = new BoardScrambler(originalBoard, 0, scrambleTreasureLocations: true, randomNumberGeneratorSeed: 1337);
+            var boardWithScrambledTeleporterLocations = scrambler.ReturnScrambledBoard();
+
+            Assert.True(boardWithScrambledTeleporterLocations.PlayfieldGrid[1, 1].Type != SquareType.Teleporter);
+            Assert.AreEqual(boardWithScrambledTeleporterLocations.Holes.Count, originalBoard.Holes.Count);
+
+            var firstTeleporter = boardWithScrambledTeleporterLocations.Holes[0];
+            var shouldAlsoBeFirstTeleporter = firstTeleporter.NextHole.NextHole.NextHole.NextHole.NextHole;
+
+            Assert.AreSame(firstTeleporter, shouldAlsoBeFirstTeleporter);
         }
 
         [Test]
         public void Scrambling_treasure_locations_works()
         {
-            Assert.Fail("Not implemented");
+            var scrambler = new BoardScrambler(originalBoard, 0, scrambleTreasureLocations: true, randomNumberGeneratorSeed: 1337);
+            var boardWithScrambledTreasureLocations = scrambler.ReturnScrambledBoard();
+
+            var numTreasuresOnOriginalBoard = originalBoard.PlayfieldGrid
+                .Cast<PlayfieldSquare>()
+                .Select(square => square.NumTreasures)
+                .Aggregate((numTreasuresA, numTreasuresB) => numTreasuresA + numTreasuresB);
+
+            var numTreasuresOnScrambledBoard = boardWithScrambledTreasureLocations.PlayfieldGrid
+                .Cast<PlayfieldSquare>()
+                .Select(square => square.NumTreasures)
+                .Aggregate((numTreasuresA, numTreasuresB) => numTreasuresA + numTreasuresB);
+
+            Assert.AreNotEqual(boardWithScrambledTreasureLocations.PlayfieldGrid[0, 0].NumTreasures, 1);
+            Assert.AreEqual(numTreasuresOnOriginalBoard, numTreasuresOnScrambledBoard);
         }
 
         [Test]
@@ -126,7 +149,14 @@ namespace LabyrinthTests
         [Test]
         public void Does_not_crash_when_scrambling_non_quadratic_boards()
         {
-            Assert.Fail("Not implemented");
+            BoardState nonQuadraticBoard = null;
+
+            // TODO: Create plausible non-quadratic board. Should use its full width to test properly.
+
+            var scrambler = new BoardScrambler(nonQuadraticBoard, 1, flipAboutHorizontalAxis: true, flipAboutVerticalAxis: true);
+            var nonQuadraticBoardAfterRotation = scrambler.ReturnScrambledBoard();
+
+            Assert.NotNull(nonQuadraticBoardAfterRotation);
         }
     }
 }

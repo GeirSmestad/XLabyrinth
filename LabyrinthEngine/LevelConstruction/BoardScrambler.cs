@@ -81,6 +81,9 @@ namespace LabyrinthEngine.LevelConstruction
             //{
             //    FlipDimensionsOfWorkingCopy();
             //}
+            // I probably have to switch to all reads being performed on original,
+            // and all writes (including flipping dimensions) being performed on workingCopy.
+            // Should do the job.
 
             // TODO: Can extract each method out to its own helper, for readability.
             // TODO: Rotation of 90 or 270 degrees will fail for non-quadratic boards.
@@ -254,17 +257,17 @@ namespace LabyrinthEngine.LevelConstruction
 
         private void scrambleBoardTreasureLocations()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void scrambleBoardTeleporterOrder()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void scrambleBoardStartingPositions()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private Position transposeXYCoordinates(int x, int y,
