@@ -9,7 +9,7 @@ using Android.OS;
 namespace AndroidGui
 {
     [Activity(Label = "AndroidGui", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainActivity : Activity
+    public class LevelEditorActivity : Activity
     {
         int count = 1;
 
