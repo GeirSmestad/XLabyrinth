@@ -114,7 +114,13 @@ namespace LabyrinthTests
         [Test]
         public void Scrambling_starting_positions_works()
         {
-            Assert.Fail("Not implemented");
+            var scrambler = new BoardScrambler(originalBoard, 0, scrambleStartingPositions: true, randomNumberGeneratorSeed: 1337);
+            var boardWithScrambledStartingPositions = scrambler.ReturnScrambledBoard();
+
+            var startingPositions = boardWithScrambledStartingPositions.StartingPositions;
+
+            Assert.False(startingPositions[0].X == 2 && startingPositions[0].Y == 3);
+            Assert.False(startingPositions[1].X == 1 && startingPositions[1].Y == 0);
         }
 
         [Test]

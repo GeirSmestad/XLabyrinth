@@ -29,7 +29,7 @@ namespace LabyrinthEngine.LevelConstruction
         private int height;
         private int width;
 
-        private PlayfieldAxis axisToRotateBoardAbout;
+        private int randomNumberGeneratorSeed;
 
         public BoardScrambler(BoardState original,
             int howMany90DegreesToRotateRight,
@@ -37,9 +37,18 @@ namespace LabyrinthEngine.LevelConstruction
             bool flipAboutVerticalAxis = false,
             bool scrambleTeleporterOrder = false,
             bool scrambleTreasureLocations = false,
-            bool scrambleStartingPositions = false
-            )
+            bool scrambleStartingPositions = false,
+            int randomNumberGeneratorSeed = 0)
         {
+            if (randomNumberGeneratorSeed == 0)
+            {
+                this.randomNumberGeneratorSeed = DateTime.Now.GetHashCode();
+            }
+            else
+            {
+                this.randomNumberGeneratorSeed = randomNumberGeneratorSeed;
+            }
+
             var workingCopy = HelperMethods.DeepClone(original);
             playfieldGrid = workingCopy.PlayfieldGrid;
             holes = workingCopy.Holes;

@@ -613,7 +613,7 @@ namespace FormsGui
 
         private void buttonFlipHorizontal_Click(object sender, EventArgs e)
         {
-            var scrambler = new BoardScrambler(game.Board, 0, flipAboutVerticalAxis: true);
+            var scrambler = new BoardScrambler(game.Board, 0, flipAboutHorizontalAxis: true);
             InitialBoardState = scrambler.ReturnScrambledBoard();
             startNewGameWithInitialBoardStateAndSelectedPlayers();
         }

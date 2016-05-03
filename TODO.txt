@@ -10,3 +10,4 @@ BUG: Board scrambler crashes on non-quadratic boards
 
 WISHLIST: Create level editor. Think a bit about how. New front-end is one option.
 WISHLIST: Currently not making text available in UI on undo/redo. This should be simple enough to solve.
+WISHLIST: Web service to allow the app to save/download maps and play games and get highscores etc.
