@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<LabyrinthLevel name="Board Loader test board" description="An example board for testing the board loader.">
+<LabyrinthLevel>
+  <Header>
+    <Name>Board Loader test board</Name>
+    <Description>An example board for testing the board loader</Description>
+    <Rank>5</Rank>
+  </Header>
+  
   <!-- Number of rows and elements must match board dimensions for parsing to work. -->
   <Playfield width="5" height="5">
     <Row>
@@ -78,5 +84,5 @@
     <CentaurStep x="2" y="2" stepHereIgnoringWalls="yes"/>
     <CentaurStep x="1" y="2"/>
   </Centaur>
-  
+
 </LabyrinthLevel>

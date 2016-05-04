@@ -36,13 +36,20 @@ namespace LabyrinthTests
         [Test]
         public void Name_is_parsed()
         {
-            Assert.Fail("Not implemented");
+            Assert.That(board.Header.Name == "Board Loader test board");
         }
 
         [Test]
         public void Description_is_parsed()
         {
-            Assert.Fail("Not implemented");
+            Assert.That(board.Header.Description ==
+                "An example board for testing the board loader");
+        }
+
+        [Test]
+        public void Rank_is_parsed()
+        {
+            Assert.That(board.Header.Rank == 5);
         }
 
         [Test]

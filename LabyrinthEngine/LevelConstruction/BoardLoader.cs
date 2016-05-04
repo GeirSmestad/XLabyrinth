@@ -44,6 +44,9 @@ namespace LabyrinthEngine.LevelConstruction
             xmlDocument.LoadXml(xml);
             var navigator = xmlDocument.CreateNavigator();
 
+            var headerXmlIfPresent = navigator.SelectSingleNode("/LabyrinthLevel/Header");
+            var header = parseHeaderFrom(headerXmlIfPresent);
+
             var playfieldXml = navigator.SelectSingleNode("/LabyrinthLevel/Playfield");
             playfield = parsePlayfieldFrom(playfieldXml);
 
@@ -62,8 +65,11 @@ namespace LabyrinthEngine.LevelConstruction
             List<Teleporter> holes = HelperMethods.PopulateTeleportersFrom(playfield);
             populatePlayfieldCoordinates();
 
-            return new BoardState(playfield, horizontalWalls, verticalWalls, holes, 
+            var result = new BoardState(playfield, horizontalWalls, verticalWalls, holes,
                 centaur, startingPositions);
+            result.Header = header;
+
+            return result; 
         }
 
         private void populatePlayfieldCoordinates()
@@ -77,6 +83,56 @@ namespace LabyrinthEngine.LevelConstruction
                     playfieldSquare.Y = y;
                 }
             }
+        }
+
+        private BoardHeader parseHeaderFrom(XPathNavigator headerElement)
+        {
+            var result = new BoardHeader();
+            if (headerElement == null)
+            {
+                return result; // Empty element
+            }
+
+            try
+            {
+                var nameElement = headerElement.SelectSingleNode("Name");
+                var descriptionElement = headerElement.SelectSingleNode("Description");
+                var rankElement = headerElement.SelectSingleNode("Rank");
+
+                if (nameElement != null)
+                {
+                    result.Name = nameElement.Value;
+                }
+                if (descriptionElement != null)
+                {
+                    result.Description = descriptionElement.Value;
+                }
+                if (rankElement != null)
+                {
+                    int parsedRank;
+                    bool rankIsValidInt = int.TryParse(
+                        rankElement.Value, 
+                        out parsedRank);
+                    if (rankIsValidInt)
+                    {
+                        result.Rank = parsedRank;
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                if (e.GetType() != typeof(LabyrinthParseException))
+                {
+                    throw new LabyrinthParseException("Kuk i computeren");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return result;
         }
 
         private PlayfieldSquare[,] parsePlayfieldFrom(XPathNavigator playfieldElement)

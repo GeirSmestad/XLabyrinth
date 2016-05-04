@@ -62,6 +62,7 @@
     <Compile Include="Moves\MoveType.cs" />
     <Compile Include="GameLogic\OutsideLabyrinthPhase.cs" />
     <Compile Include="Geometry\PlayfieldAxis.cs" />
+    <Compile Include="Playfield\BoardHeader.cs" />
     <Compile Include="Playfield\BoardState.cs" />
     <Compile Include="Playfield\PlayfieldSquare.cs" />
     <Compile Include="Playfield\SquareType.cs" />

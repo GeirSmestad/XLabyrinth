@@ -17,6 +17,8 @@ namespace LabyrinthEngine.Playfield
     [Serializable]
     public class BoardState
     {
+        public BoardHeader Header { get; set; }
+
         /* The playfield is an (x,y)-grid of positive numbers with (0,0) in the top-left.
          
         Horizontal and vertical walls are defined separately. 
@@ -56,6 +58,8 @@ namespace LabyrinthEngine.Playfield
                 throw new InvalidOperationException("The centaur cannot be null. If you want " +
                     "to play without the centaur, set its starting position to e.g. (-2,-2).");
             }
+
+            Header = new BoardHeader();
         }
 
         public int Width
