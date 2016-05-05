@@ -18,20 +18,17 @@ namespace AndroidGui
     public class PlayfieldEditorCanvas : View
     {
         private readonly ShapeDrawable _shape;
-        private int x = 0;
-        private int y = 0;
 
-        private int distanceModifier = 0;
+        // Offset values provided by the user by panning & zooming
+        private int xOffset = 0;
+        private int yOffset = 0;
+        private float zoomFactor = 1.0f;
 
-        private float previousX = -1;
-        private float previousY = -1;
+        private float previousX;
+        private float previousY;
+        private float previousDistanceBetweenTouches;
 
-        private float previousSecondFingerX = -1;
-        private float previousSecondFingerY = -1;
-
-        private float previousDistanceBetweenTouches = -1;
-
-        private int numPointers = 0;
+        private int numFingersOnScreen = 0;
 
         private const float SCALE_FACTOR = 1.0f;
 
@@ -46,7 +43,9 @@ namespace AndroidGui
             _shape = new ShapeDrawable(new OvalShape());
             _shape.Paint.Set(paint);
 
-            _shape.SetBounds(20 + x, 20 + y, 300 + x + distanceModifier, 200 + y + distanceModifier);
+            _shape.SetBounds(20 + xOffset, 20 + yOffset, 
+                (int)((300 + xOffset) * zoomFactor), 
+                (int)((200 + yOffset) * zoomFactor));
         }
 
 
@@ -61,37 +60,30 @@ namespace AndroidGui
             switch (e.Action & e.ActionMasked)
             {
                 case MotionEventActions.Move:
-                    if (numPointers == 1)
+                    if (numFingersOnScreen == 1)
                     {
                         return handlePanEvent(e);
                     }
-                    else if (numPointers == 2)
+                    else if (numFingersOnScreen == 2)
                     {
-                        if (previousSecondFingerX == -1) { previousSecondFingerX = e.GetX(1); }
-                        if (previousSecondFingerY == -1) { previousSecondFingerY = e.GetY(1); }
-
-                        if (previousDistanceBetweenTouches == -1)
-                        {
-                            previousDistanceBetweenTouches = distanceBetweenTouches(e, 0, 1);
-                        }
-                        float dd = distanceBetweenTouches(e, 0, 1) - previousDistanceBetweenTouches;
-                        previousDistanceBetweenTouches = distanceBetweenTouches(e, 0, 1);
-
-                        distanceModifier += (int)(dd * SCALE_FACTOR);
-                        _shape.SetBounds(20 + x, 20 + y, 300 + x + distanceModifier, 200 + y + distanceModifier);
-                        this.Invalidate();
-                        Console.WriteLine(string.Format("DistanceModifier: {0}, dd: {1}", distanceModifier, dd));
+                        return handleZoomEvent(e);
                     }
                     break;
                 case (MotionEventActions.Down):
                 case (MotionEventActions.PointerDown):
-                    if (numPointers < 2) { numPointers++; }
-                    Console.WriteLine("Action was DOWN. NP: {0}", numPointers);
+
+                    // Reset tracking of previous finger position
+                    previousX = e.GetX();
+                    previousY = e.GetY();
+                    previousDistanceBetweenTouches = calculateDistanceBetweenTwoTouches(e);
+
+                    if (numFingersOnScreen < 2) { numFingersOnScreen++; }
+                    Console.WriteLine("Action was DOWN. NP: {0}", numFingersOnScreen);
                     return true;
                 case (MotionEventActions.Up):
                 case (MotionEventActions.PointerUp):
-                    if (numPointers > 0) { numPointers--; }
-                    Console.WriteLine("Action was UP. NP: {0}", numPointers);
+                    if (numFingersOnScreen > 0) { numFingersOnScreen--; }
+                    Console.WriteLine("Action was UP. NP: {0}", numFingersOnScreen);
                     return true;
                 case (MotionEventActions.Cancel):
                     Console.WriteLine("Action was CANCEL");
@@ -105,29 +97,52 @@ namespace AndroidGui
             return base.OnTouchEvent(e);
         }
 
+        /// <summary>
+        /// Handle view panned by single finger
+        /// </summary>
+        /// <returns>Result of panning action, default true.</returns>
         private bool handlePanEvent(MotionEvent e)
         {
-            if (previousX == -1) { previousX = e.GetX(); }
-            if (previousY == -1) { previousY = e.GetY(); }
-
             var dx = e.GetX() - previousX;
             var dy = e.GetY() - previousY;
 
             previousX = e.GetX(0);
             previousY = e.GetY(0);
 
-            //Console.WriteLine(string.Format("({0}, {1})", dx, dy));
+            xOffset += (int)(dx * SCALE_FACTOR);
+            yOffset += (int)(dy * SCALE_FACTOR);
 
-            x += (int)(dx * SCALE_FACTOR);
-            y += (int)(dy * SCALE_FACTOR);
-
-            _shape.SetBounds(20 + x, 20 + y, 300 + x + distanceModifier, 200 + y + distanceModifier);
+            _shape.SetBounds(20 + xOffset, 20 + yOffset, 
+                (int)((300 + xOffset) * zoomFactor), 
+                (int)((200 + yOffset) * zoomFactor));
             this.Invalidate();
 
             return true;
         }
 
-        public float distanceBetweenTouches(MotionEvent e, int first, int second)
+        /// <summary>
+        /// Handle view zoomed by pinching
+        /// </summary>
+        /// <returns>Result of zoom action, default true</returns>
+        private bool handleZoomEvent(MotionEvent e)
+        {
+            float dd = calculateDistanceBetweenTwoTouches(e) - previousDistanceBetweenTouches;
+            previousDistanceBetweenTouches = calculateDistanceBetweenTwoTouches(e);
+
+            zoomFactor += (dd * 0.001f);
+            _shape.SetBounds(20 + xOffset, 20 + yOffset,
+                (int)((300 + xOffset) * zoomFactor),
+                (int)((200 + yOffset) * zoomFactor));
+            this.Invalidate();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Calculates the distance between two fingers using Pythagoras' theorem.
+        /// Assumes that there are actually two fingers in the motion event.
+        /// </summary>
+        public float calculateDistanceBetweenTwoTouches(MotionEvent e)
         {
             if (e.PointerCount >= 2)
             {
