@@ -33,7 +33,8 @@ namespace LabyrinthEngine.LevelConstruction
         }
 
         /// <summary>
-        /// Generates a legal XML representation of the BoardState given to the constructor.
+        /// Generates a legal and indented UTF-8 XML representation of the BoardState 
+        /// given to the constructor.
         /// </summary>
         public string GenerateXmlRepresentationOfBoard()
         {
@@ -53,22 +54,24 @@ namespace LabyrinthEngine.LevelConstruction
                 {
                     document.WriteTo(xmlTextWriter);
                     xmlTextWriter.Flush();
-                    return stringWriter.GetStringBuilder().ToString();
+                    var indentedResult = printAsIndentedUtf8Xml(document);
+                    return indentedResult;
                 }
             }
         }
 
         /// <summary>
         /// Saves to file an XML representation of the BoardState given to the constructor.
+        /// Use UTF-8 encoding; .NET sometimes uses UTF-16 by default.
         /// </summary>
         public void SaveXmlToFile(string filename)
         {
-            if (document == null)
-            {
-                GenerateXmlRepresentationOfBoard();
-            }
+            var output = GenerateXmlRepresentationOfBoard();
 
-            document.Save(filename);
+            using (TextWriter writer = new StreamWriter(filename, false, Encoding.UTF8))
+            {
+                writer.Write(output);
+            }
         }
 
         private void generatePlayfieldElement()
@@ -221,6 +224,22 @@ namespace LabyrinthEngine.LevelConstruction
                 {
                     stepElement.SetAttribute("stepHereIgnoringWalls", "yes");
                 }
+            }
+        }
+
+        private static string printAsIndentedUtf8Xml(XmlDocument document)
+        {
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                xmlWriterSettings.Encoding = new UTF8Encoding(false);
+                xmlWriterSettings.ConformanceLevel = ConformanceLevel.Document;
+                xmlWriterSettings.Indent = true;
+
+                XmlWriter xmlWriter = XmlWriter.Create(memoryStream, xmlWriterSettings);
+                document.Save(xmlWriter);
+
+                return Encoding.UTF8.GetString(memoryStream.ToArray());
             }
         }
     }
