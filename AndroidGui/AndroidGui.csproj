@@ -81,7 +81,14 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\BeginnersLament2.xml" />
     <Content Include="Assets\levels\BeginnersLament.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LabyrinthEngine\LabyrinthEngine.csproj">
+      <Project>{48CCC159-96B9-478C-BD15-ADA83AC296ED}</Project>
+      <Name>LabyrinthEngine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
